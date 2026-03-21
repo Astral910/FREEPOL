@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #5B5CF6;
+  --secondary: #22C55E;
+  --background: #FFFFFF;
+  --card: #F8FAFC;
+  --border: #E5E7EB;
+  --text-primary: #0F172A;
+  --text-soft: #64748B;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FFFFFF;
+  color: #0F172A;
+}
+
+/* Gradiente de texto IA */
+.gradient-text {
+  background: linear-gradient(135deg, #5B5CF6, #A855F7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradiente de fondo IA */
+.gradient-bg {
+  background: linear-gradient(135deg, #5B5CF6, #A855F7);
+}
+
+/* Animación del punto parpadeante del badge */
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Animación de flotación suave */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Patrón de puntos SVG para el hero */
+.dot-pattern {
+  background-image: radial-gradient(circle, #E5E7EB 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
