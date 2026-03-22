@@ -2,6 +2,7 @@
 
 import { memo } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
 
@@ -14,6 +15,7 @@ interface CTAFinalProps {
  * Incluye elementos decorativos y dos botones principales.
  */
 const CTAFinal = memo(function CTAFinal({ onOpenAuth }: CTAFinalProps) {
+  const router = useRouter()
   const { ref, isInView } = useScrollAnimation()
 
   return (
@@ -45,7 +47,7 @@ const CTAFinal = memo(function CTAFinal({ onOpenAuth }: CTAFinalProps) {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
               <Button
                 className="px-10 py-4 h-auto rounded-xl bg-white text-[#5B5CF6] font-bold text-base hover:bg-white/90 shadow-xl transition-all duration-200"
-                onClick={() => onOpenAuth('register')}
+                onClick={() => router.push('/chat')}
               >
                 Crear cuenta gratis
               </Button>

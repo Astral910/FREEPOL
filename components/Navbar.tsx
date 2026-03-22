@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Zap, ArrowRight, Menu, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Zap, ArrowRight, Menu, X, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
@@ -23,6 +24,7 @@ const navLinks = [
  * Se vuelve opaco y con borde al hacer scroll más de 20px.
  */
 export default function Navbar({ onOpenAuth }: NavbarProps) {
+  const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -68,6 +70,14 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
 
           {/* Botones — solo desktop */}
           <div className="hidden md:flex items-center gap-3">
+            <Button
+              variant="ghost"
+              className="text-sm text-[#64748B] hover:text-[#5B5CF6] hover:bg-[#F0F0FF] rounded-lg flex items-center gap-1.5 transition-all duration-200"
+              onClick={() => router.push('/chat')}
+            >
+              <Sparkles size={14} />
+              Probar IA →
+            </Button>
             <Button
               variant="ghost"
               className="text-sm text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg"
@@ -131,6 +141,16 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
 
                 {/* Botones al fondo */}
                 <div className="p-5 border-t border-[#E5E7EB] flex flex-col gap-3">
+                  <Button
+                    className="w-full rounded-lg bg-[#EEF2FF] text-[#5B5CF6] border border-[#C4B5FD] flex items-center justify-center gap-2 hover:bg-[#E0E7FF]"
+                    onClick={() => {
+                      setMobileOpen(false)
+                      router.push('/chat')
+                    }}
+                  >
+                    <Sparkles size={14} />
+                    Probar IA →
+                  </Button>
                   <Button
                     variant="outline"
                     className="w-full rounded-lg"

@@ -2,6 +2,7 @@
 
 import { memo } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import ChatMockup from '@/components/ChatMockup'
@@ -16,6 +17,8 @@ interface HeroSectionProps {
  * botones CTA y mockup del chat de FREEPOL.
  */
 const HeroSection = memo(function HeroSection({ onOpenAuth }: HeroSectionProps) {
+  const router = useRouter()
+
   const handleScrollToCasos = () => {
     document.getElementById('casos')?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -86,7 +89,7 @@ const HeroSection = memo(function HeroSection({ onOpenAuth }: HeroSectionProps) 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <Button
               className="px-8 py-4 h-auto rounded-xl bg-[#5B5CF6] text-white text-base font-semibold hover:brightness-110 shadow-lg hover:shadow-xl hover:shadow-[#5B5CF6]/30 transition-all duration-200"
-              onClick={() => onOpenAuth('register')}
+              onClick={() => router.push('/chat')}
             >
               Crear mi primera campaña gratis →
             </Button>
