@@ -9,7 +9,8 @@
     "lint": "next lint",
     "bot": "ts-node --esm bot/telegram.ts",
     "bot:dev": "nodemon --exec \"ts-node --esm bot/telegram.ts\"",
-    "seed": "ts-node --esm lib/seed-demos.ts"
+    "seed": "ts-node --esm lib/seed-demos.ts",
+    "verificar": "ts-node --esm scripts/verificar-proyecto.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",

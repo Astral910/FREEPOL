@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import toast, { Toaster } from 'react-hot-toast'
 import {
@@ -12,6 +12,7 @@ import {
 import ChatArea from '@/components/chat/ChatArea'
 import ChatInput from '@/components/chat/ChatInput'
 import TipsPanel from '@/components/chat/TipsPanel'
+import AuthDialog from '@/components/AuthDialog'
 import { createClient } from '@/lib/supabase'
 import type { Empresa } from '@/lib/empresa'
 import type { EstadoChat, MensajeChat, ResultadoAnalisis } from '@/types/campana'
@@ -45,6 +46,7 @@ function ordenarSugerenciasPorIndustria(industria: string | undefined): string[]
  */
 export default function ChatPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
   const [inputValue, setInputValue] = useState('')
   const [empresa, setEmpresa] = useState<Empresa | null>(null)
@@ -55,6 +57,28 @@ export default function ChatPage() {
   const [promptAnterior, setPromptAnterior] = useState('')
   const [tipsOpen, setTipsOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
+
+  // Detectar parámetros URL al montar
+  useEffect(() => {
+    // ?auth=required — redirigido desde middleware, abrir AuthDialog
+    if (searchParams.get('auth') === 'required') {
+      setAuthOpen(true)
+      toast('Inicia sesión para acceder al dashboard', {
+        icon: '🔐',
+        style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #334155' },
+      })
+    }
+
+    // ?prompt=[texto] — pre-cargar prompt desde /demos
+    const promptParam = searchParams.get('prompt')
+    if (promptParam) {
+      setInputValue(decodeURIComponent(promptParam))
+      toast('Prompt cargado desde demos ✨', {
+        style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #334155' },
+      })
+    }
+  }, [searchParams])
 
   // Cargar sesión y empresa — CERO tokens de Groq, solo Supabase DB
   useEffect(() => {
@@ -257,6 +281,7 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen bg-[#0F172A] overflow-hidden">
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
       <Toaster
         position="top-center"
         toastOptions={{

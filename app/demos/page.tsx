@@ -22,6 +22,7 @@ const DEMOS = [
     colorBorde: 'border-t-4',
     icono: Trophy,
     prompt: `Configura la campaña "Sabor Ganador" para Pollo Campero. Ruleta con 3 premios: 15% descuento (60%), pieza gratis (30%), menú completo (10%). Un giro por correo. Códigos QR que expiran en 24h. Por WhatsApp e Instagram.`,
+    promptChat: 'Configura la campaña Sabor Ganador para Pollo Campero. Ruleta con 3 premios: 15% descuento (60%), pieza gratis (30%), menú completo (10%). Un giro por correo. Vigente este mes en WhatsApp.',
     colorBtn: 'bg-[#E8000D] hover:bg-[#C00008]',
   },
   {
@@ -38,6 +39,7 @@ const DEMOS = [
     colorBorde: 'border-t-4',
     icono: Handshake,
     prompt: `Alianza Walmart + Gasolineras Puma. Los clientes suben su factura de Walmart por Telegram. Por cada $10 de compra = 1 punto. Al llegar a 50 puntos reciben $5 de descuento en combustible. Sin límite de participaciones.`,
+    promptChat: 'Crea una alianza Walmart-Puma. Los usuarios suben su factura de Walmart por Telegram. Por cada $10 de compra = 1 Eco-Punto. Meta 50 puntos = $5 de descuento en combustible Puma.',
     colorBtn: 'bg-[#0071CE] hover:bg-[#005BA6]',
   },
   {
@@ -54,6 +56,7 @@ const DEMOS = [
     colorBorde: 'border-t-4',
     icono: Smartphone,
     prompt: `Cupones flash para McDonald's Guatemala desde Instagram. Los clientes ingresan su correo y reciben un código único de Cuarto de Libra gratis. El botón los lleva directo a la app de McDonald's. Máximo 5,000 cupones. Vigente 15 días.`,
+    promptChat: "Lanza Cupones Flash para McDonalds. Landing page donde el cliente pone su correo y recibe código único de descuento para un Cuarto de Libra. Botón de deep linking a la app. Máximo 5000 cupones.",
     colorBtn: 'bg-[#FFC72C] hover:bg-[#E6B020] text-[#0F172A]',
   },
 ]
@@ -155,10 +158,10 @@ export default function DemosPage() {
                       Probar demo →
                     </Link>
                     <Link
-                      href={`/chat`}
+                      href={`/chat?prompt=${encodeURIComponent(demo.promptChat)}`}
                       className="w-full py-2.5 rounded-xl border border-[#E5E7EB] text-[#64748B] text-sm text-center hover:bg-[#F8FAFC] transition-colors"
                     >
-                      Crear campaña similar
+                      Ver en el chat →
                     </Link>
                   </div>
                 </div>

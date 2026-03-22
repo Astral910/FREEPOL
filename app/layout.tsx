@@ -5,35 +5,37 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'FREEPOL — Ecosistema de lealtad con IA',
+  title: {
+    default: 'FREEPOL — Ecosistema de lealtad con IA',
+    template: '%s | FREEPOL',
+  },
   description:
-    'Crea campañas de puntos, cupones y ruletas sin código. Describe lo que necesitas y la IA lo despliega en minutos.',
-  keywords:
-    'fidelización, lealtad, IA, campañas, puntos, cupones, WhatsApp, Telegram, SaaS',
+    'Crea campañas de puntos, cupones y ruletas sin código. Describe lo que necesitas y la IA lo despliega en WhatsApp, Telegram e Instagram.',
+  keywords: [
+    'fidelización', 'lealtad', 'IA', 'campañas', 'puntos',
+    'cupones', 'WhatsApp', 'Telegram', 'SaaS', 'Guatemala', 'Latinoamérica',
+  ],
   authors: [{ name: 'FREEPOL' }],
+  creator: 'FREEPOL',
   openGraph: {
-    title: 'FREEPOL — Ecosistema de lealtad con IA',
-    description:
-      'Crea campañas de puntos, cupones y ruletas sin código. Describe lo que necesitas y la IA lo despliega en minutos.',
-    url: 'https://freepol.com',
-    siteName: 'FREEPOL',
     type: 'website',
-    locale: 'es_LA',
-    images: [
-      {
-        url: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200',
-        width: 1200,
-        height: 630,
-        alt: 'FREEPOL — Plataforma de fidelización con IA',
-      },
-    ],
+    locale: 'es_GT',
+    url: 'https://freepol.app',
+    siteName: 'FREEPOL',
+    title: 'FREEPOL — Ecosistema de lealtad con IA',
+    description: 'Crea campañas sin código. La IA lo despliega en minutos en todos tus canales.',
+    images: [{
+      url: '/og-image.png',
+      width: 1200,
+      height: 630,
+      alt: 'FREEPOL — Plataforma de fidelización con IA',
+    }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'FREEPOL — Ecosistema de lealtad con IA',
-    description:
-      'Crea campañas de puntos, cupones y ruletas sin código en minutos.',
-    images: ['https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200'],
+    description: 'Campañas de fidelización con IA. Sin código. En minutos.',
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,
