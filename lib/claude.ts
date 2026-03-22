@@ -1,11 +1,11 @@
-import Anthropic from '@anthropic-ai/sdk'
+import Groq from 'groq-sdk'
 import type { ResultadoAnalisis, ConfigCampana } from '@/types/campana'
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 })
 
-/** Prompt del sistema que instruye a Claude cómo analizar campañas */
+/** Prompt del sistema que instruye al modelo cómo analizar campañas */
 const SYSTEM_PROMPT = `Eres el motor de análisis de campañas de FREEPOL, una plataforma 
 de fidelización empresarial para América Latina.
 
@@ -61,8 +61,8 @@ ESTRUCTURA JSON REQUERIDA:
 }`
 
 /**
- * Analiza el prompt del empresario usando Claude y devuelve
- * la configuración estructurada de la campaña.
+ * Analiza el prompt del empresario usando Groq (llama-3.3-70b-versatile)
+ * y devuelve la configuración estructurada de la campaña.
  * Incluye retry automático en caso de fallo de parseo.
  */
 export async function analizarPromptEmpresario(
@@ -72,11 +72,11 @@ export async function analizarPromptEmpresario(
 
   const intentar = async (intentoNumero: number): Promise<ResultadoAnalisis> => {
     try {
-      const respuesta = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+      const respuesta = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
         max_tokens: 2000,
-        system: SYSTEM_PROMPT,
         messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
           {
             role: 'user',
             content:
@@ -87,10 +87,9 @@ export async function analizarPromptEmpresario(
         ],
       })
 
-      const textoRespuesta =
-        respuesta.content[0].type === 'text' ? respuesta.content[0].text : ''
+      const textoRespuesta = respuesta.choices[0]?.message?.content ?? ''
 
-      // Limpiar posible markdown que Claude agregue por error
+      // Limpiar posible markdown que el modelo agregue por error
       const jsonLimpio = textoRespuesta
         .replace(/```json\n?/g, '')
         .replace(/```\n?/g, '')
@@ -99,12 +98,12 @@ export async function analizarPromptEmpresario(
       const resultado = JSON.parse(jsonLimpio) as ResultadoAnalisis
 
       const duracion = Date.now() - inicio
-      console.log(`[Claude] Análisis completado en ${duracion}ms (intento ${intentoNumero})`)
+      console.log(`[Groq] Análisis completado en ${duracion}ms (intento ${intentoNumero})`)
 
       return resultado
     } catch (error) {
       if (intentoNumero === 1) {
-        console.warn('[Claude] Primer intento fallido, reintentando en 1s...', error)
+        console.warn('[Groq] Primer intento fallido, reintentando en 1s...', error)
         await new Promise((resolve) => setTimeout(resolve, 1000))
         return intentar(2)
       }
@@ -114,7 +113,7 @@ export async function analizarPromptEmpresario(
 
   // Timeout de 30 segundos
   const timeoutPromise = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error('Timeout: Claude tardó más de 30 segundos')), 30000),
+    setTimeout(() => reject(new Error('Timeout: Groq tardó más de 30 segundos')), 30000),
   )
 
   return Promise.race([intentar(1), timeoutPromise])
@@ -122,7 +121,7 @@ export async function analizarPromptEmpresario(
 
 /**
  * Genera un mensaje de bienvenida personalizado basado
- * en la configuración de la campaña extraída por Claude.
+ * en la configuración de la campaña extraída por la IA.
  */
 export function generarMensajeBienvenida(config: ConfigCampana): string {
   const nombre = config.nombre_negocio || 'nuestra empresa'
