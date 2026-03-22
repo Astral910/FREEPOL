@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import toast, { Toaster } from 'react-hot-toast'
 import {
@@ -32,6 +33,7 @@ const HISTORIAL_SIMULADO = [
  * Accesible sin autenticación para propósitos de desarrollo.
  */
 export default function ChatPage() {
+  const router = useRouter()
   const [inputValue, setInputValue] = useState('')
   const [mensajes, setMensajes] = useState<MensajeChat[]>([])
   const [estado, setEstado] = useState<EstadoChat>('idle')
@@ -87,6 +89,11 @@ export default function ChatPage() {
         timestamp: new Date(),
       }
 
+      // Guardar la config en localStorage para que el wizard la consuma
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('freepol_config', JSON.stringify(data))
+      }
+
       setMensajes((prev) => [...prev, mensajeIA])
       setResultado(data)
       setEstado('results')
@@ -123,12 +130,9 @@ export default function ChatPage() {
   }, [promptAnterior])
 
   const handleContinuarWizard = useCallback(() => {
-    toast.success('¡Wizard próximamente! La configuración está lista.', {
-      duration: 3000,
-      icon: '🚀',
-    })
+    router.push('/wizard')
     setEstado('wizard')
-  }, [])
+  }, [router])
 
   const Sidebar = (
     <aside className="w-72 bg-[#1E293B] border-r border-[#334155] flex flex-col h-full flex-shrink-0">
