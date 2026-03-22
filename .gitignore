@@ -11,10 +11,15 @@ dist/
 
 # Variables de entorno — NUNCA subir al repo
 .env
+.env*
 .env.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
+.env.staging
 
 # Debug
 npm-debug.log*
