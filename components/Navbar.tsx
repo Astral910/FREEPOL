@@ -18,7 +18,7 @@ interface NavbarProps {
 
 const navLinks = [
   { label: 'Producto', href: '#producto' },
-  { label: 'Casos de uso', href: '#casos' },
+  { label: 'Demos', href: '/demos' },
   { label: 'Precios', href: '/precios' },
   { label: 'Guía de prompts', href: '/guia' },
 ]

@@ -7,37 +7,32 @@ const columnas = {
   producto: {
     titulo: 'Producto',
     links: [
-      'Características',
-      'Casos de uso',
-      'Precios',
-      'Actualizaciones',
-      'Roadmap',
+      { label: 'Características', href: '/#producto' },
+      { label: 'Casos de uso', href: '/#casos' },
+      { label: 'Ver demos', href: '/demos' },
+      { label: 'Precios', href: '/precios' },
     ],
   },
   recursos: {
     titulo: 'Recursos',
     links: [
-      'Guía de prompts',
-      'Documentación',
-      'API Reference',
-      'Blog',
-      'Comunidad',
+      { label: 'Guía de prompts', href: '/guia' },
+      { label: 'Probar IA', href: '/chat' },
+      { label: 'Validar código', href: '/validar' },
     ],
   },
   legal: {
     titulo: 'Legal',
     links: [
-      'Términos de servicio',
-      'Privacidad',
-      'Cookies',
-      'Seguridad',
+      { label: 'Términos de servicio', href: '/terminos' },
+      { label: 'Política de privacidad', href: '/privacidad' },
+      { label: 'Cookies', href: '/privacidad#cookies' },
     ],
   },
 }
 
 /**
- * Footer de la plataforma con grid de 4 columnas,
- * logo, redes sociales y links de navegación.
+ * Footer con links reales a todas las secciones del proyecto.
  */
 const Footer = memo(function Footer() {
   return (
@@ -57,25 +52,13 @@ const Footer = memo(function Footer() {
               Sin código. Desplegado en WhatsApp, Telegram e Instagram.
             </p>
             <div className="flex items-center gap-4">
-              <a
-                href="https://twitter.com/freepol"
-                aria-label="Twitter de FREEPOL"
-                className="text-[#475569] hover:text-white transition-colors"
-              >
+              <a href="https://twitter.com/freepol" aria-label="Twitter de FREEPOL" className="text-[#475569] hover:text-white transition-colors">
                 <Twitter size={18} />
               </a>
-              <a
-                href="https://linkedin.com/company/freepol"
-                aria-label="LinkedIn de FREEPOL"
-                className="text-[#475569] hover:text-white transition-colors"
-              >
+              <a href="https://linkedin.com/company/freepol" aria-label="LinkedIn de FREEPOL" className="text-[#475569] hover:text-white transition-colors">
                 <Linkedin size={18} />
               </a>
-              <a
-                href="https://instagram.com/freepol"
-                aria-label="Instagram de FREEPOL"
-                className="text-[#475569] hover:text-white transition-colors"
-              >
+              <a href="https://instagram.com/freepol" aria-label="Instagram de FREEPOL" className="text-[#475569] hover:text-white transition-colors">
                 <Instagram size={18} />
               </a>
             </div>
@@ -85,14 +68,11 @@ const Footer = memo(function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">{columnas.producto.titulo}</h3>
             <ul className="space-y-3">
-              {columnas.producto.links.map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-[#94A3B8] hover:text-white text-sm transition-colors duration-200"
-                  >
-                    {link}
-                  </a>
+              {columnas.producto.links.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-[#94A3B8] hover:text-white text-sm transition-colors duration-200">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -102,14 +82,11 @@ const Footer = memo(function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">{columnas.recursos.titulo}</h3>
             <ul className="space-y-3">
-              {columnas.recursos.links.map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-[#94A3B8] hover:text-white text-sm transition-colors duration-200"
-                  >
-                    {link}
-                  </a>
+              {columnas.recursos.links.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-[#94A3B8] hover:text-white text-sm transition-colors duration-200">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -119,14 +96,11 @@ const Footer = memo(function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">{columnas.legal.titulo}</h3>
             <ul className="space-y-3">
-              {columnas.legal.links.map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-[#94A3B8] hover:text-white text-sm transition-colors duration-200"
-                  >
-                    {link}
-                  </a>
+              {columnas.legal.links.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-[#94A3B8] hover:text-white text-sm transition-colors duration-200">
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -138,12 +112,8 @@ const Footer = memo(function Footer() {
 
         {/* Copyright */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[#475569] text-sm">
-            © 2025 FREEPOL. Todos los derechos reservados.
-          </p>
-          <p className="text-[#475569] text-sm">
-            Hecho con ❤️ para empresas de Latinoamérica
-          </p>
+          <p className="text-[#475569] text-sm">© 2026 FREEPOL. Todos los derechos reservados.</p>
+          <p className="text-[#475569] text-sm">Hecho con ❤️ para empresas de Latinoamérica</p>
         </div>
       </div>
     </footer>

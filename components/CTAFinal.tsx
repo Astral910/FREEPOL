@@ -54,12 +54,14 @@ const CTAFinal = memo(function CTAFinal({ onOpenAuth }: CTAFinalProps) {
             </motion.div>
 
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                variant="outline"
-                className="px-10 py-4 h-auto rounded-xl border-white/40 text-white bg-transparent hover:bg-white/10 text-base transition-all duration-200"
-              >
-                Ver una demo
-              </Button>
+              <a href="/demos">
+                <Button
+                  variant="outline"
+                  className="px-10 py-4 h-auto rounded-xl border-white/40 text-white bg-transparent hover:bg-white/10 text-base transition-all duration-200"
+                >
+                  Ver una demo
+                </Button>
+              </a>
             </motion.div>
           </div>
 

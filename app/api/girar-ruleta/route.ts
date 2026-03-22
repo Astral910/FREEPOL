@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     // 2. Obtener la campaña y su configuración
     const { data: campana, error: errCampana } = await supabase
       .from('campanas')
-      .select('id, nombre_negocio, estado, total_canjes, configuracion')
+      .select('id, nombre_negocio, nombre_campana, estado, total_canjes, configuracion')
       .eq('id', body.campana_id)
       .single()
 
@@ -111,7 +111,26 @@ export async function POST(request: NextRequest) {
       .update({ total_canjes: campana.total_canjes + 1 })
       .eq('id', body.campana_id)
 
-    // 9. Devolver resultado al cliente
+    // 9. Enviar correo con el premio (no bloquea la respuesta si falla)
+    const { data: participante } = await supabase
+      .from('participantes')
+      .select('correo')
+      .eq('id', body.participante_id)
+      .maybeSingle()
+
+    if (participante?.correo) {
+      const { enviarCodigoPremio } = await import('@/lib/email')
+      await enviarCodigoPremio({
+        correo: participante.correo,
+        nombre_negocio: campana.nombre_negocio,
+        nombre_campana: campana.nombre_campana,
+        premio: premioGanado.nombre,
+        codigo,
+        expira_en: expira_en.toISOString(),
+      }).catch((e) => console.error('[girar-ruleta] email error:', e))
+    }
+
+    // 10. Devolver resultado al cliente
     return NextResponse.json({
       premio: premioGanado.nombre,
       prize_index: prizeIndex,
