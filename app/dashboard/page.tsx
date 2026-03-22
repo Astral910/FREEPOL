@@ -1,112 +1,88 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import {
-  Zap, Plus, Rocket, Users, Award, TrendingUp, ExternalLink,
-  PauseCircle, PlayCircle, QrCode, MoreHorizontal, Handshake,
+  Zap, LayoutDashboard, MessageSquare, QrCode, Users,
+  Settings, LogOut, Menu, X, Bell,
 } from 'lucide-react'
+import toast, { Toaster } from 'react-hot-toast'
 import { createClient } from '@/lib/supabase'
-import { getUsuarioConEmpresa } from '@/lib/auth-helpers'
-import type { Empresa } from '@/lib/empresa'
+import { getEmpresaDelUsuario, type Empresa } from '@/lib/empresa'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import {
-  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
-  DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Skeleton } from '@/components/ui/skeleton'
+import DashboardHeader from '@/components/dashboard/DashboardHeader'
+import MetricasCards from '@/components/dashboard/MetricasCards'
+import ListaCampanas from '@/components/dashboard/ListaCampanas'
+import AlianzasSection from '@/components/dashboard/AlianzasSection'
 import type { User } from '@supabase/supabase-js'
 
-interface CampanaRow {
-  id: string
-  slug: string
-  nombre_campana: string
-  nombre_negocio: string
-  tipo: string
-  estado: string
-  total_participantes: number
-  total_canjes: number
-  creado_en: string
+const PLAN_BADGE: Record<string, string> = {
+  free: 'bg-[#1E293B] border-[#334155] text-[#94A3B8]',
+  starter: 'bg-[#064E3B]/30 border-[#22C55E] text-[#22C55E]',
+  pro: 'bg-[#1E1B4B]/30 border-[#5B5CF6] text-[#5B5CF6]',
+  enterprise: 'bg-gradient-to-r from-[#1E1B4B]/30 to-[#1E293B] border-[#F59E0B] text-[#F59E0B]',
 }
 
-interface Alianza {
-  id: string
-  campana_id: string
-  correo_aliado: string
-  estado: string
-  campanas: { nombre_campana: string } | null
+const PLAN_LABEL: Record<string, string> = {
+  free: 'Free', starter: 'Starter', pro: 'Pro', enterprise: 'Enterprise',
 }
 
-const BADGE_ESTADO: Record<string, { label: string; className: string }> = {
-  activa: { label: 'Activa', className: 'bg-green-100 text-green-700' },
-  pausada: { label: 'Pausada', className: 'bg-orange-100 text-orange-700' },
-  terminada: { label: 'Terminada', className: 'bg-[#F1F5F9] text-[#64748B]' },
-  borrador: { label: 'Borrador', className: 'bg-[#F1F5F9] text-[#94A3B8]' },
-}
-
-const TIPO_LABEL: Record<string, string> = {
-  ruleta: '🎡 Ruleta', puntos: '⭐ Puntos', cupon: '🎟️ Cupón', factura: '📄 Factura',
-}
-
-const PLAN_BADGE: Record<string, { label: string; className: string }> = {
-  free: { label: 'Free', className: 'bg-[#F1F5F9] text-[#64748B]' },
-  pro: { label: 'Pro', className: 'bg-[#EEF2FF] text-[#5B5CF6]' },
-  enterprise: { label: 'Enterprise', className: 'bg-[#0F172A] text-white' },
-}
-
-function saludar(): string {
-  const h = new Date().getHours()
-  if (h < 12) return 'Buenos días'
-  if (h < 18) return 'Buenas tardes'
-  return 'Buenas noches'
-}
-
+/**
+ * Dashboard principal del empresario.
+ * Requiere sesión activa; redirige a '/' o '/onboarding' si no la hay.
+ */
 export default function DashboardPage() {
   const router = useRouter()
   const supabase = createClient()
-
   const [usuario, setUsuario] = useState<User | null>(null)
   const [empresa, setEmpresa] = useState<Empresa | null>(null)
-  const [campanas, setCampanas] = useState<CampanaRow[]>([])
-  const [alianzas, setAlianzas] = useState<Alianza[]>([])
+  const [campanasActivas, setCampanasActivas] = useState(0)
   const [cargando, setCargando] = useState(true)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
-  useEffect(() => {
-    const init = async () => {
-      const datos = await getUsuarioConEmpresa()
-      if (!datos) { router.push('/'); return }
-      if (!datos.empresa) { router.push('/onboarding'); return }
+  const init = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { router.push('/'); return }
 
-      setUsuario(datos.usuario)
-      setEmpresa(datos.empresa)
+    const emp = await getEmpresaDelUsuario(session.user.id)
+    if (!emp) { router.push('/onboarding'); return }
 
-      // Cargar campañas del usuario
-      const { data: camps } = await supabase
-        .from('campanas')
-        .select('id,slug,nombre_campana,nombre_negocio,tipo,estado,total_participantes,total_canjes,creado_en')
-        .eq('creado_por', datos.usuario.id)
-        .order('creado_en', { ascending: false })
+    setUsuario(session.user)
+    setEmpresa(emp)
 
-      setCampanas((camps as CampanaRow[]) ?? [])
+    // Contar campañas activas para el header
+    const { count } = await supabase
+      .from('campanas')
+      .select('*', { count: 'exact', head: true })
+      .eq('creado_por', session.user.id)
+      .eq('estado', 'activa')
 
-      // Cargar alianzas
-      const { data: alz } = await supabase
-        .from('campana_aliados')
-        .select('id,campana_id,correo_aliado,estado,campanas(nombre_campana)')
-        .order('creado_en', { ascending: false })
-
-      setAlianzas((alz as unknown as Alianza[]) ?? [])
-      setCargando(false)
-    }
-    init()
+    setCampanasActivas(count ?? 0)
+    setCargando(false)
   }, [router, supabase])
 
-  const toggleEstado = async (campana: CampanaRow) => {
-    const nuevoEstado = campana.estado === 'activa' ? 'pausada' : 'activa'
-    await supabase.from('campanas').update({ estado: nuevoEstado }).eq('id', campana.id)
-    setCampanas((prev) => prev.map((c) => c.id === campana.id ? { ...c, estado: nuevoEstado } : c))
-  }
+  useEffect(() => {
+    init()
+  }, [init])
+
+  // Realtime — nuevo participante → toast
+  useEffect(() => {
+    if (!usuario) return
+    const channel = supabase
+      .channel(`participantes-${usuario.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'participantes' }, (payload) => {
+        const p = payload.new as { correo?: string; nombre?: string }
+        toast(`🎉 Nuevo participante: ${p.correo ?? p.nombre ?? 'anónimo'}`, {
+          style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #334155', borderRadius: '12px' },
+        })
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [usuario, supabase])
 
   const cerrarSesion = async () => {
     await supabase.auth.signOut()
@@ -115,209 +91,157 @@ export default function DashboardPage() {
 
   if (cargando) {
     return (
-      <div className="h-screen bg-[#0F172A] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[#5B5CF6] border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-[#0F172A] p-8 space-y-6">
+        <div className="h-16 bg-[#1E293B] border-b border-[#1E293B] rounded-b-none" />
+        <div className="max-w-7xl mx-auto space-y-6 pt-4">
+          <Skeleton className="h-20 w-full rounded-2xl" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}
+          </div>
+          <Skeleton className="h-64 rounded-2xl" />
+        </div>
       </div>
     )
   }
 
-  const totalParticipantes = campanas.reduce((a, c) => a + c.total_participantes, 0)
-  const totalCanjes = campanas.reduce((a, c) => a + c.total_canjes, 0)
-  const tasaConversion = totalParticipantes > 0 ? Math.round((totalCanjes / totalParticipantes) * 100) : 0
-  const campanaActivas = campanas.filter((c) => c.estado === 'activa').length
+  if (!empresa || !usuario) return null
 
-  const planData = PLAN_BADGE[empresa?.plan ?? 'free']
-  const inicial = empresa?.nombre?.[0]?.toUpperCase() ?? 'E'
+  const inicial = empresa.nombre[0]?.toUpperCase() ?? 'E'
+  const planClass = PLAN_BADGE[empresa.plan] ?? PLAN_BADGE.free
+  const planLabel = PLAN_LABEL[empresa.plan] ?? empresa.plan
+
+  const NavLinks = (
+    <nav className="flex flex-col md:flex-row md:items-center gap-1 md:gap-6">
+      {[
+        { href: '/dashboard', label: 'Campañas', icono: LayoutDashboard },
+        { href: '/chat', label: 'Nueva campaña', icono: MessageSquare },
+        { href: '/validar', label: 'Validar código', icono: QrCode },
+      ].map(({ href, label, icono: Icono }) => (
+        <Link key={href} href={href}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#1E293B] transition-all md:hover:bg-transparent md:hover:text-[#E2E8F0]"
+          onClick={() => setMobileOpen(false)}>
+          <Icono size={14} />
+          {label}
+        </Link>
+      ))}
+    </nav>
+  )
 
   return (
     <div className="min-h-screen bg-[#0F172A]">
-      {/* Navbar del dashboard */}
-      <header className="sticky top-0 z-30 bg-[#0F172A] border-b border-[#1E293B]">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-1.5">
-              <Zap size={16} className="text-[#5B5CF6]" />
-              <span className="font-bold text-white text-sm"><span className="text-[#5B5CF6]">FREE</span>POL</span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-5 text-sm">
-              <Link href="/dashboard" className="text-[#E2E8F0] font-medium">Mis campañas</Link>
-              <Link href="/chat" className="text-[#64748B] hover:text-[#94A3B8] transition-colors">Nueva campaña</Link>
-              <Link href="/validar" className="text-[#64748B] hover:text-[#94A3B8] transition-colors">Validar código</Link>
-            </nav>
-          </div>
+      <Toaster position="bottom-right" toastOptions={{ style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #334155', borderRadius: '12px' } }} />
 
-          <div className="flex items-center gap-3">
-            <Link href="/chat" className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl gradient-bg text-white text-sm font-semibold hover:opacity-90 transition-opacity">
-              <Plus size={14} /> Nueva campaña
-            </Link>
+      {/* Navbar */}
+      <header className="sticky top-0 z-30 bg-[#0F172A] border-b border-[#1E293B]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center gap-4">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+            <Zap size={16} className="text-[#5B5CF6]" />
+            <span className="font-bold text-white text-sm"><span className="text-[#5B5CF6]">FREE</span>POL</span>
+          </Link>
+
+          <div className="w-px h-5 bg-[#334155] hidden md:block" />
+
+          {/* Links desktop */}
+          <div className="hidden md:flex flex-1">{NavLinks}</div>
+
+          <div className="flex items-center gap-3 ml-auto">
+            {/* Badge plan */}
+            <span className={`hidden sm:inline-flex text-xs font-medium px-2.5 py-1 rounded-full border ${planClass}`}>
+              {planLabel}
+            </span>
+
+            {/* Avatar + dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-[#1E293B] transition-colors">
+                <button className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-[#1E293B] transition-colors">
                   <Avatar className="w-8 h-8">
-                    <AvatarFallback>{inicial}</AvatarFallback>
+                    <AvatarFallback style={{ background: `linear-gradient(135deg, ${empresa.color_primario}, #A855F7)` }}>
+                      {inicial}
+                    </AvatarFallback>
                   </Avatar>
-                  <span className="text-[#E2E8F0] text-sm font-medium hidden md:block">{empresa?.nombre}</span>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white">
-                <DropdownMenuLabel className="flex flex-col gap-1">
-                  <span className="text-[#0F172A] font-semibold normal-case text-sm">{empresa?.nombre}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full w-fit font-medium ${planData.className}`}>{planData.label}</span>
+              <DropdownMenuContent align="end" className="bg-[#1E293B] border-[#334155] text-[#E2E8F0] w-52">
+                <DropdownMenuLabel>
+                  <p className="text-[#E2E8F0] font-semibold normal-case text-sm">{empresa.nombre}</p>
+                  <p className="text-[#64748B] text-xs font-normal truncate">{usuario.email}</p>
+                  <span className={`mt-1 inline-flex text-xs font-medium px-2 py-0.5 rounded-full border ${planClass}`}>
+                    Plan {planLabel}
+                  </span>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push('/dashboard')}>Mi dashboard</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push('/chat')}>Nueva campaña</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600 hover:text-red-700" onClick={cerrarSesion}>Cerrar sesión</DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-[#334155]" />
+                <DropdownMenuItem asChild className="gap-2 hover:bg-[#334155] cursor-pointer">
+                  <Link href="/dashboard"><LayoutDashboard size={13} />Mi dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="gap-2 hover:bg-[#334155] cursor-pointer">
+                  <Link href="/chat"><MessageSquare size={13} />Nueva campaña</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="gap-2 hover:bg-[#334155] cursor-pointer">
+                  <Link href="/validar"><QrCode size={13} />Validar código</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-[#334155]" />
+                <DropdownMenuItem asChild className="gap-2 hover:bg-[#334155] cursor-pointer">
+                  <Link href="/dashboard/config"><Settings size={13} />Configuración</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-[#334155]" />
+                <DropdownMenuItem className="gap-2 text-red-400 hover:bg-red-500/10 cursor-pointer" onClick={cerrarSesion}>
+                  <LogOut size={13} />Cerrar sesión
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Hamburguesa móvil */}
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger asChild className="md:hidden">
+                <button className="text-[#94A3B8] hover:text-white transition-colors">
+                  <Menu size={20} />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-64 bg-[#1E293B] border-r border-[#334155] p-0">
+                <div className="p-5 border-b border-[#334155] flex items-center justify-between">
+                  <Link href="/" className="flex items-center gap-1.5" onClick={() => setMobileOpen(false)}>
+                    <Zap size={14} className="text-[#5B5CF6]" />
+                    <span className="font-bold text-white text-sm"><span className="text-[#5B5CF6]">FREE</span>POL</span>
+                  </Link>
+                </div>
+                <div className="p-4">
+                  {NavLinks}
+                  <div className="mt-4 pt-4 border-t border-[#334155] space-y-1">
+                    <Link href="/dashboard/config" onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#334155] transition-all">
+                      <Settings size={14} />Configuración
+                    </Link>
+                    <button onClick={cerrarSesion}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-all">
+                      <LogOut size={14} />Cerrar sesión
+                    </button>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
 
+      {/* Contenido principal */}
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
-        {/* Saludo */}
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">
-            {saludar()}, <span className="gradient-text">{empresa?.nombre}</span> 👋
-          </h1>
-          <p className="text-[#64748B] text-sm mt-1">
-            {campanaActivas > 0
-              ? `Tienes ${campanaActivas} campaña${campanaActivas !== 1 ? 's' : ''} activa${campanaActivas !== 1 ? 's' : ''}.`
-              : 'Crea tu primera campaña para empezar.'}
-          </p>
-        </div>
+        <DashboardHeader
+          empresa={empresa}
+          nombreUsuario={usuario.user_metadata?.full_name ?? undefined}
+          campanasActivas={campanasActivas}
+        />
 
-        {/* Métricas */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: 'Campañas activas', valor: campanaActivas, icono: Rocket, color: 'text-[#5B5CF6]', bg: 'bg-[#EEF2FF]' },
-            { label: 'Total participantes', valor: totalParticipantes.toLocaleString(), icono: Users, color: 'text-[#22C55E]', bg: 'bg-[#F0FDF4]' },
-            { label: 'Total canjes', valor: totalCanjes.toLocaleString(), icono: Award, color: 'text-[#F59E0B]', bg: 'bg-[#FFFBEB]' },
-            { label: 'Tasa conversión', valor: `${tasaConversion}%`, icono: TrendingUp, color: 'text-[#A855F7]', bg: 'bg-[#FAF5FF]' },
-          ].map((m, i) => {
-            const Icono = m.icono
-            return (
-              <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                className="bg-[#1E293B] border border-[#334155] rounded-2xl p-5">
-                <div className={`w-10 h-10 rounded-xl ${m.bg} flex items-center justify-center mb-3`}>
-                  <Icono size={18} className={m.color} />
-                </div>
-                <p className="text-2xl font-bold text-white">{m.valor}</p>
-                <p className="text-[#64748B] text-xs mt-0.5">{m.label}</p>
-              </motion.div>
-            )
-          })}
-        </div>
+        <MetricasCards
+          userId={usuario.id}
+          colorPrimario={empresa.color_primario}
+          supabase={supabase}
+        />
 
-        {/* Lista de campañas */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-white font-bold text-lg">Mis campañas</h2>
-            <Link href="/chat" className="text-[#5B5CF6] text-sm hover:text-[#A855F7] transition-colors flex items-center gap-1">
-              <Plus size={14} /> Nueva
-            </Link>
-          </div>
+        <ListaCampanas userId={usuario.id} supabase={supabase} />
 
-          {campanas.length === 0 ? (
-            <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-12 text-center space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-[#0F172A] flex items-center justify-center mx-auto">
-                <Rocket size={28} className="text-[#475569]" />
-              </div>
-              <div>
-                <p className="text-white font-semibold text-lg">Aún no tienes campañas</p>
-                <p className="text-[#64748B] text-sm mt-1">Crea tu primera campaña con la IA en minutos</p>
-              </div>
-              <Link href="/chat" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl gradient-bg text-white font-bold hover:opacity-90 transition-opacity">
-                <Plus size={16} /> Crear mi primera campaña
-              </Link>
-            </div>
-          ) : (
-            <div className="bg-[#1E293B] border border-[#334155] rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-[#334155]">
-                      {['Campaña', 'Tipo', 'Estado', 'Participantes', 'Canjes', 'Acciones'].map((h) => (
-                        <th key={h} className="text-left text-[#64748B] text-xs uppercase tracking-wide px-5 py-3 font-medium whitespace-nowrap">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1E293B]">
-                    {campanas.map((c) => {
-                      const badge = BADGE_ESTADO[c.estado] ?? BADGE_ESTADO.borrador
-                      return (
-                        <tr key={c.id} className="hover:bg-[#0F172A]/50 transition-colors">
-                          <td className="px-5 py-4">
-                            <p className="text-[#E2E8F0] font-medium text-sm whitespace-nowrap">{c.nombre_campana}</p>
-                            <p className="text-[#475569] text-xs">{c.nombre_negocio}</p>
-                          </td>
-                          <td className="px-5 py-4 whitespace-nowrap">
-                            <span className="text-[#94A3B8] text-sm">{TIPO_LABEL[c.tipo] ?? c.tipo}</span>
-                          </td>
-                          <td className="px-5 py-4">
-                            <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${badge.className}`}>{badge.label}</span>
-                          </td>
-                          <td className="px-5 py-4 text-[#94A3B8] text-sm">{c.total_participantes.toLocaleString()}</td>
-                          <td className="px-5 py-4 text-[#94A3B8] text-sm">{c.total_canjes.toLocaleString()}</td>
-                          <td className="px-5 py-4">
-                            <div className="flex items-center gap-2">
-                              <a href={`/c/${c.slug}`} target="_blank" rel="noreferrer"
-                                className="w-8 h-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-[#475569] hover:text-[#5B5CF6] transition-colors" title="Ver landing">
-                                <ExternalLink size={14} />
-                              </a>
-                              <button onClick={() => toggleEstado(c)}
-                                className="w-8 h-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-[#475569] hover:text-[#22C55E] transition-colors"
-                                title={c.estado === 'activa' ? 'Pausar' : 'Activar'}>
-                                {c.estado === 'activa' ? <PauseCircle size={14} /> : <PlayCircle size={14} />}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Alianzas activas */}
-        {alianzas.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Handshake size={18} className="text-[#5B5CF6]" />
-              <h2 className="text-white font-bold text-lg">Colaboraciones activas</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {alianzas.map((a) => {
-                const isActiva = a.estado === 'activa'
-                return (
-                  <div key={a.id} className="bg-[#1E293B] border border-[#334155] rounded-xl p-4 flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-[#E2E8F0] font-medium text-sm">
-                        {(a.campanas as { nombre_campana?: string } | null)?.nombre_campana ?? 'Campaña'}
-                      </p>
-                      <p className="text-[#64748B] text-xs mt-0.5">{a.correo_aliado}</p>
-                    </div>
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${isActiva ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
-                      {isActiva ? 'Activa' : 'Pendiente'}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
+        <AlianzasSection userId={usuario.id} userEmail={usuario.email ?? ''} supabase={supabase} />
       </main>
-
-      {/* FAB flotante */}
-      <Link href="/chat"
-        className="fixed bottom-6 right-6 flex items-center gap-2 px-5 py-3.5 rounded-2xl gradient-bg text-white font-bold shadow-xl shadow-[#5B5CF6]/25 hover:opacity-90 transition-opacity z-20">
-        <Plus size={18} />
-        <span className="hidden sm:inline">Nueva campaña</span>
-      </Link>
     </div>
   )
 }

@@ -964,3 +964,152 @@ Obtener credenciales de Upstash en: [console.upstash.com](https://console.upstas
 ---
 
 *Actualización agregada el 20 de marzo de 2026.*
+
+---
+
+## Módulo 5: Autenticación de Empresas, Dashboard, Páginas Públicas y Colaboraciones
+
+### Fecha: 20 de marzo de 2026
+
+### Resumen de lo construido
+
+Se completó el flujo completo de autenticación para empresas, el dashboard con métricas reales, las páginas públicas de precios y guía de prompts, la personalización del chat por empresa, y el sistema de colaboraciones (alianzas) entre empresas.
+
+---
+
+### Dependencias instaladas
+
+```bash
+npm install @radix-ui/react-accordion @radix-ui/react-avatar @radix-ui/react-dropdown-menu @radix-ui/react-switch
+```
+
+---
+
+### SQL adicional para Supabase
+
+```sql
+-- Tabla de empresas
+CREATE TABLE empresas (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nombre TEXT NOT NULL,
+  sitio_web TEXT,
+  color_primario TEXT DEFAULT '#5B5CF6',
+  color_secundario TEXT DEFAULT '#22C55E',
+  logo_url TEXT,
+  industria TEXT DEFAULT 'otro',
+  plan TEXT DEFAULT 'free' CHECK (plan IN ('free','starter','pro','enterprise')),
+  owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  creado_en TIMESTAMPTZ DEFAULT NOW(),
+  actualizado_en TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE empresa_miembros (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  rol TEXT DEFAULT 'miembro' CHECK (rol IN ('admin','editor','miembro')),
+  invitado_en TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(empresa_id, user_id)
+);
+
+CREATE INDEX idx_empresas_owner ON empresas(owner_id);
+CREATE INDEX idx_miembros_empresa ON empresa_miembros(empresa_id);
+CREATE INDEX idx_miembros_user ON empresa_miembros(user_id);
+
+ALTER TABLE empresas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE empresa_miembros ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Owner lee su empresa" ON empresas FOR SELECT USING (owner_id = auth.uid());
+CREATE POLICY "Owner crea empresa" ON empresas FOR INSERT WITH CHECK (owner_id = auth.uid());
+CREATE POLICY "Owner actualiza empresa" ON empresas FOR UPDATE USING (owner_id = auth.uid());
+CREATE POLICY "Miembros leen empresa" ON empresa_miembros FOR SELECT USING (user_id = auth.uid());
+CREATE POLICY "Admin agrega miembros" ON empresa_miembros FOR INSERT WITH CHECK (true);
+
+-- Tabla de alianzas entre empresas
+CREATE TABLE campana_aliados (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  campana_id UUID NOT NULL REFERENCES campanas(id) ON DELETE CASCADE,
+  empresa_emisora_id UUID NOT NULL REFERENCES empresas(id),
+  empresa_receptora_id UUID REFERENCES empresas(id),
+  correo_aliado TEXT NOT NULL,
+  estado TEXT DEFAULT 'pendiente' CHECK (estado IN ('pendiente','activa','rechazada')),
+  token_invitacion UUID DEFAULT gen_random_uuid(),
+  creado_en TIMESTAMPTZ DEFAULT NOW(),
+  aceptado_en TIMESTAMPTZ
+);
+
+CREATE INDEX idx_aliados_campana ON campana_aliados(campana_id);
+CREATE INDEX idx_aliados_token ON campana_aliados(token_invitacion);
+
+ALTER TABLE campana_aliados ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Empresas ven sus alianzas" ON campana_aliados FOR SELECT USING (true);
+CREATE POLICY "Insercion alianzas" ON campana_aliados FOR INSERT WITH CHECK (true);
+CREATE POLICY "Update alianzas" ON campana_aliados FOR UPDATE USING (true);
+```
+
+---
+
+### Archivos creados
+
+| Archivo | Descripción |
+|---|---|
+| `lib/empresa.ts` | `getEmpresaDelUsuario`, `crearEmpresa`, `actualizarEmpresa`. Interface `Empresa`. |
+| `lib/auth-helpers.ts` | `getUsuarioActual`, `getUsuarioConEmpresa`. Wrappers sobre Supabase Auth. |
+| `components/ui/accordion.tsx` | Componente shadcn/ui Accordion con Radix UI. |
+| `components/ui/avatar.tsx` | Componente shadcn/ui Avatar con Radix UI. |
+| `components/ui/dropdown-menu.tsx` | Componente shadcn/ui DropdownMenu con Radix UI. |
+| `components/ui/switch.tsx` | Componente shadcn/ui Switch con Radix UI. |
+| `app/onboarding/page.tsx` | Onboarding de 3 pasos: (1) nombre + industria (9 opciones), (2) colores de marca con preview en tiempo real, (3) confirmación + confetti. Pre-llena de `localStorage('freepol_registro')`. Llama `crearEmpresa()` al finalizar. |
+| `app/dashboard/page.tsx` | Dashboard principal con verificación de sesión. 4 cards de métricas (campañas activas, participantes, canjes, tasa conversión). Tabla de campañas con acciones (ver landing, pausar/activar). Sección de alianzas activas. FAB flotante para nueva campaña. |
+| `app/guia/page.tsx` | Página pública `/guia`. Hero, comparación prompt vago vs detallado, Accordion con 5 ingredientes, ejemplos por industria (5 tabs), FAQ de 8 preguntas, CTA final. |
+| `app/precios/page.tsx` | Página pública `/precios`. Toggle mensual/anual (20% descuento). 4 planes: Free $0, Starter $19/$15, Pro $49/$39, Enterprise $149/$119. FAQ con Accordion. |
+| `app/alianza/[token]/page.tsx` | Página pública para aceptar/rechazar invitación de alianza por token UUID. UPDATE en `campana_aliados`. Maneja estado ya procesado. |
+| `components/wizard/pasos/Paso8bAliado.tsx` | Paso opcional del wizard (entre Paso 8 y 9). Toggle aliado, formulario con correo + nombre + checkbox. Guarda en `localStorage('freepol_aliado')`. Exporta `guardarAliado`, `leerAliado`, `limpiarAliado`. |
+
+---
+
+### Archivos modificados
+
+| Archivo | Cambio |
+|---|---|
+| `components/AuthDialog.tsx` | Post-login verifica empresa → `/dashboard` o `/onboarding`. Errores de Supabase traducidos al español. Registro guarda datos en `localStorage('freepol_registro')`. Campo `sitioWeb` opcional agregado. |
+| `components/Navbar.tsx` | Detecta sesión con `getSession` y `onAuthStateChange`. Con sesión: avatar + DropdownMenu. Sin sesión: botones originales. Links "Precios" → `/precios`, "Guía de prompts" → `/guia`. |
+| `app/chat/page.tsx` | Carga empresa via Supabase DB (cero tokens Groq). Historial real de campañas (últimas 3). Sidebar personalizado con nombre de empresa. Botón inferior cambia a "Ver mis campañas →". |
+| `components/chat/ChatArea.tsx` | Props `empresa` y `ordenSugerencias`. Saludo personalizado con nombre. Sugerencias reordenadas por industria (`.sort()` en cliente). Prompts interpolados con nombre de empresa. |
+| `components/CasosSection.tsx` | Agrega 4to caso: "Taquería Don Chema" (negocio local, naranja, métricas reales). |
+| `components/LogosBar.tsx` | Subtítulo → "Desde taquerías locales hasta cadenas nacionales". |
+| `app/page.tsx` | Agrega `id="producto"` y `id="casos"` para scroll desde navbar. |
+
+---
+
+### Notas técnicas importantes
+
+**Cero tokens de Groq en personalización:**
+La personalización del chat es 100% JavaScript del cliente. La función `analizarPromptEmpresario` solo se llama cuando el usuario presiona enviar en el chat. Las siguientes operaciones no consumen tokens: saludo personalizado (interpolación de string), historial real (query Supabase DB), reorden de sugerencias por industria (`Array.sort()`), prompts pre-llenados con nombre de empresa (`.replace()` en string).
+
+**Reorden de sugerencias por industria (sin tokens):**
+- `restaurantes` / `entretenimiento` → Ruleta primero
+- `retail` / `gasolineras` → Puntos por Factura primero
+- `ecommerce` → Cupón Directo primero
+- Resto → orden normal
+
+---
+
+### Tareas pendientes actualizadas
+
+- [x] ~~Construir el dashboard `/dashboard` con métricas en tiempo real~~ ✓ Completado
+- [x] ~~Páginas `/precios` y `/guia`~~ ✓ Completado
+- [x] ~~Autenticación de empresas con onboarding~~ ✓ Completado
+- [x] ~~Personalización del chat por empresa (cero tokens Groq)~~ ✓ Completado
+- [x] ~~Sistema de colaboraciones (alianzas) entre empresas~~ ✓ Completado
+- [ ] **Alta prioridad**: Crear tabla `puntos_participantes` en Supabase para el módulo de puntos
+- [ ] **Media prioridad**: Integrar OCR real con Google Cloud Vision API en `/api/procesar-factura`
+- [ ] **Media prioridad**: Integrar bots de WhatsApp y Telegram
+- [ ] **Media prioridad**: Sistema de notificaciones (email al ganar un premio)
+- [ ] **Baja prioridad**: Páginas `/terminos`, `/privacidad`
+- [ ] **Baja prioridad**: API pública para integraciones
+- [ ] **Baja prioridad**: Panel de configuración de empresa (colores, logo, plan)
+
+---
+
+*Actualización agregada el 20 de marzo de 2026 — Módulo 5.*
