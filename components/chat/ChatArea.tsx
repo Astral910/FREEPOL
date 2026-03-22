@@ -63,6 +63,8 @@ interface ChatAreaProps {
   onContinuarWizard: () => void
   onAjustar: () => void
   onReiniciar: () => void
+  empresa?: { nombre: string; industria?: string } | null
+  ordenSugerencias?: string[]
 }
 
 /**
@@ -77,6 +79,8 @@ export default function ChatArea({
   onContinuarWizard,
   onAjustar,
   onReiniciar,
+  empresa,
+  ordenSugerencias,
 }: ChatAreaProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -107,24 +111,39 @@ export default function ChatArea({
               <Sparkles size={28} className="text-white" />
             </motion.div>
 
+            {/* Saludo personalizado si hay empresa — solo interpolación, CERO tokens */}
             <h1 className="text-3xl font-bold text-white text-center mb-3">
-              ¿Qué campaña tienes en mente?
+              {empresa
+                ? `Hola, ${empresa.nombre} 👋`
+                : '¿Qué campaña tienes en mente?'}
             </h1>
             <p className="text-[#94A3B8] text-center max-w-lg mx-auto leading-relaxed mb-10">
-              Descríbela como se te ocurra. Puedes incluir el tipo de premio, las reglas,
-              el tiempo, los canales... Entre más detalle, mejor resultado.
+              {empresa
+                ? `Soy tu asistente FREEPOL. ¿Qué campaña quieres crear hoy para ${empresa.nombre}?`
+                : 'Descríbela como se te ocurra. Puedes incluir el tipo de premio, las reglas, el tiempo, los canales... Entre más detalle, mejor resultado.'}
             </p>
 
-            {/* Grid de sugerencias */}
+            {/* Grid de sugerencias — reordenadas por industria sin consumir tokens */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl w-full mx-auto">
-              {SUGERENCIAS.map((s) => {
+              {(ordenSugerencias
+                ? [...SUGERENCIAS].sort((a, b) => {
+                    const idA = a.titulo.toLowerCase().includes('ruleta') ? 'ruleta' : a.titulo.toLowerCase().includes('puntos') ? 'puntos' : a.titulo.toLowerCase().includes('cupón') ? 'cupon' : 'factura'
+                    const idB = b.titulo.toLowerCase().includes('ruleta') ? 'ruleta' : b.titulo.toLowerCase().includes('puntos') ? 'puntos' : b.titulo.toLowerCase().includes('cupón') ? 'cupon' : 'factura'
+                    return (ordenSugerencias.indexOf(idA) ?? 4) - (ordenSugerencias.indexOf(idB) ?? 4)
+                  })
+                : SUGERENCIAS
+              ).map((s) => {
                 const Icon = s.icon
+                // Interpolar nombre de empresa en el prompt si hay sesión
+                const prompt = empresa
+                  ? s.promptEjemplo.replace('mi restaurante', empresa.nombre).replace('mi tienda', empresa.nombre).replace('mis clientes', `los clientes de ${empresa.nombre}`)
+                  : s.promptEjemplo
                 return (
                   <motion.button
                     key={s.titulo}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => onSugerencia(s.promptEjemplo)}
+                    onClick={() => onSugerencia(prompt)}
                     className="bg-[#1E293B] border border-[#334155] rounded-xl p-4 text-left cursor-pointer group transition-all duration-200 hover:border-current"
                     style={
                       { '--hover-color': s.color } as React.CSSProperties

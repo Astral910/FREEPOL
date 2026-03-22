@@ -2,7 +2,7 @@
 
 import { memo } from 'react'
 import { motion } from 'framer-motion'
-import { Trophy, Star, Ticket } from 'lucide-react'
+import { Trophy, Star, Ticket, UtensilsCrossed } from 'lucide-react'
 import { GradientBadge } from '@/components/ui/GradientBadge'
 import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
 
@@ -48,6 +48,20 @@ const casos = [
       'Código único por usuario generado desde Instagram. Un clic lleva directo al carrito en la app de McDonald\'s. Control de stock automático.',
     metricas: 'Código único · Deep linking · Límite 5,000 usos',
     linkColor: '#B45309',
+  },
+  {
+    empresa: 'Taquería Don Chema',
+    colorTop: '#F97316',
+    badgeBg: 'bg-orange-50',
+    badgeText: 'text-orange-600',
+    badgeLabel: 'Negocio local',
+    icon: UtensilsCrossed,
+    numero: '04',
+    titulo: 'Fidelización para el negocio local',
+    descripcion:
+      'Una taquería de barrio lanzó su primera ruleta en 20 minutos. Sus clientes acumulan puntos por cada visita y los canjean por tacos gratis. Sin app, sin complicaciones.',
+    metricas: '20 min configuración · WhatsApp · 300+ clientes fidelizados',
+    linkColor: '#F97316',
   },
 ]
 

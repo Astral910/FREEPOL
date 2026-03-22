@@ -22,7 +22,7 @@ const LogosBar = memo(function LogosBar() {
           transition={{ duration: 0.5 }}
           className="text-center text-sm text-[#64748B] uppercase tracking-widest font-medium mb-8"
         >
-          Confiado por marcas líderes
+          Desde taquerías locales hasta cadenas nacionales
         </motion.p>
 
         <motion.div

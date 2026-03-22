@@ -34,9 +34,15 @@ export default function HomePage() {
       <Navbar onOpenAuth={handleOpenAuth} />
       <HeroSection onOpenAuth={handleOpenAuth} />
       <LogosBar />
-      <PilaresSection />
+      {/* id="producto" para que el link del navbar haga scroll aquí */}
+      <div id="producto">
+        <PilaresSection />
+      </div>
       <PasosSection />
-      <CasosSection />
+      {/* id="casos" para el scroll desde el botón del hero */}
+      <div id="casos">
+        <CasosSection />
+      </div>
       <IAPanel />
       <CTAFinal onOpenAuth={handleOpenAuth} />
       <Footer />

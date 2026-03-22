@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase'
+import { getEmpresaDelUsuario } from '@/lib/empresa'
 
 interface AuthDialogProps {
   open: boolean
@@ -31,6 +32,7 @@ interface RegisterForm {
   email: string
   password: string
   confirmPassword: string
+  sitioWeb?: string
   terms: boolean
 }
 
@@ -90,15 +92,26 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
     setLoginLoading(true)
     setLoginError('')
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       })
       if (error) {
-        setLoginError('Correo o contraseña incorrectos. Intenta de nuevo.')
-      } else {
+        const errMsg = error.message.toLowerCase()
+        if (errMsg.includes('invalid login credentials') || errMsg.includes('invalid_credentials')) {
+          setLoginError('Correo o contraseña incorrectos. Intenta de nuevo.')
+        } else if (errMsg.includes('email not confirmed')) {
+          setLoginError('Confirma tu correo antes de entrar. Revisa tu bandeja de entrada.')
+        } else if (errMsg.includes('too many requests')) {
+          setLoginError('Demasiados intentos. Espera unos minutos.')
+        } else {
+          setLoginError('Ocurrió un error inesperado. Intenta de nuevo.')
+        }
+      } else if (authData.user) {
         onOpenChange(false)
-        router.push('/dashboard')
+        // Verificar si ya tiene empresa → dashboard, si no → onboarding
+        const empresa = await getEmpresaDelUsuario(authData.user.id)
+        router.push(empresa ? '/dashboard' : '/onboarding')
       }
     } catch {
       setLoginError('Ocurrió un error inesperado. Intenta de nuevo.')
@@ -127,11 +140,22 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
       })
       if (error) {
         if (error.message.includes('already registered')) {
-          setRegisterError('Este correo ya está registrado.')
+          setRegisterError('Este correo ya está registrado. ¿Quieres iniciar sesión?')
         } else {
           setRegisterError(error.message)
         }
       } else {
+        // Guardar datos del registro en localStorage para pre-llenar el onboarding
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(
+            'freepol_registro',
+            JSON.stringify({
+              nombre_empresa: data.company,
+              nombre_completo: data.fullName,
+              sitio_web: data.sitioWeb ?? '',
+            }),
+          )
+        }
         setRegisteredEmail(data.email)
         setRegisterSuccess(true)
         setResendCountdown(60)

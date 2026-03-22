@@ -3,10 +3,14 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Zap, ArrowRight, Menu, X, Sparkles } from 'lucide-react'
+import { Zap, ArrowRight, Menu, X, Sparkles, Plus, LayoutDashboard, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu'
+import { createClient } from '@/lib/supabase'
+import type { Empresa } from '@/lib/empresa'
 
 interface NavbarProps {
   onOpenAuth: (tab?: 'login' | 'register') => void
@@ -15,26 +19,56 @@ interface NavbarProps {
 const navLinks = [
   { label: 'Producto', href: '#producto' },
   { label: 'Casos de uso', href: '#casos' },
-  { label: 'Precios', href: '#precios' },
-  { label: 'Guía de prompts', href: '#prompts' },
+  { label: 'Precios', href: '/precios' },
+  { label: 'Guía de prompts', href: '/guia' },
 ]
 
 /**
- * Navbar fijo con comportamiento de scroll y menú móvil.
- * Se vuelve opaco y con borde al hacer scroll más de 20px.
+ * Navbar inteligente: detecta sesión activa y cambia los botones
+ * por avatar + dropdown con acciones del usuario autenticado.
  */
 export default function Navbar({ onOpenAuth }: NavbarProps) {
   const router = useRouter()
+  const supabase = createClient()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [empresa, setEmpresa] = useState<Empresa | null>(null)
+  const [haySesion, setHaySesion] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
+    const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Detectar sesión activa y cargar empresa
+  useEffect(() => {
+    const verificar = async () => {
+      const { data } = await supabase.auth.getSession()
+      if (!data.session) return
+
+      setHaySesion(true)
+      const { getEmpresaDelUsuario } = await import('@/lib/empresa')
+      const emp = await getEmpresaDelUsuario(data.session.user.id)
+      setEmpresa(emp)
+    }
+    verificar()
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setHaySesion(!!session)
+      if (!session) setEmpresa(null)
+    })
+    return () => listener.subscription.unsubscribe()
+  }, [supabase.auth])
+
+  const cerrarSesion = async () => {
+    await supabase.auth.signOut()
+    setHaySesion(false)
+    setEmpresa(null)
+    router.push('/')
+  }
+
+  const inicial = empresa?.nombre?.[0]?.toUpperCase() ?? 'E'
 
   return (
     <header
@@ -70,28 +104,69 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
 
           {/* Botones — solo desktop */}
           <div className="hidden md:flex items-center gap-3">
-            <Button
-              variant="ghost"
-              className="text-sm text-[#64748B] hover:text-[#5B5CF6] hover:bg-[#F0F0FF] rounded-lg flex items-center gap-1.5 transition-all duration-200"
-              onClick={() => router.push('/chat')}
-            >
-              <Sparkles size={14} />
-              Probar IA →
-            </Button>
-            <Button
-              variant="ghost"
-              className="text-sm text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg"
-              onClick={() => onOpenAuth('login')}
-            >
-              Iniciar sesión
-            </Button>
-            <Button
-              className="text-sm px-5 py-2 rounded-lg bg-[#5B5CF6] text-white hover:brightness-110 shadow-sm hover:shadow-md hover:shadow-[#5B5CF6]/25 transition-all duration-200 flex items-center gap-2"
-              onClick={() => onOpenAuth('register')}
-            >
-              Empezar gratis
-              <ArrowRight size={15} />
-            </Button>
+            {haySesion ? (
+              /* Con sesión activa: avatar + dropdown */
+              <>
+                <Button
+                  className="text-sm px-4 py-2 rounded-lg gradient-bg text-white hover:opacity-90 transition-opacity flex items-center gap-2"
+                  onClick={() => router.push('/chat')}
+                >
+                  <Plus size={14} />
+                  Nueva campaña
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-[#F8FAFC] transition-colors">
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback>{inicial}</AvatarFallback>
+                      </Avatar>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>
+                      <span className="text-[#0F172A] font-semibold normal-case text-sm">{empresa?.nombre ?? 'Mi empresa'}</span>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => router.push('/dashboard')} className="gap-2">
+                      <LayoutDashboard size={14} />Mi dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/chat')} className="gap-2">
+                      <Plus size={14} />Nueva campaña
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="gap-2 text-red-600 hover:text-red-700" onClick={cerrarSesion}>
+                      <LogOut size={14} />Cerrar sesión
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              /* Sin sesión: botones originales */
+              <>
+                <Button
+                  variant="ghost"
+                  className="text-sm text-[#64748B] hover:text-[#5B5CF6] hover:bg-[#F0F0FF] rounded-lg flex items-center gap-1.5 transition-all duration-200"
+                  onClick={() => router.push('/chat')}
+                >
+                  <Sparkles size={14} />
+                  Probar IA →
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="text-sm text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg"
+                  onClick={() => onOpenAuth('login')}
+                >
+                  Iniciar sesión
+                </Button>
+                <Button
+                  className="text-sm px-5 py-2 rounded-lg bg-[#5B5CF6] text-white hover:brightness-110 shadow-sm hover:shadow-md hover:shadow-[#5B5CF6]/25 transition-all duration-200 flex items-center gap-2"
+                  onClick={() => onOpenAuth('register')}
+                >
+                  Empezar gratis
+                  <ArrowRight size={15} />
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Menú hamburguesa — solo móvil */}

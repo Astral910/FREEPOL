@@ -1,25 +1,26 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import toast, { Toaster } from 'react-hot-toast'
 import {
-  Zap,
-  Plus,
-  MessageSquare,
-  LogIn,
-  BookOpen,
-  MoreHorizontal,
-  Menu,
-  X,
-  ArrowLeft,
+  Zap, Plus, MessageSquare, LogIn, BookOpen,
+  MoreHorizontal, Menu, X, ArrowLeft, LayoutDashboard,
 } from 'lucide-react'
 import ChatArea from '@/components/chat/ChatArea'
 import ChatInput from '@/components/chat/ChatInput'
 import TipsPanel from '@/components/chat/TipsPanel'
+import { createClient } from '@/lib/supabase'
+import type { Empresa } from '@/lib/empresa'
 import type { EstadoChat, MensajeChat, ResultadoAnalisis } from '@/types/campana'
+
+interface CampanaHistorial {
+  id: string
+  nombre_campana: string
+  creado_en: string
+}
 
 const HISTORIAL_SIMULADO = [
   { id: '1', titulo: 'Ruleta Pollo Campero', tiempo: 'hace 2 horas' },
@@ -27,20 +28,56 @@ const HISTORIAL_SIMULADO = [
   { id: '3', titulo: 'Cupones Flash', tiempo: 'hace 3 días' },
 ]
 
+/** Reordena las cards de sugerencias según la industria de la empresa */
+function ordenarSugerenciasPorIndustria(industria: string | undefined): string[] {
+  const orden = ['ruleta', 'puntos', 'cupon', 'factura']
+  if (!industria) return orden
+  if (industria === 'restaurantes' || industria === 'entretenimiento') return ['ruleta', 'puntos', 'cupon', 'factura']
+  if (industria === 'retail' || industria === 'gasolineras') return ['factura', 'puntos', 'ruleta', 'cupon']
+  if (industria === 'ecommerce') return ['cupon', 'ruleta', 'puntos', 'factura']
+  return orden
+}
+
 /**
  * Página principal del chat de IA de FREEPOL.
- * Layout oscuro dividido en sidebar + área principal.
- * Accesible sin autenticación para propósitos de desarrollo.
+ * Personaliza la experiencia cuando hay sesión activa.
+ * La personalización es SOLO visual/textual — cero tokens extra de Groq.
  */
 export default function ChatPage() {
   const router = useRouter()
+  const supabase = createClient()
   const [inputValue, setInputValue] = useState('')
+  const [empresa, setEmpresa] = useState<Empresa | null>(null)
+  const [historialReal, setHistorialReal] = useState<CampanaHistorial[]>([])
   const [mensajes, setMensajes] = useState<MensajeChat[]>([])
   const [estado, setEstado] = useState<EstadoChat>('idle')
   const [resultado, setResultado] = useState<ResultadoAnalisis | null>(null)
   const [promptAnterior, setPromptAnterior] = useState('')
   const [tipsOpen, setTipsOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Cargar sesión y empresa — CERO tokens de Groq, solo Supabase DB
+  useEffect(() => {
+    const cargar = async () => {
+      const { data } = await supabase.auth.getSession()
+      if (!data.session) return
+
+      const { getEmpresaDelUsuario } = await import('@/lib/empresa')
+      const emp = await getEmpresaDelUsuario(data.session.user.id)
+      setEmpresa(emp)
+
+      // Cargar últimas 3 campañas reales del usuario
+      const { data: camps } = await supabase
+        .from('campanas')
+        .select('id,nombre_campana,creado_en')
+        .eq('creado_por', data.session.user.id)
+        .order('creado_en', { ascending: false })
+        .limit(3)
+
+      if (camps) setHistorialReal(camps as CampanaHistorial[])
+    }
+    cargar()
+  }, [supabase])
 
   const reiniciar = useCallback(() => {
     setMensajes([])
@@ -134,18 +171,35 @@ export default function ChatPage() {
     setEstado('wizard')
   }, [router])
 
+  const historialMostrado = historialReal.length > 0
+    ? historialReal.map((c) => ({
+        id: c.id,
+        titulo: c.nombre_campana,
+        tiempo: new Date(c.creado_en).toLocaleDateString('es-GT', { day: 'numeric', month: 'short' }),
+      }))
+    : HISTORIAL_SIMULADO
+
   const Sidebar = (
-    <aside className="w-72 bg-[#1E293B] border-r border-[#334155] flex flex-col h-full flex-shrink-0">
+    <aside
+      className="w-72 border-r border-[#334155] flex flex-col h-full flex-shrink-0"
+      style={{ backgroundColor: empresa?.color_primario ? `${empresa.color_primario}10` : undefined, background: '#1E293B' }}
+    >
       {/* Header del sidebar */}
       <div className="p-5 border-b border-[#334155]">
-        <Link href="/" className="flex items-center gap-2 mb-5 group">
+        <Link href="/" className="flex items-center gap-2 mb-3 group">
           <ArrowLeft size={14} className="text-[#475569] group-hover:text-[#94A3B8] transition-colors" />
           <Zap size={16} className="text-[#5B5CF6]" />
           <span className="font-bold text-white">
-            <span className="text-[#5B5CF6]">FREE</span>POL
+            {empresa ? (
+              <span style={{ color: empresa.color_primario }}>{empresa.nombre}</span>
+            ) : (
+              <><span className="text-[#5B5CF6]">FREE</span>POL</>
+            )}
           </span>
         </Link>
-        <p className="text-[#64748B] text-xs mb-4">Asistente de campañas</p>
+        <p className="text-[#64748B] text-xs mb-4">
+          {empresa ? `Asistente de ${empresa.nombre}` : 'Asistente de campañas'}
+        </p>
         <button
           onClick={reiniciar}
           className="w-full bg-[#5B5CF6] hover:brightness-110 text-white rounded-lg px-4 py-2.5 text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200"
@@ -161,7 +215,7 @@ export default function ChatPage() {
           Recientes
         </p>
         <div className="space-y-1">
-          {HISTORIAL_SIMULADO.map((item) => (
+          {historialMostrado.map((item) => (
             <div
               key={item.id}
               className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] cursor-pointer group transition-colors duration-150"
@@ -171,10 +225,7 @@ export default function ChatPage() {
                 <p className="text-[#CBD5E1] text-sm truncate">{item.titulo}</p>
                 <p className="text-[#475569] text-xs">{item.tiempo}</p>
               </div>
-              <MoreHorizontal
-                size={14}
-                className="text-[#475569] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-              />
+              <MoreHorizontal size={14} className="text-[#475569] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
             </div>
           ))}
         </div>
@@ -189,10 +240,17 @@ export default function ChatPage() {
           <BookOpen size={15} />
           <span className="text-sm">Guía de prompts</span>
         </button>
-        <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] transition-colors cursor-pointer">
-          <LogIn size={15} className="text-[#5B5CF6]" />
-          <span className="text-[#5B5CF6] text-sm">Iniciar sesión para guardar</span>
-        </div>
+        {empresa ? (
+          <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] transition-colors">
+            <LayoutDashboard size={15} className="text-[#5B5CF6]" />
+            <span className="text-[#5B5CF6] text-sm">Ver mis campañas →</span>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] transition-colors cursor-pointer">
+            <LogIn size={15} className="text-[#5B5CF6]" />
+            <span className="text-[#5B5CF6] text-sm">Iniciar sesión para guardar</span>
+          </div>
+        )}
       </div>
     </aside>
   )
@@ -260,6 +318,8 @@ export default function ChatPage() {
           onContinuarWizard={handleContinuarWizard}
           onAjustar={handleAjustar}
           onReiniciar={reiniciar}
+          empresa={empresa}
+          ordenSugerencias={ordenarSugerenciasPorIndustria(empresa?.industria)}
         />
 
         {/* Input fijo en la parte inferior — oculto en estado wizard */}
