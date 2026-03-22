@@ -543,4 +543,424 @@ Máximo 5000 participantes.
 
 ---
 
-*Documento generado el 20 de marzo de 2026. NO incluir en commits — borrar manualmente antes de terminar el proyecto.*
+## ACTUALIZACIÓN — 20 de marzo de 2026 (Sesión 2)
+
+### ✅ WIZARD COMPLETO DE 10 PASOS
+
+Se construyó el componente más importante del flujo de FREEPOL: el wizard que recibe la configuración generada por Groq y permite al empresario confirmarla paso a paso antes de lanzar la campaña.
+
+---
+
+### Nuevas dependencias instaladas
+
+| Paquete | Versión | Propósito |
+|---|---|---|
+| `zustand` | latest | Estado global del wizard |
+| `date-fns` | latest | Cálculo de diferencia de fechas en Paso 7 |
+| `canvas-confetti` | latest | Efecto de celebración al lanzar campaña |
+| `@types/canvas-confetti` | latest | Tipos TypeScript para canvas-confetti |
+| `@radix-ui/react-progress` | latest | Base para barra de progreso |
+| `@radix-ui/react-select` | latest | Componente select accesible |
+| `@radix-ui/react-checkbox` | latest | Componente checkbox accesible |
+| `@radix-ui/react-tooltip` | latest | Tooltips accesibles |
+| `@radix-ui/react-slider` | latest | Slider accesible |
+
+---
+
+### Archivos creados
+
+#### `store/wizardStore.ts`
+Store central de Zustand para el wizard. Contiene:
+- Estado: `paso`, `totalPasos` (10), `config: ConfigCampana`, `errores`, `guardando`, `completado`, `hayDatos`
+- Acciones de navegación: `setPaso`, `siguientePaso`, `anteriorPaso`
+- Acciones de config: `setConfig`, `setConfigCompleta`
+- Acciones de errores: `setError`, `limpiarError`, `limpiarErrores`
+- Función `cargarDesdeLocalStorage`: lee la clave `freepol_config` del localStorage, parsea el JSON y llama a `setConfigCompleta` si existe `config` dentro
+
+#### `app/wizard/page.tsx`
+Página principal del wizard en ruta `/wizard`. Accesible sin autenticación.
+- Layout oscuro (#0F172A) igual que `/chat`
+- `Progress` animado en la parte superior (gradiente #5B5CF6 → #A855F7, h-1)
+- Header fijo: logo FREEPOL, link "Volver al chat", texto "Paso X de 10"
+- Área central scrolleable `max-w-2xl mx-auto`
+- Footer fijo: botón "← Atrás" (oculto en paso 1), indicadores de paso (pills), botón "Siguiente →" o "Lanzar campaña" en paso 10
+- `AnimatePresence` de Framer Motion: transición entre pasos (salida/entrada lateral, 250ms, ease easeInOut)
+- Si no hay datos en localStorage: muestra pantalla de error con botón "Ir al asistente de IA"
+- Validación por paso: paso 2 requiere nombre negocio ≥2 chars y nombre campaña ≥3 chars; paso 5 requiere probabilidades que sumen 100%; paso 7 requiere fechas válidas
+
+#### `components/wizard/PasoLayout.tsx`
+Wrapper reutilizable para cada paso. Props: `titulo`, `subtitulo`, `icono: LucideIcon`, `children`, `badge?: string`.
+- Ícono en cuadrado redondeado con gradiente (28px, shadow #5B5CF6/20)
+- Badge opcional encima del título (estilo pill con borde #C4B5FD)
+- Título `text-2xl font-bold text-white`
+- Subtítulo `text-[#94A3B8] text-base`
+- Separador `h-px bg-[#334155]`
+- Animación de entrada: fadeUp con Framer Motion delay 0.1s
+
+#### `components/wizard/pasos/Paso1TipoCampana.tsx`
+- Ícono: Sparkles — badge "Pre-detectado por IA"
+- Grid 2x2 de cards de selección: Ruleta (Trophy #F59E0B), Puntos (Star #22C55E), Cupón (Ticket #5B5CF6), Factura (Receipt #A855F7)
+- Selección marcada con `border-[#5B5CF6]` + indicador circular blanco
+- Pre-seleccionado con `config.tipo` del store
+
+#### `components/wizard/pasos/Paso2Identidad.tsx`
+- Ícono: Building2
+- Input "Nombre de tu empresa" — pre-llenado con `config.nombre_negocio`, requerido ≥2 chars
+- Input "Nombre de la campaña" — pre-llenado con `config.nombre_campana`, requerido ≥3 chars
+- Preview en tiempo real debajo: muestra "[negocio] presenta: [campaña]", actualiza con debounce 300ms
+
+#### `components/wizard/pasos/Paso3Canales.tsx`
+- Ícono: Radio
+- 4 toggle cards multi-selección: WhatsApp (#22C55E), Telegram (#38BDF8), Instagram (#E1306C), Landing (#5B5CF6)
+- Switch toggle visual integrado en cada card
+- Nota informativa azul: "La Landing Page siempre se crea..."
+- Si `config.canal === 'todos'`, activa los 4
+
+#### `components/wizard/pasos/Paso4Condicion.tsx`
+- Ícono: ShieldCheck
+- 4 cards de selección única: correo (badge "Recomendado" verde), teléfono, quiz (badge "Mayor engagement" naranja), libre (badge "Sin datos" gris)
+- Radio button visual circular en cada card
+
+#### `components/wizard/pasos/Paso5Premios.tsx`
+UI adaptativa según `config.tipo`:
+- **Ruleta**: 3 filas de premios (nombre + % probabilidad), SVG dinámico de ruleta que se actualiza en tiempo real, barra de progreso de probabilidad total (verde=100%, naranja<100%, rojo>100%), botón agregar 3er premio opcional
+- **Puntos/Factura**: inputs "X puntos por cada $Y", meta de canje, calculadora visual que muestra cuántas compras necesita el cliente
+- **Cupón**: input del beneficio, toggle de deep linking con input URL
+
+#### `components/wizard/pasos/Paso6Frecuencia.tsx`
+- Ícono: RefreshCw
+- 4 cards: "1 vez total" (Target), "1 vez por día" (Calendar, badge "Más popular" azul), "1 vez por semana" (CalendarDays), "Sin límite" (Infinity, badge "Mayor riesgo" naranja)
+
+#### `components/wizard/pasos/Paso7Vigencia.tsx`
+- Ícono: CalendarRange
+- Date pickers nativos `type="date"` con `[color-scheme:dark]`
+- Resumen visual verde: "Tu campaña estará activa X días" (calculado con `date-fns differenceInDays`)
+- Toggle "¿Horario específico?": si activo, muestra time pickers + pills de días de la semana (L M X J V S D)
+- Pre-llenado con `config.fecha_inicio`, `config.fecha_fin`, `config.horario_inicio`, `config.horario_fin`, `config.dias_activos`
+
+#### `components/wizard/pasos/Paso8Limites.tsx`
+- Ícono: Gauge
+- Toggle "Limitar participantes" + input número si activo
+- 4 pills de expiración del código: 24h, 48h (badge "Recomendado"), 72h, 1 semana
+- Pre-llenado con `config.limite_participantes` y `config.horas_expiracion_codigo`
+
+#### `components/wizard/pasos/Paso9Mensaje.tsx`
+- Ícono: MessageSquare
+- Textarea con máximo 200 caracteres, contador en tiempo real (naranja >180)
+- Botón "✨ Regenerar con IA" — llama a `/api/generar-mensaje`, muestra spinner Loader2
+- Preview estilo WhatsApp: burbuja verde con el texto del mensaje, nombre del negocio como remitente
+- Botones de ajuste de tono: "Más formal", "Más amigable", "Más corto"
+- Pre-llenado con `config.mensaje_bienvenida`
+
+#### `components/wizard/pasos/Paso10Resumen.tsx`
+- Ícono: CheckCircle2
+- Grid 2 columnas de `CardResumen`: cada card muestra label, valor y ícono lápiz (Pencil) al hover que llama `setPaso(n)` para volver sin perder datos
+- Lista verde "Lo que FREEPOL va a crear": landing page URL, bots, códigos QR, dashboard, panel cajeros
+- Botón "🚀 Lanzar mi campaña" con animación pulse suave y gradiente
+- Al lanzar: llama `/api/crear-campana`, dispara `canvas-confetti`, limpia localStorage, muestra pantalla de éxito y redirige a `/dashboard` tras 3 segundos
+
+#### `components/ui/progress.tsx`
+Barra de progreso usando `@radix-ui/react-progress`. Gradiente horizontal #5B5CF6 → #A855F7, transición 500ms.
+
+#### `components/ui/checkbox.tsx`
+Checkbox usando `@radix-ui/react-checkbox`. Tema oscuro: fondo #1E293B, borde #475569, check azul #5B5CF6 al activar.
+
+#### `components/ui/textarea.tsx`
+Textarea con estilos del tema oscuro del wizard: bg #1E293B, borde #334155, texto #E2E8F0, focus borde #5B5CF6.
+
+---
+
+### Archivos modificados
+
+#### `app/chat/page.tsx`
+- **Importación**: agregado `useRouter` de `next/navigation`
+- **`enviarMensaje`**: después de recibir la respuesta de Groq y antes de `setResultado(data)`, guarda `JSON.stringify(data)` en `localStorage.setItem('freepol_config', ...)` para que el wizard lo consuma
+- **`handleContinuarWizard`**: reemplazado el `toast.success` placeholder por `router.push('/wizard')`, conectando el botón "Continuar al wizard →" de `ResultadosAnalisis` con la ruta real
+
+---
+
+### Nuevos API Routes
+
+#### `app/api/generar-mensaje/route.ts`
+- Método: `POST`
+- Recibe: `{ config: ConfigCampana }`
+- Llama a Groq (`llama-3.3-70b-versatile`, max 100 tokens) con prompt en español para generar mensaje de bienvenida ≤150 caracteres
+- Devuelve: `{ mensaje: string }`
+
+#### `app/api/crear-campana/route.ts`
+- Método: `POST`
+- Recibe: `{ config: ConfigCampana }`
+- Genera slug URL-safe: `nombre_campana → lowercase → normalizar acentos → reemplazar non-alphanum por guión → + '-' + Date.now().toString(36)`
+- Inserta en tabla `campanas` de Supabase con estado inicial `'activa'`
+- Devuelve: `{ id, slug, url_campana: '/c/[slug]' }`
+
+---
+
+### Tabla de Supabase creada (SQL)
+
+```sql
+CREATE TABLE campanas (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  nombre_negocio TEXT NOT NULL,
+  nombre_campana TEXT NOT NULL,
+  tipo TEXT NOT NULL CHECK (tipo IN ('ruleta','puntos','cupon','factura')),
+  canales TEXT[] NOT NULL DEFAULT '{}',
+  estado TEXT NOT NULL DEFAULT 'activa' CHECK (estado IN ('activa','pausada','terminada','borrador')),
+  configuracion JSONB NOT NULL DEFAULT '{}',
+  total_participantes INTEGER DEFAULT 0,
+  total_canjes INTEGER DEFAULT 0,
+  creado_por UUID REFERENCES auth.users(id),
+  creado_en TIMESTAMPTZ DEFAULT NOW(),
+  actualizado_en TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_campanas_slug ON campanas(slug);
+CREATE INDEX idx_campanas_estado ON campanas(estado);
+CREATE INDEX idx_campanas_creado_por ON campanas(creado_por);
+
+ALTER TABLE campanas ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Lectura publica de campanas activas"
+  ON campanas FOR SELECT USING (estado = 'activa');
+
+CREATE POLICY "Insercion autenticada"
+  ON campanas FOR INSERT WITH CHECK (true);
+```
+
+---
+
+### Flujo completo implementado
+
+```
+/chat → escribir prompt → Groq analiza → ResultadosAnalisis
+→ localStorage.setItem('freepol_config', data)
+→ router.push('/wizard')
+→ WizardPage: cargarDesdeLocalStorage() → pre-llena los 10 pasos
+→ Empresario confirma paso a paso
+→ Paso 10: "🚀 Lanzar" → POST /api/crear-campana
+→ Supabase inserta campaña → confetti → pantalla de éxito
+→ router.push('/dashboard')
+```
+
+---
+
+### Tareas pendientes actualizadas
+
+- [ ] **Alta prioridad**: Construir el dashboard `/dashboard` con métricas en tiempo real
+- [ ] **Alta prioridad**: Construir páginas públicas de campaña `/c/[slug]`
+- [ ] **Alta prioridad**: Implementar seguridad de códigos de premio (UUID v4 + SHA-256) y lógica de ruleta en servidor
+- [ ] **Media prioridad**: Integrar bots de WhatsApp y Telegram (`node-telegram-bot-api`)
+- [ ] **Media prioridad**: Implementar OCR para validación de facturas
+- [ ] **Media prioridad**: Sistema de notificaciones (email, push)
+- [ ] **Media prioridad**: Deep linking funcional
+- [ ] **Baja prioridad**: Página de precios `/precios`
+- [ ] **Baja prioridad**: Página pública "Guía de Prompts" `/guia`
+- [ ] **Baja prioridad**: API pública para integraciones
+
+---
+
+*Actualización agregada el 20 de marzo de 2026.*
+
+---
+
+## ACTUALIZACIÓN — 20 de marzo de 2026 (Sesión 3)
+
+### ✅ LANDING PÚBLICA DE CAMPAÑA + MOTOR DE CÓDIGOS CON ANTIFRAUDE
+
+Se construyó el motor completo de participación del cliente final: la landing pública `/c/[slug]`, los componentes de actividad (ruleta, cupón, puntos), y el sistema antifraude con Upstash Redis + SHA-256.
+
+---
+
+### Nuevas dependencias instaladas
+
+| Paquete | Versión | Propósito |
+|---|---|---|
+| `@upstash/redis` | latest | Antifraude en tiempo real (locks, deduplicación por IP) |
+| `qrcode.react` | latest | Generación de QR para códigos de premio |
+| `@types/qrcode.react` | latest | Tipos TypeScript para qrcode.react |
+
+---
+
+### SQL adicional para Supabase
+
+Se crearon 2 nuevas tablas:
+
+**`participantes`** — Almacena los datos de cada participante por campaña con restricciones UNIQUE para evitar duplicados de correo/teléfono por campaña.
+
+**`codigos`** — Almacena cada código de premio con su hash SHA-256 de verificación, estado de uso, fecha de uso y expiración.
+
+**`puntos_participantes`** — (usada por `procesar-factura`) Acumula puntos por participante por campaña con UPSERT.
+
+Todos con RLS habilitado y políticas de lectura/inserción pública para el flujo sin auth.
+
+---
+
+### Archivos creados
+
+#### `lib/redis.ts`
+Cliente global de Upstash Redis. Exporta:
+- `redis` — instancia de `Redis` de `@upstash/redis`
+- `setConExpiracion(key, value, segundos)` — guarda con TTL
+- `existe(key)` — verifica si una clave existe (antifraude)
+- `eliminar(key)` — elimina una clave (liberar locks)
+- `setNX(key, value, segundos)` — SET atómico solo si no existe, devuelve `boolean`. Usado para lock de doble canje.
+
+#### `lib/codigos.ts`
+Motor de generación y validación de códigos. Exporta:
+- `generarCodigoUnico(prefijo)` — formato `XXXX-YYYY-ZZZZ`, usando `randomBytes(2).toString('hex').toUpperCase()` por segmento. Ejemplo: `POLL-A2F9-K7M3`
+- `generarHash(codigo)` — SHA-256 de `codigo + HASH_SECRET`
+- `calcularExpiracion(horas)` — `new Date(Date.now() + horas * ms)`
+- `validarYUsarCodigo(codigoTexto, supabase)` — validación en 7 pasos: existencia → ya usado → expirado → hash válido → lock Redis NX → UPDATE Supabase → liberar lock. Devuelve `ResultadoValidacion`
+
+#### `lib/supabase-server.ts`
+Cliente de Supabase para Server Components y API Routes. Usa `createClient` de `@supabase/supabase-js` con las variables de entorno del servidor.
+
+#### `app/c/[slug]/page.tsx`
+Página pública de campaña. Server Component.
+- `generateMetadata` dinámica: título "[campaña] — [negocio]", description con el mensaje de bienvenida
+- Si slug no existe: página 404 personalizada con logo FREEPOL y botón "Volver al inicio"
+- Si estado ≠ 'activa': página de campaña finalizada/pausada con mensaje elegante según el estado
+- Si activa: renderiza `LandingCampana` con la fila completa de Supabase
+
+#### `components/campana/LandingCampana.tsx`
+Componente principal de la landing del cliente final. Diseño mobile-first, max-w-lg, sin navbar de FREEPOL.
+- **Zona 1 (Header)**: nombre del negocio en color primario, nombre de campaña, badge naranja si hay horario activo
+- **Zona 2 (Mensaje)**: card `#F8FAFC` con mensaje de bienvenida y fecha fin
+- **Zona 3 (Formulario)**: react-hook-form. Inputs adaptativos según `condicion` (correo, teléfono, libre). POST a `/api/registrar-participante`. Manejo de errores por límite, IP duplicada o ya registrado.
+- **Zona 4 (Actividad)**: `AnimatePresence` transiciona desde formulario al componente de actividad tras registro exitoso. Renderiza `ComponenteRuleta`, `ComponenteCupon` o `ComponentePuntos` según `tipo`
+- **Zona 5 (Footer)**: "Powered by FREEPOL" + links Términos/Privacidad
+
+#### `components/campana/ComponenteRuleta.tsx`
+Ruleta funcional SVG. El resultado SIEMPRE viene del servidor.
+- **`RuletaSVG`**: genera secciones con `pathArco()` calculando arcos SVG dinámicos según probabilidades. Texto de premios rotado al centro de cada sección. Puntero SVG fijo arriba. Animación CSS `transform: rotate()` + `transition: transform 3s cubic-bezier`.
+- **Flujo de giro**: (1) usuario presiona → (2) giro visual rápido de 720° mientras espera API → (3) API devuelve `prize_index` → (4) calcula ángulo de parada para esa sección + variación aleatoria ±10° → (5) anima desaceleración 3s → (6) espera 3.2s → (7) muestra pantalla de resultado
+- **Pantalla de resultado**: Trophy, "¡Ganaste!", premio, código en `font-mono` con botón copiar, `QRCodeSVG` 200x200, botón "Descargar QR" que usa canvas para exportar como PNG, texto de expiración
+
+#### `components/campana/ComponenteCupon.tsx`
+Para campañas de tipo cupón directo. Al montar llama automáticamente a `/api/generar-codigo`.
+- Skeleton animado mientras carga
+- Al recibir: confetti, código con botón copiar, `QRCodeSVG` 180x180, botón "Descargar QR", botón "Abrir en la App →" si hay `deep_link_url` (con fallback a nueva pestaña a los 2s)
+
+#### `components/campana/ComponentePuntos.tsx`
+Para campañas de puntos y factura.
+- Barra de progreso animada con Framer Motion, gradiente #5B5CF6 → #22C55E
+- Si `tipo === 'factura'`: botón "Subir foto de factura" con `input[type=file][capture=environment]`, llama a `/api/procesar-factura`, actualiza barra en tiempo real
+- Si `tipo === 'puntos'`: instrucciones de acumulación
+- Al alcanzar la meta: botón "¡Canjear mi premio! →" que llama a `/api/generar-codigo` y muestra QR del código
+
+---
+
+### Nuevos API Routes
+
+#### `app/api/registrar-participante/route.ts`
+POST — registra al cliente en la campaña con antifraude completo:
+1. Verifica campaña activa en Supabase
+2. Verifica límite de participantes
+3. Verifica IP duplicada en Redis (24h TTL con key `ip:[campana_id]:[ip]`)
+4. Si correo/teléfono ya existe → devuelve `ya_registrado: true, participante_id`
+5. Inserta en tabla `participantes`
+6. Incrementa `total_participantes` en `campanas`
+7. Guarda IP en Redis por 24h
+
+#### `app/api/girar-ruleta/route.ts`
+POST — endpoint más crítico de seguridad. Resultado calculado 100% en servidor:
+1. Verifica Redis `giro:[participante_id]:[campana_id]` — si existe: `ya_participo`
+2. Carga campaña y sus premios
+3. Algoritmo de pesos: `random * 100`, acumula probabilidades, selecciona premio
+4. Genera código con prefijo del negocio + `randomBytes`
+5. Genera hash SHA-256 del código
+6. Guarda en tabla `codigos` de Supabase
+7. Guarda `giro:...` en Redis con TTL = segundos hasta `fecha_fin` de la campaña
+8. Incrementa `total_canjes`
+9. Devuelve `{ premio, prize_index, codigo, expira_en }`
+
+#### `app/api/generar-codigo/route.ts`
+POST — genera código para cupón o canje de puntos:
+- Si Redis `cupon:[participante_id]:[campana_id]` existe: busca y devuelve el código existente
+- Si no: verifica límite, genera código, guarda en Supabase y Redis
+
+#### `app/api/procesar-factura/route.ts`
+POST (FormData) — procesa imagen de factura:
+- Por ahora: datos simulados (OCR pendiente)
+- Calcula puntos según `puntos_por_monto` / `monto_base` de la campaña
+- UPSERT en tabla `puntos_participantes`
+- Devuelve puntos ganados, total acumulado, si alcanzó meta
+- Comentario TODO: integrar Google Cloud Vision API
+
+#### `app/api/validar-codigo/route.ts`
+POST — llama a `validarYUsarCodigo()` de `lib/codigos.ts`. Devuelve `ResultadoValidacion` directamente.
+
+---
+
+### Página creada
+
+#### `app/validar/page.tsx`
+Página para cajeros. Sin autenticación. Accesible en `/validar`.
+- Input `font-mono text-xl text-center` con auto-formato al escribir (`XXXX-XXXX-XXXX`)
+- Auto-envío cuando el código tiene formato completo (14 chars)
+- Pantalla verde `CheckCircle` con premio y nombre del negocio al validar exitosamente
+- Pantalla roja `XCircle` con la razón del rechazo
+- Botón "Validar otro código" / "Intentar otro código" según resultado
+
+---
+
+### Variables de entorno agregadas a `.env.local`
+
+```env
+UPSTASH_REDIS_REST_URL=tu_url_de_upstash
+UPSTASH_REDIS_REST_TOKEN=tu_token_de_upstash
+HASH_SECRET=freepol_secret_2025_muy_larga_y_segura
+```
+
+Obtener credenciales de Upstash en: [console.upstash.com](https://console.upstash.com) → crear base de datos Redis → copiar REST URL y REST TOKEN.
+
+---
+
+### Flujo completo de prueba
+
+```
+1. Crear campaña en /wizard → campaña guardada en Supabase con slug
+
+2. Ir a /c/[slug-de-la-campana]
+   → Ingresar correo → POST /api/registrar-participante
+   → participante_id guardado en estado del componente
+
+3. [Si tipo = 'ruleta']:
+   → Botón "¡Girar!" → POST /api/girar-ruleta
+   → Servidor calcula resultado → devuelve prize_index y código
+   → Ruleta SVG anima y para en el premio correcto
+   → Pantalla de resultado: código + QR
+
+4. Ir a /validar
+   → Escribir el código: XXXX-XXXX-XXXX
+   → Auto-envía cuando está completo
+   → POST /api/validar-codigo → valida hash SHA-256 + marca usado=true
+   → Pantalla verde con el premio ganado
+```
+
+### Verificación del antifraude
+
+**Intento de doble giro**: Girar nuevamente con el mismo participante_id → Redis devuelve que ya existe `giro:[id]:[campana_id]` → respuesta `{ error: 'ya_participo', status: 409 }`
+
+**Intento de doble validación**: Usar el mismo código dos veces en `/validar` → primer intento marca `usado=true` en Supabase → segundo intento: `{ valido: false, razon: 'Este código ya fue utilizado' }`
+
+**Condición de carrera**: Dos peticiones simultáneas de validación del mismo código → `setNX` de Redis garantiza que solo una adquiere el lock → la otra recibe `{ valido: false, razon: 'Código en proceso' }`
+
+---
+
+### Tareas pendientes actualizadas
+
+- [ ] **Alta prioridad**: Construir el dashboard `/dashboard` con métricas en tiempo real
+- [x] ~~Construir páginas públicas de campaña `/c/[slug]`~~ ✓ Completado
+- [x] ~~Implementar seguridad de códigos (UUID + SHA-256) y lógica de ruleta en servidor~~ ✓ Completado
+- [ ] **Alta prioridad**: Crear tabla `puntos_participantes` en Supabase para el módulo de puntos
+- [ ] **Media prioridad**: Integrar OCR real con Google Cloud Vision API en `/api/procesar-factura`
+- [ ] **Media prioridad**: Integrar bots de WhatsApp y Telegram
+- [ ] **Media prioridad**: Sistema de notificaciones (email al ganar un premio)
+- [ ] **Baja prioridad**: Páginas `/terminos`, `/privacidad`, `/precios`, `/guia`
+- [ ] **Baja prioridad**: API pública para integraciones
+
+---
+
+*Actualización agregada el 20 de marzo de 2026.*
