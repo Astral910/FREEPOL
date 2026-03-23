@@ -37,6 +37,12 @@ interface RegisterForm {
 }
 
 /**
+ * Desarrollo: en Supabase → Authentication → Providers → Email,
+ * puedes desactivar "Confirm email" para entrar al instante tras registrarse
+ * (útil en local). En producción suele dejarse activado.
+ */
+
+/**
  * Verifica los requisitos de contraseña en tiempo real.
  */
 function checkPasswordRequirements(password: string) {
@@ -80,6 +86,34 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
     }
   }, [open, defaultTab])
 
+  /**
+   * Al cerrar el modal: limpiar pantalla de "revisa tu correo" para que
+   * la próxima vez puedan iniciar sesión o registrarse sin quedar bloqueados.
+   */
+  const handleDialogOpenChange = (next: boolean) => {
+    if (!next) {
+      setRegisterSuccess(false)
+      setResendCountdown(0)
+      setRegisteredEmail('')
+    }
+    onOpenChange(next)
+  }
+
+  /** Salir de la pantalla de verificación y volver a login / registro */
+  const salirDePantallaVerificacion = (destino: 'login' | 'register') => {
+    const correo = registeredEmail
+    setRegisterSuccess(false)
+    setResendCountdown(0)
+    setActiveTab(destino)
+    if (destino === 'login' && correo) {
+      loginForm.setValue('email', correo)
+    }
+    if (destino === 'register') {
+      registerForm.reset({ terms: false })
+    }
+    setRegisteredEmail('')
+  }
+
   // Countdown para reenvío de correo
   useEffect(() => {
     if (resendCountdown > 0) {
@@ -100,15 +134,20 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
         const errMsg = error.message.toLowerCase()
         if (errMsg.includes('invalid login credentials') || errMsg.includes('invalid_credentials')) {
           setLoginError('Correo o contraseña incorrectos. Intenta de nuevo.')
-        } else if (errMsg.includes('email not confirmed')) {
-          setLoginError('Confirma tu correo antes de entrar. Revisa tu bandeja de entrada.')
+        } else if (
+          errMsg.includes('email not confirmed') ||
+          errMsg.includes('email_not_confirmed')
+        ) {
+          setLoginError(
+            'Activa tu cuenta con el enlace que enviamos a tu correo y vuelve a intentar. Si ya lo hiciste, espera un momento e intenta otra vez.',
+          )
         } else if (errMsg.includes('too many requests')) {
           setLoginError('Demasiados intentos. Espera unos minutos.')
         } else {
           setLoginError('Ocurrió un error inesperado. Intenta de nuevo.')
         }
       } else if (authData.user) {
-        onOpenChange(false)
+        handleDialogOpenChange(false)
         // Verificar si ya tiene empresa → dashboard, si no → onboarding
         const empresa = await getEmpresaDelUsuario(authData.user.id)
         router.push(empresa ? '/dashboard' : '/onboarding')
@@ -128,10 +167,17 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
     setRegisterLoading(true)
     setRegisterError('')
     try {
-      const { error } = await supabase.auth.signUp({
+      const origin =
+        typeof window !== 'undefined'
+          ? window.location.origin
+          : process.env.NEXT_PUBLIC_APP_URL ?? ''
+
+      const { data: signupData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
+          // Tras confirmar correo, Supabase redirige aquí (ajusta dominios en Supabase → URL config)
+          emailRedirectTo: origin ? `${origin}/` : undefined,
           data: {
             full_name: data.fullName,
             company_name: data.company,
@@ -144,8 +190,23 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
         } else {
           setRegisterError(error.message)
         }
+      } else if (signupData.session && signupData.user) {
+        // Confirmación de correo desactivada en Supabase: sesión inmediata
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(
+            'freepol_registro',
+            JSON.stringify({
+              nombre_empresa: data.company,
+              nombre_completo: data.fullName,
+              sitio_web: data.sitioWeb ?? '',
+            }),
+          )
+        }
+        handleDialogOpenChange(false)
+        const empresa = await getEmpresaDelUsuario(signupData.user.id)
+        router.push(empresa ? '/dashboard' : '/onboarding')
       } else {
-        // Guardar datos del registro en localStorage para pre-llenar el onboarding
+        // Requiere abrir el enlace del correo (o el usuario ya existe y Supabase no devuelve error explícito)
         if (typeof window !== 'undefined') {
           localStorage.setItem(
             'freepol_registro',
@@ -176,7 +237,7 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
   const pwdReqs = checkPasswordRequirements(watchedPassword)
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="max-w-md p-0 overflow-hidden" aria-labelledby="auth-dialog-title">
         <DialogTitle className="sr-only" id="auth-dialog-title">
           Acceso a FREEPOL
@@ -186,7 +247,7 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
         </DialogDescription>
 
         {registerSuccess ? (
-          /* Pantalla de confirmación de correo */
+          /* Pantalla de confirmación de correo — puede cerrarse y volver a login/registro */
           <div className="p-8 flex flex-col items-center text-center gap-4">
             <div className="w-16 h-16 rounded-full bg-[#F0FDF4] flex items-center justify-center animate-bounce">
               <Mail size={32} className="text-[#22C55E]" />
@@ -195,11 +256,11 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
             <p className="text-sm text-[#64748B] leading-relaxed">
               Enviamos un enlace a{' '}
               <span className="font-semibold text-[#0F172A]">{registeredEmail}</span>. Haz
-              clic para activar tu cuenta.
+              clic para activar tu cuenta y luego inicia sesión aquí.
             </p>
             <Button
               variant="outline"
-              className="mt-2"
+              className="mt-1 w-full max-w-xs"
               onClick={handleResend}
               disabled={resendCountdown > 0}
             >
@@ -207,6 +268,26 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 ? `Reenviar correo en ${resendCountdown}s`
                 : 'Reenviar correo'}
             </Button>
+            <div className="w-full max-w-xs flex flex-col gap-2 pt-2">
+              <Button
+                type="button"
+                className="w-full bg-[#5B5CF6] text-white hover:brightness-110"
+                onClick={() => salirDePantallaVerificacion('login')}
+              >
+                Ir a iniciar sesión
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => salirDePantallaVerificacion('register')}
+              >
+                Registrar otro correo
+              </Button>
+            </div>
+            <p className="text-xs text-[#94A3B8] max-w-xs">
+              Si cierras esta ventana también podrás entrar o registrarte de nuevo; este aviso no te bloquea.
+            </p>
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -285,8 +366,15 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 </div>
 
                 {loginError && (
-                  <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-600">
-                    {loginError}
+                  <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-600 space-y-2">
+                    <p>{loginError}</p>
+                    <button
+                      type="button"
+                      className="text-xs font-semibold text-[#5B5CF6] hover:underline"
+                      onClick={() => setLoginError('')}
+                    >
+                      Cerrar este mensaje
+                    </button>
                   </div>
                 )}
 
