@@ -9,6 +9,9 @@ out/
 build/
 dist/
 
+# Documentación interna / auditoría (no versionar)
+AUDITORIA.md
+
 # Variables de entorno — NUNCA subir al repo
 .env
 .env*

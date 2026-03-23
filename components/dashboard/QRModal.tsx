@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { X, Copy, Download } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Copy, Download } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
+import { resolverUrlPublicaCliente } from '@/lib/app-base-url'
 
 interface QRModalProps {
   open: boolean
@@ -13,17 +14,25 @@ interface QRModalProps {
   nombreCampana: string
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://freepol.app'
-
 /**
  * Modal con QR grande y opción de descarga como PNG.
+ * La URL usa el origen actual en el navegador para que el QR funcione en local y en producción.
  */
 export default function QRModal({ open, onOpenChange, slug, nombreCampana }: QRModalProps) {
   const svgRef = useRef<SVGSVGElement>(null)
-  const url = `${BASE_URL}/c/${slug}`
+  const [baseUrl, setBaseUrl] = useState('')
+
+  useEffect(() => {
+    if (open) {
+      setBaseUrl(resolverUrlPublicaCliente())
+    }
+  }, [open])
+
+  const url = baseUrl ? `${baseUrl}/c/${slug}` : ''
 
   const copiarLink = async () => {
-    await navigator.clipboard.writeText(url)
+    const u = url || `${resolverUrlPublicaCliente()}/c/${slug}`
+    await navigator.clipboard.writeText(u)
     toast.success('Link copiado al portapapeles')
   }
 
@@ -62,20 +71,28 @@ export default function QRModal({ open, onOpenChange, slug, nombreCampana }: QRM
         <div className="flex flex-col items-center gap-4">
           {/* QR */}
           <div className="bg-white p-4 rounded-2xl shadow-md">
-            <QRCodeSVG
-              ref={svgRef}
-              value={url}
-              size={220}
-              bgColor="#FFFFFF"
-              fgColor="#0F172A"
-              level="H"
-              includeMargin
-            />
+            {url ? (
+              <QRCodeSVG
+                ref={svgRef}
+                value={url}
+                size={220}
+                bgColor="#FFFFFF"
+                fgColor="#0F172A"
+                level="H"
+                includeMargin
+              />
+            ) : (
+              <div className="w-[220px] h-[220px] flex items-center justify-center text-[#64748B] text-sm text-center px-4">
+                Abriendo enlace…
+              </div>
+            )}
           </div>
 
           {/* URL copiable */}
           <div className="w-full bg-[#0F172A] border border-[#334155] rounded-xl px-4 py-2 flex items-center gap-2">
-            <span className="text-[#94A3B8] text-xs truncate flex-1">{url}</span>
+            <span className="text-[#94A3B8] text-xs truncate flex-1">
+              {url || `${resolverUrlPublicaCliente()}/c/${slug}`}
+            </span>
             <button onClick={copiarLink} className="text-[#5B5CF6] hover:text-[#A855F7] transition-colors flex-shrink-0">
               <Copy size={14} />
             </button>

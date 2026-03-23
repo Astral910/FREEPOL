@@ -50,6 +50,27 @@ export default function ValidarPage() {
     }
   }
 
+  // Prefill desde ?codigo= (QR o link compartido)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const raw = new URLSearchParams(window.location.search).get('codigo')
+    if (!raw) return
+    try {
+      const decodificado = decodeURIComponent(raw)
+      const limpio = decodificado.replace(/[^A-Z0-9]/gi, '').toUpperCase()
+      if (limpio.length < 12) return
+      const formateado =
+        limpio.length <= 4
+          ? limpio
+          : limpio.length <= 8
+            ? `${limpio.slice(0, 4)}-${limpio.slice(4)}`
+            : `${limpio.slice(0, 4)}-${limpio.slice(4, 8)}-${limpio.slice(8, 12)}`
+      setCodigo(formateado)
+    } catch {
+      /* ignorar query mal formada */
+    }
+  }, [])
+
   // Auto-enviar cuando el código tiene 14 caracteres (XXXX-XXXX-XXXX)
   useEffect(() => {
     if (FORMATO_CODIGO.test(codigo)) {

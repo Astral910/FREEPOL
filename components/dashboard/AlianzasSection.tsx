@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Handshake, Copy, Check } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { resolverUrlPublicaCliente } from '@/lib/app-base-url'
 
 interface AlianzaRow {
   id: string
@@ -20,8 +21,6 @@ interface AlianzasSectionProps {
   userEmail: string
   supabase: SupabaseClient
 }
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://freepol.app'
 
 /**
  * Sección de colaboraciones activas y pendientes del dashboard.
@@ -59,7 +58,7 @@ export default function AlianzasSection({ userId, userEmail, supabase }: Alianza
   }, [userId, userEmail, supabase])
 
   const copiarLinkInvitacion = async (token: string) => {
-    const url = `${BASE_URL}/alianza/${token}`
+    const url = `${resolverUrlPublicaCliente()}/alianza/${token}`
     await navigator.clipboard.writeText(url)
     toast.success('Link de invitación copiado')
   }

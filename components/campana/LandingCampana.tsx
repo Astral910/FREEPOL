@@ -3,7 +3,18 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Loader2, Mail, Phone, Zap, Calendar } from 'lucide-react'
+import {
+  Loader2,
+  Mail,
+  Phone,
+  Zap,
+  Calendar,
+  Trophy,
+  Star,
+  Ticket,
+  Receipt,
+  Sparkles,
+} from 'lucide-react'
 import type { CampanaRow } from '@/app/c/[slug]/page'
 import ComponenteRuleta from './ComponenteRuleta'
 import ComponenteCupon from './ComponenteCupon'
@@ -73,35 +84,76 @@ export default function LandingCampana({ campana }: Props) {
     }
   }
 
-  const primarioColor = '#5B5CF6'
+  const primarioColor = cfg.color_primario?.trim() || '#5B5CF6'
+
+  const tipoBadge = (() => {
+    const map = {
+      ruleta: { label: 'Ruleta de premios', Icon: Trophy },
+      puntos: { label: 'Puntos y recompensas', Icon: Star },
+      cupon: { label: 'Cupón instantáneo', Icon: Ticket },
+      factura: { label: 'Puntos por compra', Icon: Receipt },
+    } as const
+    const key = tipo as keyof typeof map
+    return map[key] ?? map.puntos
+  })()
+  const TipoIcon = tipoBadge.Icon
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
-
-        {/* ZONA 1 — Header de marca */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold" style={{ color: primarioColor }}>
-            {campana.nombre_negocio}
-          </h1>
-          <p className="text-lg text-[#64748B]">{campana.nombre_campana}</p>
+    <div className="min-h-screen bg-[#F8FAFC]">
+      {/* Hero decorativo: identidad de marca + tipo de campaña */}
+      <div
+        className="relative overflow-hidden rounded-b-[2rem] px-4 pb-10 pt-10 shadow-sm"
+        style={{
+          background: `linear-gradient(135deg, ${primarioColor} 0%, #A855F7 55%, #22C55E 120%)`,
+        }}
+      >
+        <div
+          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-2xl"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -bottom-8 left-8 h-32 w-32 rounded-full bg-black/5 blur-xl"
+          aria-hidden
+        />
+        <div className="relative mx-auto max-w-lg text-center space-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm border border-white/30">
+            <Sparkles size={14} className="opacity-90" />
+            Campaña activa
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
+              {campana.nombre_negocio}
+            </h1>
+            <p className="text-lg text-white/90 font-medium">{campana.nombre_campana}</p>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-2xl bg-white/95 px-4 py-2 text-sm font-medium text-[#0F172A] shadow-md">
+            <TipoIcon size={18} style={{ color: primarioColor }} />
+            {tipoBadge.label}
+          </div>
           {horarioActivo && (
-            <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-xs px-3 py-1.5 rounded-full font-medium">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-black/15 px-3 py-1.5 text-xs font-medium text-white">
               <Calendar size={12} />
-              Válido hoy de {horarioActivo}
+              Horario: {horarioActivo}
             </div>
           )}
-          <div className="h-px bg-[#E5E7EB] mt-3" />
         </div>
+      </div>
+
+      <div className="max-w-lg mx-auto px-4 -mt-6 pb-10 space-y-6 relative z-[1]">
+        {/* Tarjeta principal: bienvenida + flujo */}
+        <div className="rounded-2xl border border-[#E5E7EB] bg-white shadow-xl shadow-[#0F172A]/[0.06] p-6 space-y-6">
 
         {/* ZONA 2 — Mensaje de bienvenida */}
         {cfg.mensaje_bienvenida && (
-          <div className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-6 space-y-3">
+          <div
+            className="rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-5 space-y-3"
+            style={{ borderLeftWidth: 4, borderLeftColor: primarioColor }}
+          >
             <p className="text-base text-[#0F172A] leading-relaxed">{cfg.mensaje_bienvenida}</p>
             {cfg.fecha_fin && (
               <p className="text-sm text-[#64748B]">
                 Válido hasta{' '}
-                <span className="font-medium">
+                <span className="font-medium text-[#0F172A]">
                   {new Date(cfg.fecha_fin).toLocaleDateString('es-GT', {
                     day: 'numeric',
                     month: 'long',
@@ -126,10 +178,13 @@ export default function LandingCampana({ campana }: Props) {
               {condicion === 'libre' ? (
                 /* Participación libre: un solo botón */
                 <button
-                  onClick={() => onSubmit({})}
+                  type="button"
+                  onClick={() => void onSubmit({})}
                   disabled={enviando}
-                  className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-60"
-                  style={{ backgroundColor: primarioColor }}
+                  className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-60 shadow-lg"
+                  style={{
+                    background: `linear-gradient(135deg, ${primarioColor}, #A855F7)`,
+                  }}
                 >
                   {enviando ? <Loader2 size={18} className="animate-spin" /> : 'Participar ahora →'}
                 </button>
@@ -176,6 +231,7 @@ export default function LandingCampana({ campana }: Props) {
                           minLength: { value: 8, message: 'Número muy corto' },
                         })}
                         className="w-full border border-[#E5E7EB] rounded-xl py-3.5 px-4 text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 text-base"
+                        style={{ '--tw-ring-color': primarioColor } as React.CSSProperties}
                       />
                       {errors.telefono && (
                         <p className="text-red-500 text-xs">{errors.telefono.message}</p>
@@ -195,8 +251,10 @@ export default function LandingCampana({ campana }: Props) {
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-60"
-                    style={{ backgroundColor: primarioColor }}
+                    className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-60 shadow-lg"
+                    style={{
+                      background: `linear-gradient(135deg, ${primarioColor}, #A855F7)`,
+                    }}
                   >
                     {enviando ? (
                       <Loader2 size={18} className="animate-spin" />
@@ -222,27 +280,33 @@ export default function LandingCampana({ campana }: Props) {
                 <ComponenteCupon campana={campana} participanteId={participanteId} />
               )}
               {(tipo === 'puntos' || tipo === 'factura') && (
-                <ComponentePuntos campana={campana} participanteId={participanteId} />
+                <ComponentePuntos
+                  campana={campana}
+                  participanteId={participanteId}
+                  colorPrimario={primarioColor}
+                />
               )}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ZONA 5 — Footer mínimo */}
-        <div className="text-center pt-4 border-t border-[#F1F5F9] space-y-1">
+        {/* ZONA 5 — Footer */}
+        <div className="text-center pt-2 border-t border-[#F1F5F9] space-y-1">
           <div className="flex items-center justify-center gap-1">
             <Zap size={11} className="text-[#CBD5E1]" />
-            <p className="text-xs text-[#CBD5E1]">Powered by FREEPOL</p>
+            <p className="text-xs text-[#94A3B8]">Powered by FREEPOL</p>
           </div>
           <div className="flex items-center justify-center gap-3">
-            <a href="/terminos" className="text-xs text-[#CBD5E1] hover:text-[#94A3B8] transition-colors">
+            <a href="/terminos" className="text-xs text-[#94A3B8] hover:text-[#64748B] transition-colors">
               Términos
             </a>
             <span className="text-[#E5E7EB]">·</span>
-            <a href="/privacidad" className="text-xs text-[#CBD5E1] hover:text-[#94A3B8] transition-colors">
+            <a href="/privacidad" className="text-xs text-[#94A3B8] hover:text-[#64748B] transition-colors">
               Privacidad
             </a>
           </div>
+        </div>
+
         </div>
       </div>
     </div>

@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Camera, Loader2, Upload, CheckCircle } from 'lucide-react'
+import { Camera, Copy, Loader2, ShoppingBag, CheckCircle } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { QRCodeSVG } from 'qrcode.react'
 import type { CampanaRow } from '@/app/c/[slug]/page'
+import { resolverUrlPublicaCliente } from '@/lib/app-base-url'
 
 interface EstadoPuntos {
   total: number
@@ -22,13 +23,20 @@ interface CodigoCanjeado {
 interface Props {
   campana: CampanaRow
   participanteId: string
+  /** Color de marca para acentos (desde configuración de campaña) */
+  colorPrimario?: string
 }
 
 /**
  * Componente para campañas de puntos y factura.
- * Muestra progreso, permite subir facturas y canjear cuando se alcanza la meta.
+ * Carga el saldo real desde el servidor, permite subir facturas (tipo factura),
+ * simular compras en demo (tipo puntos) y canjear al alcanzar la meta.
  */
-export default function ComponentePuntos({ campana, participanteId }: Props) {
+export default function ComponentePuntos({
+  campana,
+  participanteId,
+  colorPrimario = '#5B5CF6',
+}: Props) {
   const cfg = campana.configuracion
   const meta = cfg.meta_canje ?? 50
   const tipo = campana.tipo
@@ -36,12 +44,53 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
   const [puntos, setPuntos] = useState<EstadoPuntos>({ total: 0, meta, alcanzadaMeta: false })
   const [codigoCanjeado, setCodigoCanjeado] = useState<CodigoCanjeado | null>(null)
   const [subiendoFactura, setSubiendoFactura] = useState(false)
+  const [simulandoCompra, setSimulandoCompra] = useState(false)
   const [canjeando, setCanjeando] = useState(false)
+  const [cargandoSaldo, setCargandoSaldo] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [mensajeFactura, setMensajeFactura] = useState<string | null>(null)
+  const [mensajeCopiado, setMensajeCopiado] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const porcentaje = Math.min((puntos.total / meta) * 100, 100)
+
+  /** Sincroniza puntos con la base (al montar y tras acciones) */
+  const cargarSaldo = useCallback(async () => {
+    setCargandoSaldo(true)
+    setError(null)
+    try {
+      const params = new URLSearchParams({
+        campana_id: campana.id,
+        participante_id: participanteId,
+      })
+      const res = await fetch(`/api/mis-puntos?${params.toString()}`)
+      const data = await res.json() as {
+        total_puntos?: number
+        meta_canje?: number
+        alcanzaste_meta?: boolean
+        error?: string
+      }
+      if (!res.ok) {
+        setError(data.error ?? 'No se pudo cargar tu saldo')
+        return
+      }
+      const m = data.meta_canje ?? meta
+      const t = data.total_puntos ?? 0
+      setPuntos({
+        total: t,
+        meta: m,
+        alcanzadaMeta: data.alcanzaste_meta ?? t >= m,
+      })
+    } catch {
+      setError('Error de conexión al cargar puntos')
+    } finally {
+      setCargandoSaldo(false)
+    }
+  }, [campana.id, participanteId, meta])
+
+  useEffect(() => {
+    void cargarSaldo()
+  }, [cargarSaldo])
 
   const subirFactura = async (file: File) => {
     setSubiendoFactura(true)
@@ -88,6 +137,45 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
     }
   }
 
+  const simularCompraDemo = async () => {
+    setSimulandoCompra(true)
+    setError(null)
+    setMensajeFactura(null)
+    try {
+      const res = await fetch('/api/simular-compra-puntos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          campana_id: campana.id,
+          participante_id: participanteId,
+        }),
+      })
+      const data = await res.json() as {
+        puntos_ganados?: number
+        total_puntos?: number
+        meta_canje?: number
+        alcanzaste_meta?: boolean
+        error?: string
+      }
+      if (!res.ok) {
+        setError(data.error ?? 'No se pudo registrar la compra simulada')
+        return
+      }
+      setPuntos({
+        total: data.total_puntos ?? 0,
+        meta: data.meta_canje ?? meta,
+        alcanzadaMeta: data.alcanzaste_meta ?? false,
+      })
+      setMensajeFactura(
+        `Compra simulada: +${data.puntos_ganados ?? 0} pts. Total: ${data.total_puntos ?? 0}`,
+      )
+    } catch {
+      setError('Error de conexión')
+    } finally {
+      setSimulandoCompra(false)
+    }
+  }
+
   const canjearPuntos = async () => {
     setCanjeando(true)
     setError(null)
@@ -104,10 +192,12 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
 
       if (!res.ok) {
         setError(data.error ?? 'Error al canjear')
+        await cargarSaldo()
         return
       }
 
       setCodigoCanjeado(data)
+      await cargarSaldo()
       confetti({
         particleCount: 100,
         spread: 70,
@@ -119,6 +209,18 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
     } finally {
       setCanjeando(false)
     }
+  }
+
+  const urlValidacionPremio =
+    codigoCanjeado != null
+      ? `${resolverUrlPublicaCliente()}/validar?codigo=${encodeURIComponent(codigoCanjeado.codigo)}`
+      : ''
+
+  const copiarLinkValidacion = async () => {
+    if (!urlValidacionPremio) return
+    await navigator.clipboard.writeText(urlValidacionPremio)
+    setMensajeCopiado(true)
+    window.setTimeout(() => setMensajeCopiado(false), 2500)
   }
 
   if (codigoCanjeado) {
@@ -137,9 +239,21 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
             {codigoCanjeado.codigo}
           </span>
         </div>
+        <p className="text-xs text-[#64748B] leading-relaxed px-1">
+          El QR abre la página de validación del negocio. El cajero confirma el premio al escanearlo o
+          abrir el enlace.
+        </p>
         <div className="flex justify-center">
-          <QRCodeSVG value={codigoCanjeado.codigo} size={180} marginSize={3} />
+          <QRCodeSVG value={urlValidacionPremio} size={180} marginSize={3} />
         </div>
+        <button
+          type="button"
+          onClick={() => void copiarLinkValidacion()}
+          className="w-full py-3 rounded-xl border-2 border-[#E5E7EB] text-[#0F172A] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#F8FAFC] transition-colors"
+        >
+          <Copy size={16} />
+          {mensajeCopiado ? '¡Copiado!' : 'Copiar link para cajero'}
+        </button>
         <p className="text-sm text-[#64748B]">
           Válido hasta{' '}
           <strong>
@@ -157,6 +271,13 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
 
   return (
     <div className="space-y-6">
+      {cargandoSaldo && (
+        <div className="flex items-center justify-center gap-2 py-4 text-[#64748B] text-sm">
+          <Loader2 size={18} className="animate-spin" />
+          Cargando tu saldo…
+        </div>
+      )}
+
       {/* Barra de progreso */}
       <div className="space-y-3">
         <div className="flex justify-between items-center">
@@ -168,7 +289,9 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
         <div className="h-4 bg-[#F1F5F9] rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full"
-            style={{ background: 'linear-gradient(90deg, #5B5CF6, #22C55E)' }}
+            style={{
+              background: `linear-gradient(90deg, ${colorPrimario}, #22C55E)`,
+            }}
             initial={{ width: 0 }}
             animate={{ width: `${porcentaje}%` }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -177,11 +300,11 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
         <p className="text-xs text-[#94A3B8] text-center">
           {puntos.alcanzadaMeta
             ? '¡Alcanzaste la meta! Puedes canjear tu premio.'
-            : `Te faltan ${meta - puntos.total} puntos para canjear`}
+            : `Te faltan ${Math.max(0, meta - puntos.total)} puntos para canjear`}
         </p>
       </div>
 
-      {/* Zona de subir factura (solo tipo factura o puntos con OCR) */}
+      {/* Zona de subir factura (solo tipo factura) */}
       {tipo === 'factura' && !puntos.alcanzadaMeta && (
         <div className="space-y-3">
           <p className="text-sm text-[#64748B] text-center">
@@ -203,8 +326,9 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
           />
 
           <button
+            type="button"
             onClick={() => fileInputRef.current?.click()}
-            disabled={subiendoFactura}
+            disabled={subiendoFactura || cargandoSaldo}
             className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 gradient-bg hover:opacity-90 disabled:opacity-60 transition-opacity"
           >
             {subiendoFactura ? (
@@ -222,14 +346,42 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
         </div>
       )}
 
+      {/* Demo: acumular puntos sin factura (solo tipo puntos) */}
       {tipo === 'puntos' && !puntos.alcanzadaMeta && (
-        <div className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-5 space-y-2">
-          <p className="text-sm font-medium text-[#0F172A]">¿Cómo acumular puntos?</p>
-          <p className="text-sm text-[#64748B]">
-            Por cada ${cfg.monto_base ?? 10} de compra, ganas{' '}
-            <strong>{cfg.puntos_por_monto ?? 1} punto(s)</strong>. Acumula{' '}
-            <strong>{meta} puntos</strong> para canjear tu premio.
-          </p>
+        <div className="space-y-3">
+          <div className="bg-gradient-to-br from-[#F8FAFC] to-[#EEF2FF] border border-[#E5E7EB] rounded-2xl p-5 space-y-3">
+            <p className="text-sm font-medium text-[#0F172A]">¿Cómo acumular puntos?</p>
+            <p className="text-sm text-[#64748B]">
+              Por cada ${cfg.monto_base ?? 10} de compra, ganas{' '}
+              <strong>{cfg.puntos_por_monto ?? 1} punto(s)</strong>. Acumula{' '}
+              <strong>{meta} puntos</strong> para canjear tu premio.
+            </p>
+            <p className="text-xs text-[#94A3B8] border-t border-[#E5E7EB] pt-3">
+              <strong>Modo demo:</strong> simula una compra en el negocio para ver cómo suben los puntos
+              (ideal para presentaciones sin POS real).
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void simularCompraDemo()}
+            disabled={simulandoCompra || cargandoSaldo}
+            className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 shadow-lg transition-opacity disabled:opacity-60 hover:opacity-90"
+            style={{
+              background: `linear-gradient(135deg, ${colorPrimario}, #A855F7)`,
+            }}
+          >
+            {simulandoCompra ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Registrando compra…
+              </>
+            ) : (
+              <>
+                <ShoppingBag size={18} />
+                Simular una compra (+{cfg.puntos_por_monto ?? 1} pts)
+              </>
+            )}
+          </button>
         </div>
       )}
 
@@ -259,11 +411,12 @@ export default function ComponentePuntos({ campana, participanteId }: Props) {
       </AnimatePresence>
 
       {/* Botón canjear si alcanzó la meta */}
-      {puntos.alcanzadaMeta && (
+      {puntos.alcanzadaMeta && !cargandoSaldo && (
         <motion.button
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          onClick={canjearPuntos}
+          type="button"
+          onClick={() => void canjearPuntos()}
           disabled={canjeando}
           className="w-full py-4 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2 gradient-bg shadow-lg shadow-[#5B5CF6]/20 hover:opacity-90 disabled:opacity-60 transition-opacity"
         >
