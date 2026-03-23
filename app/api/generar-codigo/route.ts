@@ -104,10 +104,10 @@ export async function POST(request: NextRequest) {
       .update({ total_canjes: campana.total_canjes + 1 })
       .eq('id', body.campana_id)
 
-    // 8. Enviar correo con el código (no bloquea si falla)
+    // 8. Notificar al participante por correo y/o WhatsApp (fire-and-forget)
     const { data: participante } = await supabase
       .from('participantes')
-      .select('correo')
+      .select('correo, telefono')
       .eq('id', body.participante_id)
       .maybeSingle()
 
@@ -121,6 +121,17 @@ export async function POST(request: NextRequest) {
         codigo,
         expira_en: expira_en.toISOString(),
       }).catch((e) => console.error('[generar-codigo] email error:', e))
+    }
+
+    if (participante?.telefono) {
+      const { enviarCodigoPorWhatsApp } = await import('@/lib/whatsapp')
+      await enviarCodigoPorWhatsApp(participante.telefono, {
+        nombre_negocio: campana.nombre_negocio,
+        nombre_campana: campana.nombre_campana,
+        premio,
+        codigo,
+        expira_en: expira_en.toISOString(),
+      }).catch((e) => console.error('[generar-codigo] whatsapp error:', e))
     }
 
     return NextResponse.json({ codigo, premio, expira_en: expira_en.toISOString() })

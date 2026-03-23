@@ -98,6 +98,25 @@ export async function POST(request: NextRequest) {
     // 7. Guardar IP en Redis por 24 horas
     await setConExpiracion(ipKey, 'true', 86400)
 
+    // 8. Enviar bienvenida por WhatsApp si la condición es teléfono (fire-and-forget)
+    if (cfg.condicion === 'telefono' && body.telefono && cfg.mensaje_bienvenida) {
+      const { data: campanaConSlug } = await supabase
+        .from('campanas')
+        .select('slug, nombre_negocio, nombre_campana')
+        .eq('id', body.campana_id)
+        .single()
+
+      if (campanaConSlug) {
+        const { enviarBienvenidaWhatsApp } = await import('@/lib/whatsapp')
+        await enviarBienvenidaWhatsApp(body.telefono, {
+          nombre_negocio: campanaConSlug.nombre_negocio,
+          nombre_campana: campanaConSlug.nombre_campana,
+          url_campana: `${process.env.NEXT_PUBLIC_APP_URL}/c/${campanaConSlug.slug}`,
+          mensaje_bienvenida: cfg.mensaje_bienvenida,
+        }).catch((e) => console.error('[registrar-participante] whatsapp error:', e))
+      }
+    }
+
     return NextResponse.json({
       participante_id: nuevo.id,
       mensaje: 'Registro exitoso',

@@ -180,6 +180,9 @@ export default function LandingCampana({ campana }: Props) {
                       {errors.telefono && (
                         <p className="text-red-500 text-xs">{errors.telefono.message}</p>
                       )}
+                      <p className="text-xs text-[#64748B] flex items-center gap-1">
+                        📱 Te enviaremos tu código por WhatsApp al ganar
+                      </p>
                     </div>
                   )}
 
