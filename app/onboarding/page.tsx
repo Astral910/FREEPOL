@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Zap, Building2, Palette, CheckCircle2, Loader2,
   UtensilsCrossed, ShoppingBag, Fuel, Globe,
-  Dumbbell, Sparkles, Briefcase, Music,
+  Dumbbell, Sparkles, Briefcase, Music, Rocket,
+  Star, Crown, Check,
 } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
@@ -27,10 +28,80 @@ const INDUSTRIAS = [
   { valor: 'otro', label: 'Otro', icono: Building2 },
 ]
 
-/** Input de texto con estilos del tema oscuro */
-function DarkInput({
-  id, label, value, onChange, placeholder, optional = false
-}: {
+const PLANES = [
+  {
+    id: 'free',
+    nombre: 'Free',
+    precio: '$0',
+    subtitulo: 'Para empezar y probar',
+    icono: Rocket,
+    color: '#64748B',
+    border: 'border-[#334155]',
+    bg: 'bg-[#1E293B]',
+    features: [
+      '2 campañas activas',
+      'Hasta 1,000 participantes/mes',
+      'Landing page generada',
+      'Bot de Telegram',
+      'Códigos QR únicos',
+    ],
+  },
+  {
+    id: 'starter',
+    nombre: 'Starter',
+    precio: '$19',
+    subtitulo: 'Para negocios locales',
+    icono: Star,
+    color: '#22C55E',
+    border: 'border-[#22C55E]',
+    bg: 'bg-[#064E3B]/20',
+    badge: 'Para negocios locales',
+    features: [
+      '5 campañas activas',
+      'Hasta 3,000 participantes/mes',
+      'WhatsApp Business básico',
+      'Dashboard con métricas',
+      'Exportar participantes CSV',
+    ],
+  },
+  {
+    id: 'pro',
+    nombre: 'Pro',
+    precio: '$49',
+    subtitulo: 'Para negocios en crecimiento',
+    icono: Crown,
+    color: '#5B5CF6',
+    border: 'border-[#5B5CF6]',
+    bg: 'bg-[#1E1B4B]/30',
+    badge: '⭐ Más popular',
+    features: [
+      'Campañas ilimitadas',
+      'Hasta 10,000 participantes/mes',
+      'Bot de Instagram',
+      'Personalización completa de marca',
+      'Colaboraciones entre empresas',
+    ],
+  },
+  {
+    id: 'enterprise',
+    nombre: 'Enterprise',
+    precio: '$149',
+    subtitulo: 'Para cadenas y empresas grandes',
+    icono: Sparkles,
+    color: '#F59E0B',
+    border: 'border-[#F59E0B]',
+    bg: 'bg-[#1E293B]',
+    features: [
+      'Participantes ilimitados',
+      'OCR de facturas con IA',
+      'Red de alianzas múltiples',
+      'API REST para integraciones',
+      'Soporte dedicado 24/7',
+    ],
+  },
+]
+
+function DarkInput({ id, label, value, onChange, placeholder, optional = false }: {
   id: string; label: string; value: string
   onChange: (v: string) => void; placeholder: string; optional?: boolean
 }) {
@@ -53,11 +124,15 @@ function DarkInput({
 }
 
 /**
- * Onboarding de 3 pasos para nuevas empresas.
- * Requiere sesión activa. Crea la empresa en Supabase al finalizar.
+ * Onboarding de 4 pasos para nuevas empresas.
+ * Paso 1: Datos de empresa e industria
+ * Paso 2: Colores de marca
+ * Paso 3: Selección de plan (solo visual, sin cobro real)
+ * Paso 4: Confirmación y creación
  */
 export default function OnboardingPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [paso, setPaso] = useState(1)
   const [userId, setUserId] = useState<string | null>(null)
   const [cargandoSesion, setCargandoSesion] = useState(true)
@@ -71,19 +146,20 @@ export default function OnboardingPage() {
   const [colorPrimario, setColorPrimario] = useState('#5B5CF6')
   const [colorSecundario, setColorSecundario] = useState('#22C55E')
 
-  // Paso 3
+  // Paso 3 — Plan
+  const [planSeleccionado, setPlanSeleccionado] = useState('free')
+
+  // Paso 4
   const [creando, setCreando] = useState(false)
   const [empresaCreada, setEmpresaCreada] = useState(false)
 
-  const progreso = (paso / 3) * 100
+  const TOTAL_PASOS = 4
+  const progreso = (paso / TOTAL_PASOS) * 100
 
   useEffect(() => {
     const verificar = async () => {
       const usuario = await getUsuarioActual()
-      if (!usuario) {
-        router.push('/')
-        return
-      }
+      if (!usuario) { router.push('/'); return }
       setUserId(usuario.id)
 
       // Pre-llenar con datos del registro guardados en localStorage
@@ -95,12 +171,19 @@ export default function OnboardingPage() {
           if (datos.sitio_web) setSitioWeb(datos.sitio_web)
         } catch { /* ignorar */ }
       }
+
+      // Pre-seleccionar plan si viene de /precios?plan=X
+      const planParam = searchParams.get('plan')
+      if (planParam && PLANES.find((p) => p.id === planParam)) {
+        setPlanSeleccionado(planParam)
+      }
+
       setCargandoSesion(false)
     }
     verificar()
-  }, [router])
+  }, [router, searchParams])
 
-  const avanzar = () => setPaso((p) => Math.min(p + 1, 3))
+  const avanzar = () => setPaso((p) => Math.min(p + 1, TOTAL_PASOS))
   const retroceder = () => setPaso((p) => Math.max(p - 1, 1))
 
   const handleFinalizar = async () => {
@@ -113,6 +196,7 @@ export default function OnboardingPage() {
         color_primario: colorPrimario,
         color_secundario: colorSecundario,
         industria,
+        plan: planSeleccionado,
       })
       localStorage.removeItem('freepol_registro')
       setEmpresaCreada(true)
@@ -122,7 +206,7 @@ export default function OnboardingPage() {
         origin: { y: 0.5 },
         colors: [colorPrimario, colorSecundario, '#A855F7', '#F59E0B'],
       })
-    } catch (e) {
+    } catch {
       toast.error('Error al crear la empresa. Intenta de nuevo.')
     } finally {
       setCreando(false)
@@ -138,6 +222,7 @@ export default function OnboardingPage() {
   }
 
   if (empresaCreada) {
+    const planInfo = PLANES.find((p) => p.id === planSeleccionado)
     return (
       <div className="h-screen bg-[#0F172A] flex flex-col items-center justify-center text-center px-4">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }}
@@ -145,9 +230,13 @@ export default function OnboardingPage() {
           <span className="text-4xl">🎉</span>
         </motion.div>
         <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="text-3xl font-bold text-white mb-3">
+          className="text-3xl font-bold text-white mb-2">
           ¡Bienvenido a FREEPOL, <span className="gradient-text">{nombre}</span>!
         </motion.h1>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+          className="text-[#64748B] text-sm mb-1">
+          Plan activado: <span className="font-semibold" style={{ color: planInfo?.color }}>{planInfo?.nombre}</span>
+        </motion.p>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
           className="text-[#94A3B8] mb-8 max-w-sm">
           Tu cuenta está lista. Ahora crea tu primera campaña con la IA.
@@ -170,7 +259,7 @@ export default function OnboardingPage() {
       <header className="flex-shrink-0 px-6 py-5 border-b border-[#1E293B] flex items-center gap-2">
         <Zap size={18} className="text-[#5B5CF6]" />
         <span className="font-bold text-white"><span className="text-[#5B5CF6]">FREE</span>POL</span>
-        <span className="text-[#334155] ml-4 text-sm text-[#64748B]">Configuración inicial</span>
+        <span className="ml-4 text-sm text-[#64748B]">Configuración inicial</span>
       </header>
 
       {/* Barra progreso */}
@@ -178,21 +267,24 @@ export default function OnboardingPage() {
 
       <div className="flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-lg">
+
           {/* Indicador de pasos */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className={`flex items-center gap-2 ${n < 3 ? 'flex-1' : ''}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-colors ${
+          <div className="flex items-center justify-center gap-1 mb-8">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className={`flex items-center gap-1 ${n < 4 ? 'flex-1' : ''}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-all ${
                   n < paso ? 'gradient-bg text-white' : n === paso ? 'border-2 border-[#5B5CF6] text-[#5B5CF6]' : 'border-2 border-[#334155] text-[#475569]'
                 }`}>
                   {n < paso ? '✓' : n}
                 </div>
-                {n < 3 && <div className={`flex-1 h-px transition-colors ${n < paso ? 'bg-[#5B5CF6]' : 'bg-[#334155]'}`} />}
+                {n < 4 && <div className={`flex-1 h-px transition-colors ${n < paso ? 'bg-[#5B5CF6]' : 'bg-[#334155]'}`} />}
               </div>
             ))}
           </div>
 
           <AnimatePresence mode="wait">
+
+            {/* PASO 1 — Empresa e industria */}
             {paso === 1 && (
               <motion.div key="paso1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
                 <div className="space-y-2 mb-6">
@@ -207,7 +299,7 @@ export default function OnboardingPage() {
                   <DarkInput id="sitio" label="Sitio web" value={sitioWeb} onChange={setSitioWeb} placeholder="https://tuempresa.com" optional />
                   <div className="space-y-2">
                     <label className="text-[#94A3B8] text-sm">¿En qué industria está tu negocio?</label>
-                    <div className="grid grid-cols-1 gap-2 max-h-72 overflow-y-auto pr-1">
+                    <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-1">
                       {INDUSTRIAS.map((ind) => {
                         const Icono = ind.icono
                         const activo = industria === ind.valor
@@ -225,6 +317,7 @@ export default function OnboardingPage() {
               </motion.div>
             )}
 
+            {/* PASO 2 — Colores de marca */}
             {paso === 2 && (
               <motion.div key="paso2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
                 <div className="space-y-2 mb-6">
@@ -234,7 +327,6 @@ export default function OnboardingPage() {
                   <h2 className="text-2xl font-bold text-white">Personaliza tu marca</h2>
                   <p className="text-[#94A3B8]">Así se verán las landing pages de tus campañas</p>
                 </div>
-
                 <div className="space-y-5">
                   <div className="grid grid-cols-2 gap-4">
                     {[
@@ -251,8 +343,6 @@ export default function OnboardingPage() {
                       </div>
                     ))}
                   </div>
-
-                  {/* Preview en tiempo real */}
                   <div className="bg-[#0F172A] border border-[#334155] rounded-2xl p-4 space-y-3">
                     <p className="text-[#475569] text-xs uppercase tracking-wide">Preview de tu campaña</p>
                     <div className="bg-white rounded-xl p-4 space-y-3">
@@ -275,8 +365,72 @@ export default function OnboardingPage() {
               </motion.div>
             )}
 
+            {/* PASO 3 — Selección de plan */}
             {paso === 3 && (
               <motion.div key="paso3" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
+                <div className="space-y-2 mb-6">
+                  <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center mb-4">
+                    <Crown size={22} className="text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">Elige tu plan</h2>
+                  <p className="text-[#94A3B8]">Puedes cambiar de plan en cualquier momento desde tu perfil</p>
+                </div>
+                <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto pr-1">
+                  {PLANES.map((plan) => {
+                    const Icono = plan.icono
+                    const activo = planSeleccionado === plan.id
+                    return (
+                      <button
+                        key={plan.id}
+                        onClick={() => setPlanSeleccionado(plan.id)}
+                        className={`w-full text-left rounded-2xl border-2 p-4 transition-all ${activo ? `${plan.border} ${plan.bg}` : 'border-[#334155] bg-[#1E293B] hover:border-[#5B5CF6]/30'}`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                              style={{ backgroundColor: `${plan.color}20` }}>
+                              <Icono size={17} style={{ color: plan.color }} />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-white font-bold text-sm">{plan.nombre}</span>
+                                {plan.badge && (
+                                  <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                                    style={{ backgroundColor: `${plan.color}25`, color: plan.color }}>
+                                    {plan.badge}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[#64748B] text-xs">{plan.subtitulo}</p>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-white font-bold">{plan.precio}<span className="text-[#64748B] text-xs font-normal">/mes</span></span>
+                            {activo && (
+                              <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: plan.color }}>
+                                <Check size={12} className="text-white" />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="mt-3 grid grid-cols-1 gap-1">
+                          {plan.features.map((f) => (
+                            <div key={f} className="flex items-center gap-2">
+                              <Check size={11} style={{ color: plan.color }} className="flex-shrink-0" />
+                              <span className="text-[#94A3B8] text-xs">{f}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            {/* PASO 4 — Confirmación */}
+            {paso === 4 && (
+              <motion.div key="paso4" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
                 <div className="space-y-2 mb-6">
                   <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center mb-4">
                     <CheckCircle2 size={22} className="text-white" />
@@ -284,7 +438,6 @@ export default function OnboardingPage() {
                   <h2 className="text-2xl font-bold text-white">¡Todo listo para empezar!</h2>
                   <p className="text-[#94A3B8]">Confirma los datos de tu empresa</p>
                 </div>
-
                 <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-5 space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     {[
@@ -305,6 +458,23 @@ export default function OnboardingPage() {
                       </div>
                     </div>
                   </div>
+                  {/* Plan seleccionado */}
+                  {(() => {
+                    const planInfo = PLANES.find((p) => p.id === planSeleccionado)!
+                    const PlanIcono = planInfo.icono
+                    return (
+                      <div className="bg-[#0F172A] rounded-xl p-3 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${planInfo.color}20` }}>
+                          <PlanIcono size={15} style={{ color: planInfo.color }} />
+                        </div>
+                        <div>
+                          <p className="text-[#64748B] text-xs uppercase tracking-wide">Plan seleccionado</p>
+                          <p className="text-[#E2E8F0] font-bold text-sm">{planInfo.nombre} — {planInfo.precio}/mes</p>
+                        </div>
+                      </div>
+                    )
+                  })()}
                 </div>
               </motion.div>
             )}
@@ -317,8 +487,10 @@ export default function OnboardingPage() {
               ← Atrás
             </button>
 
-            {paso < 3 ? (
-              <button onClick={avanzar} disabled={paso === 1 && !nombre.trim()}
+            {paso < TOTAL_PASOS ? (
+              <button
+                onClick={avanzar}
+                disabled={paso === 1 && !nombre.trim()}
                 className="px-6 py-3 rounded-xl gradient-bg text-white font-semibold text-sm disabled:opacity-40 hover:opacity-90 transition-opacity">
                 Siguiente →
               </button>

@@ -1113,3 +1113,791 @@ La personalización del chat es 100% JavaScript del cliente. La función `analiz
 ---
 
 *Actualización agregada el 20 de marzo de 2026 — Módulo 5.*
+
+---
+
+## Módulo 6: Dashboard Completo con Realtime, Métricas Detalladas y Configuración
+
+### Fecha: 20 de marzo de 2026
+
+### Resumen de lo construido
+
+Se construyó el dashboard completo del empresario: métricas en tiempo real con Supabase Realtime, lista de campañas con búsqueda/filtros/acciones, modal de QR con descarga PNG, métricas detalladas por campaña (incluyendo distribución de premios para ruletas), exportación de participantes a CSV, sección de alianzas y página de configuración de empresa.
+
+---
+
+### Dependencias instaladas
+
+```bash
+npm install @radix-ui/react-alert-dialog
+```
+
+---
+
+### API Routes creadas
+
+| Ruta | Método | Descripción |
+|---|---|---|
+| `app/api/campana/[id]/estado/route.ts` | `PATCH` | Pausa o activa una campaña. Requiere Bearer JWT en header `Authorization`. Verifica que el `creado_por` coincide con el usuario del token. Body: `{ estado: 'activa' \| 'pausada' \| 'terminada' }` |
+
+---
+
+### Componentes UI creados
+
+| Archivo | Descripción |
+|---|---|
+| `components/ui/skeleton.tsx` | Skeleton animado (`animate-pulse`) para estados de carga. Compatible con tema oscuro del dashboard. |
+| `components/ui/alert-dialog.tsx` | Modal de confirmación destructiva con Radix UI `@radix-ui/react-alert-dialog`. Exporta `AlertDialog`, `AlertDialogTrigger`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogFooter`, `AlertDialogTitle`, `AlertDialogDescription`, `AlertDialogAction`, `AlertDialogCancel`. |
+
+---
+
+### Archivos creados
+
+| Archivo | Descripción detallada |
+|---|---|
+| `components/dashboard/DashboardHeader.tsx` | Saludo dinámico según hora del día (buenos días/tardes/noches). Muestra nombre del usuario, nombre de la empresa, campañas activas y plan actual. Botón "Nueva campaña" con color `empresa.color_primario` via inline style (cero tokens Groq). Animación `fadeIn` desde arriba con Framer Motion delay 0.1s. |
+| `components/dashboard/MetricasCards.tsx` | 4 cards animadas: Campañas activas, Total participantes, Canjes realizados, Tasa de conversión. `AnimatedNumber` local anima desde 0 al valor con ease-out. Skeleton loading mientras cargan. Supabase Realtime channel `metricas-[userId]` escucha `UPDATE` e `INSERT` en `campanas` y recalcula. Cleanup de canal en `useEffect return`. |
+| `components/dashboard/ListaCampanas.tsx` | Lista completa de campañas con: búsqueda en tiempo real por nombre, filtros pills (Todas/Activas/Pausadas/Terminadas), tabla desktop con columnas (Campaña, Tipo, Estado con punto parpadeante si activa, Participantes con barra de progreso si hay límite, Canjes + conversión, Fecha relativa con `date-fns`), DropdownMenu de acciones (Ver landing, Copiar link, Ver QR, Ver métricas, Pausar/Activar, Eliminar). Cards responsive en móvil. Toggle estado vía `PATCH /api/campana/[id]/estado` con JWT + actualización optimista. AlertDialog de confirmación para eliminar (marca como terminada, no borra). Toast de confirmación en cada acción. |
+| `components/dashboard/QRModal.tsx` | Dialog con QRCodeSVG de 220x220 (fondo blanco, foreground #0F172A, nivel H). URL copiable. Botón "Copiar link" con toast. Botón "Descargar PNG": convierte SVG a canvas 300x300, exporta via `URL.createObjectURL`, nombre: `[slug]-qr.png`. Instrucción para impresión. |
+| `components/dashboard/AlianzasSection.tsx` | Solo visible si hay registros en `campana_aliados`. Carga alianzas con join a `campanas`. Tres estados: Pendiente (naranja, botón copiar link de invitación), Activa (verde, mensaje informativo), Rechazada (rojo). URL de invitación: `[BASE_URL]/alianza/[token_invitacion]`. |
+| `app/dashboard/campana/[id]/page.tsx` | Métricas detalladas de una campaña. Auth guard: verifica sesión y que la campaña pertenece al usuario. Breadcrumb + header con nombre, estado y acciones. 4 cards de métricas rápidas (participantes, canjes, conversión, disponibles). **Para ruletas**: distribución de premios con barras dobles (probabilidad teórica azul vs resultado real verde), conteo de veces ganado por premio. **Para puntos/factura**: mecánica (puntos/monto, meta, metas alcanzadas). Tabla de últimos 50 participantes con columnas (identidad, fecha relativa, premio, estado del código). Botón "Exportar CSV": genera CSV con headers `correo,telefono,nombre,fecha_registro,premio,canjeado`, descarga via `Blob + URL.createObjectURL`, nombre: `[slug]-participantes.csv`. |
+| `app/dashboard/config/page.tsx` | Configuración de empresa en 4 secciones. **Sección 1 - Datos**: nombre, sitio web, select de industria (9 opciones); llama `actualizarEmpresa()`. **Sección 2 - Colores**: input `type="color"` para primario y secundario; preview en tiempo real idéntico al onboarding; guarda colores separado de datos. **Sección 3 - Plan**: card con plan actual, límites, link a `/precios`; banner de upgrade si plan es `free`. **Sección 4 - Zona de peligro**: borde rojo, AlertDialog de confirmación; por ahora hace signOut y envía a soporte. |
+
+---
+
+### Archivos modificados
+
+| Archivo | Cambio |
+|---|---|
+| `app/dashboard/page.tsx` | Reescritura completa. Auth guard con skeleton loading (evita flash de contenido no autorizado). Navbar fijo con logo, links de navegación, badge de plan con colores por tier (Free/Starter/Pro/Enterprise), avatar con color de empresa, DropdownMenu completo, Sheet lateral para móvil. Realtime channel `participantes-[userId]` muestra toast con nombre/correo del nuevo participante. Cleanup de canales en `useEffect return`. Compone `DashboardHeader`, `MetricasCards`, `ListaCampanas`, `AlianzasSection`. |
+
+---
+
+### Notas técnicas importantes
+
+**Supabase Realtime — dos canales:**
+```
+Canal 1 (MetricasCards): metricas-[userId]
+  - Evento: UPDATE en campanas WHERE creado_por=eq.[userId]
+  - Acción: recalcular las 4 métricas
+
+Canal 2 (dashboard/page.tsx): participantes-[userId]
+  - Evento: INSERT en participantes (cualquier campaña del usuario)
+  - Acción: mostrar toast "🎉 Nuevo participante: [correo]"
+
+Cleanup: supabase.removeChannel(channel) en return del useEffect
+```
+
+**Autenticación en API Route de estado:**
+La ruta `PATCH /api/campana/[id]/estado` usa el Bearer JWT del header `Authorization`. El cliente envía el token via:
+```typescript
+const { data: { session } } = await supabase.auth.getSession()
+const token = session?.access_token ?? ''
+fetch('/api/campana/[id]/estado', {
+  headers: { Authorization: `Bearer ${token}` }
+})
+```
+
+**Colores de empresa en el dashboard (cero tokens):**
+Los colores `color_primario` y `color_secundario` de la tabla `empresas` se aplican via inline styles en:
+- Avatar del navbar: `style={{ background: linear-gradient(135deg, color_primario, #A855F7) }}`
+- Botón "Nueva campaña" en `DashboardHeader`: `style={{ background: linear-gradient(135deg, color_primario, #A855F7) }}`
+- Iconos en `MetricasCards`: el color de la card de campañas activas usa `color_primario`
+
+**Export CSV — sin librerías externas:**
+```typescript
+const csv = [headers, ...filas].join('\n')
+const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+const url = URL.createObjectURL(blob)
+const a = document.createElement('a')
+a.download = `${slug}-participantes.csv`
+a.click()
+URL.revokeObjectURL(url)
+```
+
+---
+
+### Flujo de prueba completo
+
+1. **Login** con empresa existente → redirige a `/dashboard`
+2. **Dashboard** → skeleton loading → métricas animan desde 0 → lista de campañas
+3. **Nueva campaña** → botón en header → `/chat` → wizard → lanzar → aparece en tabla
+4. **Pausar campaña** → DropdownMenu → "Pausar" → badge cambia a naranja instantáneamente
+5. **Ver QR** → DropdownMenu → "Ver QR" → modal con QR grande → descargar PNG
+6. **Ver métricas detalladas** → "Ver métricas" → `/dashboard/campana/[id]` → distribución de premios
+7. **Exportar CSV** → botón "Exportar CSV" → descarga `[slug]-participantes.csv`
+8. **Realtime** → abre dashboard + abre campaign page en otra tab → participa → toast aparece sin recargar
+9. **Configuración** → avatar → Configuración → cambiar colores → preview en tiempo real → guardar
+
+---
+
+### Tareas pendientes actualizadas
+
+- [x] ~~Dashboard completo con métricas en tiempo real~~ ✓ Completado
+- [x] ~~Métricas detalladas por campaña~~ ✓ Completado
+- [x] ~~Exportar participantes CSV~~ ✓ Completado
+- [x] ~~Configuración de empresa (colores, datos, plan)~~ ✓ Completado
+- [x] ~~QR modal con descarga PNG~~ ✓ Completado
+- [x] ~~Panel de configuración de empresa~~ ✓ Completado
+- [ ] **Alta prioridad**: Crear tabla `puntos_participantes` en Supabase para el módulo de puntos
+- [ ] **Media prioridad**: Integrar OCR real con Google Cloud Vision API en `/api/procesar-factura`
+- [ ] **Media prioridad**: Integrar bots de WhatsApp y Telegram
+- [ ] **Media prioridad**: Sistema de notificaciones (email al ganar un premio)
+- [ ] **Baja prioridad**: Páginas `/terminos`, `/privacidad`
+- [ ] **Baja prioridad**: API pública para integraciones
+
+---
+
+*Actualización agregada el 20 de marzo de 2026 — Módulo 6.*
+
+---
+
+## Módulo 7 — Bot de Telegram, OCR de Facturas, Notificaciones por Correo, Demos y Páginas Legales
+
+### Fecha: 20 de marzo de 2026
+
+---
+
+### Resumen del módulo
+
+Se implementaron los módulos críticos finales del MVP: el bot de Telegram para interacción conversacional, OCR real de facturas con Tesseract.js, notificaciones automáticas por correo con Resend, los 3 demos pre-cargados con su página pública, y las páginas legales de términos y privacidad. También se actualizaron el footer y el navbar con links reales a todas las secciones.
+
+---
+
+### Archivos creados
+
+| Archivo | Descripción |
+|---------|-------------|
+| `lib/ocr.ts` | Motor de OCR con Tesseract.js para facturas (spa+eng) |
+| `lib/email.ts` | Notificaciones con Resend: `enviarCodigoPremio` y `enviarBienvenida` |
+| `lib/seed-demos.ts` | Script para cargar los 3 demos en Supabase (`npm run seed`) |
+| `bot/telegram.ts` | Bot de Telegram con polling: /start, /campanas, /puntos, /canjear, /ayuda, fotos |
+| `app/demos/page.tsx` | Página pública `/demos` con los 3 casos de uso interactivos |
+| `app/terminos/page.tsx` | Términos de Servicio |
+| `app/privacidad/page.tsx` | Política de Privacidad (con ancla `#cookies`) |
+
+---
+
+### Archivos modificados
+
+| Archivo | Cambios |
+|---------|---------|
+| `app/api/procesar-factura/route.ts` | Reemplazado placeholder por OCR real con `procesarFacturaConOCR()` |
+| `app/api/girar-ruleta/route.ts` | Agrega envío de correo con `enviarCodigoPremio()` tras giro exitoso |
+| `app/api/generar-codigo/route.ts` | Agrega envío de correo con `enviarCodigoPremio()` tras generar cupón |
+| `components/Footer.tsx` | Links reales: /demos, /precios, /guia, /validar, /terminos, /privacidad |
+| `components/Navbar.tsx` | "Casos de uso" → "Demos" apuntando a `/demos` |
+| `components/CTAFinal.tsx` | Botón "Ver una demo" apunta a `/demos` |
+| `.env.local` | Agregadas: `TELEGRAM_BOT_TOKEN`, `RESEND_API_KEY`, `NEXT_PUBLIC_APP_URL` |
+| `package.json` | Scripts: `bot`, `bot:dev`, `seed` |
+
+---
+
+### SQL nuevo para Supabase
+
+```sql
+-- Tabla de puntos por participante
+CREATE TABLE IF NOT EXISTS puntos_participantes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  participante_id UUID NOT NULL REFERENCES participantes(id) ON DELETE CASCADE,
+  campana_id UUID NOT NULL REFERENCES campanas(id),
+  total_puntos INTEGER DEFAULT 0,
+  ultima_actualizacion TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(participante_id, campana_id)
+);
+ALTER TABLE puntos_participantes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Insercion puntos" ON puntos_participantes FOR INSERT WITH CHECK (true);
+CREATE POLICY "Lectura puntos" ON puntos_participantes FOR SELECT USING (true);
+CREATE POLICY "Update puntos" ON puntos_participantes FOR UPDATE USING (true);
+
+-- Tabla para usuarios del bot de Telegram
+CREATE TABLE IF NOT EXISTS telegram_usuarios (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  telegram_id TEXT UNIQUE NOT NULL,
+  username TEXT,
+  nombre TEXT,
+  campana_id UUID REFERENCES campanas(id),
+  participante_id UUID REFERENCES participantes(id),
+  ultimo_mensaje TIMESTAMPTZ DEFAULT NOW(),
+  creado_en TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX idx_telegram_id ON telegram_usuarios(telegram_id);
+ALTER TABLE telegram_usuarios ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Lectura telegram" ON telegram_usuarios FOR SELECT USING (true);
+CREATE POLICY "Insercion telegram" ON telegram_usuarios FOR INSERT WITH CHECK (true);
+CREATE POLICY "Update telegram" ON telegram_usuarios FOR UPDATE USING (true);
+
+-- Tabla para log de notificaciones enviadas
+CREATE TABLE IF NOT EXISTS notificaciones (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  participante_id UUID REFERENCES participantes(id),
+  campana_id UUID REFERENCES campanas(id),
+  tipo TEXT CHECK (tipo IN ('premio_ganado','recordatorio','bienvenida')),
+  enviado_a TEXT NOT NULL,
+  enviado_en TIMESTAMPTZ DEFAULT NOW(),
+  exitoso BOOLEAN DEFAULT TRUE
+);
+ALTER TABLE notificaciones ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Insercion notificaciones" ON notificaciones FOR INSERT WITH CHECK (true);
+CREATE POLICY "Lectura notificaciones" ON notificaciones FOR SELECT USING (true);
+```
+
+---
+
+### Detalles técnicos
+
+**OCR con Tesseract.js (`lib/ocr.ts`):**
+- Crea worker con idiomas `spa+eng` para facturas latinoamericanas
+- Extrae número de factura con 3 patrones regex en cascada (fallback a timestamp único)
+- Extrae monto con 3 patrones: total/amount/monto, símbolos $ y Q (quetzales)
+- Verifica que la factura no haya sido procesada antes (anti-duplicados via tabla `notificaciones`)
+- UPSERT en `puntos_participantes` — suma o crea el registro
+- Primer análisis: 10-15s (descarga modelos ~40MB). Siguientes: 3-5s
+- Timeout extendido a 60s en el API route con `export const maxDuration = 60`
+
+**Notificaciones con Resend (`lib/email.ts`):**
+- `enviarCodigoPremio()`: HTML con gradiente FREEPOL, código en font-mono con borde punteado, fecha de expiración
+- `enviarBienvenida()`: Botón CTA directo a la URL de la campaña
+- `fromEmail`: `onboarding@resend.dev` en desarrollo, `premios@freepol.app` en producción
+- Si Resend falla: `console.error` + devuelve `false` — **nunca interrumpe el flujo principal**
+- Ambas rutas (`/api/girar-ruleta`, `/api/generar-codigo`) llaman al envío como fire-and-forget con `.catch()`
+
+**Bot de Telegram (`bot/telegram.ts`):**
+- Modo **polling** para desarrollo local; en producción usar webhook
+- Comandos: `/start`, `/campanas`, `/puntos`, `/canjear`, `/ayuda`
+- Callbacks inline para selección de campaña
+- Procesamiento de fotos: descarga la imagen más grande del mensaje y llama a `procesarFacturaConOCR()`
+- Al /canjear exitoso: genera QR con `qrcode.toBuffer()` y envía con `bot.sendPhoto()`
+- Antifraude: Redis key `tg:[campana_id]:[telegram_id]` para evitar doble participación
+
+**Página de demos (`app/demos/page.tsx`):**
+- Tema claro como la landing
+- 3 cards con colores corporativos reales (Pollo Campero #E8000D, Walmart #0071CE, McDonald's #FFC72C)
+- Prompt original de cada demo en recuadro tipo terminal
+- Botones: "Probar demo" → `/c/[slug]`, "Crear campaña similar" → `/chat`
+
+**Script seed (`lib/seed-demos.ts`):**
+- Verifica existencia por `slug` antes de insertar
+- Usa `SUPABASE_SERVICE_ROLE_KEY` para saltarse RLS
+- Ejecutar: `npm run seed`
+
+---
+
+### Comandos de prueba
+
+```bash
+# 1. Iniciar el servidor Next.js
+npm run dev
+
+# 2. Cargar los 3 demos en Supabase (una sola vez)
+npm run seed
+
+# 3. Iniciar el bot de Telegram (requiere TELEGRAM_BOT_TOKEN)
+npm run bot
+
+# 4. Ver demos en vivo
+open http://localhost:3000/demos
+
+# 5. Páginas legales
+open http://localhost:3000/terminos
+open http://localhost:3000/privacidad
+```
+
+---
+
+### Pendientes actualizados tras el Módulo 7
+
+- [x] ~~Tabla `puntos_participantes`~~ ✓
+- [x] ~~Bot de Telegram~~ ✓
+- [x] ~~OCR de facturas (Tesseract.js)~~ ✓
+- [x] ~~Notificaciones por correo (Resend)~~ ✓
+- [x] ~~Página /demos con los 3 demos~~ ✓
+- [x] ~~`/terminos` y `/privacidad`~~ ✓
+- [x] ~~Footer con links reales~~ ✓
+- [x] ~~Script `npm run seed`~~ ✓
+- [ ] Tabla `telegram_usuarios` — correr SQL en Supabase
+- [ ] Tabla `notificaciones` — correr SQL en Supabase
+- [ ] Verificar token de Telegram en `.env.local`
+- [ ] Verificar API key de Resend en `.env.local`
+- [ ] Activar webhook de Telegram en producción
+- [ ] Verificar dominio `freepol.app` en Resend dashboard
+- [ ] Bot de WhatsApp Business (solo plan Pro+)
+- [ ] Bot de Instagram (solo plan Pro+)
+- [ ] Google Cloud Vision API para OCR de alta precisión en producción
+- [ ] `/dashboard/equipo` — gestión de miembros
+- [ ] `/api/campana/[id]/duplicar` — duplicar campaña
+- [ ] `app/not-found.tsx` — página 404 personalizada
+- [ ] `sitemap.xml` y `robots.txt`
+
+---
+
+*Actualización agregada el 20 de marzo de 2026 — Módulo 7.*
+
+### Fecha: 20 de marzo de 2026
+
+Esta sección recoge **todos** los ítems pendientes detectados tras revisar el proyecto completo, organizados por prioridad y módulo. Se irán marcando como completados a medida que se implementen.
+
+---
+
+### Pendientes de infraestructura / Supabase
+
+- [x] ~~Tabla `campanas`~~ ✓
+- [x] ~~Tabla `participantes`~~ ✓
+- [x] ~~Tabla `codigos`~~ ✓
+- [x] ~~Tabla `empresas`~~ ✓
+- [x] ~~Tabla `empresa_miembros`~~ ✓
+- [x] ~~Tabla `campana_aliados`~~ ✓
+- [x] ~~**Tabla `puntos_participantes`**~~ ✓ SQL listo en Módulo 7
+- [x] ~~**Tabla `telegram_usuarios`**~~ ✓ SQL listo en Módulo 7
+- [x] ~~**Tabla `notificaciones`**~~ ✓ SQL listo en Módulo 7
+- [ ] **Tabla `facturas`** — para evitar doble procesamiento de OCR (número de factura único por campaña)
+- [ ] Habilitar Supabase Realtime en las tablas `campanas` y `participantes` desde el dashboard de Supabase (Publication → supabase_realtime)
+- [ ] Configurar Supabase Auth con "Email confirmation" habilitado en producción
+
+---
+
+### Pendientes de Backend / API Routes
+
+- [x] ~~`/api/analizar-prompt`~~ ✓
+- [x] ~~`/api/girar-ruleta`~~ ✓
+- [x] ~~`/api/generar-codigo`~~ ✓
+- [x] ~~`/api/registrar-participante`~~ ✓
+- [x] ~~`/api/validar-codigo`~~ ✓
+- [x] ~~`/api/procesar-factura` (placeholder)~~ ✓ placeholder
+- [x] ~~`/api/generar-mensaje`~~ ✓
+- [x] ~~`/api/crear-campana`~~ ✓
+- [x] ~~`/api/campana/[id]/estado`~~ ✓
+- [x] ~~**`/api/procesar-factura` con OCR real**~~ ✓ Tesseract.js integrado
+- [ ] **`/api/telegram-webhook`** — endpoint POST para recibir mensajes del bot en producción (Vercel no soporta polling)
+- [ ] **`/api/send-email`** (opcional wrapper) — centralizar envío de correos
+- [ ] **`/api/campana/[id]/duplicar`** — duplicar campaña como borrador (mencionado en `ListaCampanas.tsx` pero no implementado)
+
+---
+
+### Pendientes de Frontend / Páginas
+
+- [x] ~~Landing `/`~~ ✓
+- [x] ~~Chat `/chat`~~ ✓
+- [x] ~~Wizard `/wizard`~~ ✓
+- [x] ~~Landing pública `/c/[slug]`~~ ✓
+- [x] ~~Validar código `/validar`~~ ✓
+- [x] ~~Onboarding `/onboarding`~~ ✓
+- [x] ~~Dashboard `/dashboard`~~ ✓
+- [x] ~~Métricas campaña `/dashboard/campana/[id]`~~ ✓
+- [x] ~~Configuración `/dashboard/config`~~ ✓
+- [x] ~~Guía `/guia`~~ ✓
+- [x] ~~Precios `/precios`~~ ✓
+- [x] ~~Alianza `/alianza/[token]`~~ ✓
+- [x] ~~**`/demos`**~~ ✓ Página con los 3 demos pre-cargados
+- [x] ~~**`/terminos`**~~ ✓ Términos de Servicio
+- [x] ~~**`/privacidad`**~~ ✓ Política de Privacidad
+- [ ] **`/dashboard/equipo`** — gestión de miembros del equipo (mencionado en dropdown del dashboard pero placeholder)
+- [ ] **`/dashboard/facturacion`** — gestión del plan y facturación
+- [ ] **Paso `Paso8bAliado`** integrado al wizard — actualmente existe el componente pero no está conectado en `app/wizard/page.tsx`
+- [ ] **`app/api/campana/[id]/duplicar`** + botón en dashboard
+
+---
+
+### Pendientes de Integraciones externas
+
+- [ ] **Bot de Telegram** (`bot/telegram.ts`) — bot con polling para desarrollo, webhook para producción
+- [ ] **OCR real con Tesseract.js** (`lib/ocr.ts`) — reemplazar placeholder en `/api/procesar-factura`
+- [ ] **Notificaciones por correo con Resend** (`lib/email.ts`) — correo al ganar un premio y bienvenida
+- [ ] **Bot de WhatsApp** — requiere WhatsApp Business API (solo plan Pro+)
+- [ ] **Bot de Instagram** — respuesta automática a comentarios (solo plan Pro+)
+- [ ] **Google Cloud Vision API** — OCR de alta precisión en producción (reemplazar Tesseract.js)
+
+---
+
+### Pendientes de datos / Seeds
+
+- [x] ~~**`lib/seed-demos.ts`**~~ ✓ Script `npm run seed` listo
+- [ ] Correr `npm run seed` en el entorno de staging antes del lanzamiento
+
+---
+
+### Pendientes de seguridad y producción
+
+- [ ] Verificar dominio `freepol.app` en Resend para enviar correos reales
+- [ ] Activar webhook de Telegram: `POST https://api.telegram.org/bot[TOKEN]/setWebhook`
+- [ ] Configurar variables de entorno en Vercel: `TELEGRAM_BOT_TOKEN`, `RESEND_API_KEY`, `NEXT_PUBLIC_APP_URL`
+- [ ] Habilitar `actualizado_en` trigger en Supabase para `empresas` (actualiza automáticamente)
+- [ ] Rate limiting en `/api/procesar-factura` (OCR es costoso en CPU)
+- [ ] CORS y headers de seguridad en `next.config.js`
+- [ ] `HASH_SECRET` en producción debe ser una clave de mínimo 32 caracteres aleatoria
+
+---
+
+### Pendientes de UX / polish
+
+- [ ] Estados de error globales en las páginas públicas de campaña (`/c/[slug]`) cuando las APIs fallan
+- [ ] Página 404 personalizada (`app/not-found.tsx`) con branding FREEPOL
+- [ ] Página de mantenimiento cuando Supabase está caído
+- [ ] `og:image` dinámica por campaña en `/c/[slug]` (actualmente solo texto)
+- [ ] `sitemap.xml` y `robots.txt` para SEO
+- [ ] `app/loading.tsx` global con skeleton consistente
+- [ ] Animación de transición entre páginas (actualmente cada página carga independiente)
+- [ ] Modo oscuro completo en páginas públicas (actualmente solo chat y wizard son oscuros)
+- [ ] Componente `ComponenteRuleta.tsx` — la animación de giro necesita calibración más precisa del ángulo final
+- [ ] `Paso8bAliado.tsx` — los datos guardados en `localStorage('freepol_aliado')` no se consumen en `Paso10Resumen.tsx` para insertar en `campana_aliados`
+
+---
+
+### Variables de entorno faltantes
+
+Las siguientes deben agregarse a `.env.local` y a Vercel:
+
+```
+TELEGRAM_BOT_TOKEN=obtener de @BotFather en Telegram
+RESEND_API_KEY=obtener de resend.com (gratis hasta 3,000/mes)
+NEXT_PUBLIC_APP_URL=http://localhost:3000 (o dominio en producción)
+```
+
+---
+
+## Módulo 8 — Pulido y Producción: Middleware, SEO, 404, Loading, Vercel
+
+### Fecha: 20 de marzo de 2026
+
+---
+
+### Resumen del módulo
+
+Módulo final de pulido que prepara el proyecto para despliegue en producción. Se implementó el middleware de autenticación con `@supabase/ssr`, páginas de estado (404 personalizada, loading global y específicos), mejoras de SEO en el layout raíz, layout aislado para landings de campaña, detección de parámetros URL en el chat, integración del flujo Demo→Chat con prompts pre-cargados, configuración de Vercel, y scripts de verificación y semilla.
+
+---
+
+### Archivos creados
+
+| Archivo | Descripción |
+|---------|-------------|
+| `middleware.ts` | Protege `/dashboard` y `/onboarding` con sesión Supabase SSR |
+| `app/not-found.tsx` | Página 404 con tema oscuro, número animado y botones de navegación |
+| `app/loading.tsx` | Loading global con logo FREEPOL y barra de progreso animada |
+| `app/dashboard/loading.tsx` | Skeleton completo del dashboard (navbar + métricas + tabla) |
+| `app/chat/loading.tsx` | Skeleton del chat con sidebar y ícono Sparkles pulsante |
+| `app/c/[slug]/layout.tsx` | Layout override que aísla las landings de campaña del navbar global |
+| `vercel.json` | Configuración de Vercel con timeouts extendidos para OCR y IA |
+| `.env.example` | Plantilla de variables de entorno para nuevos desarrolladores |
+| `scripts/verificar-proyecto.ts` | Script de verificación completa (`npm run verificar`) |
+
+---
+
+### Archivos modificados
+
+| Archivo | Cambios |
+|---------|---------|
+| `app/layout.tsx` | Metadatos OG completos con template de título, locale es_GT, og-image.png |
+| `lib/supabase-server.ts` | Refactorizado con `@supabase/ssr` + cookies correctas de Next.js App Router |
+| `app/chat/page.tsx` | Detecta `?auth=required` (abre AuthDialog) y `?prompt=` (pre-carga textarea) |
+| `app/demos/page.tsx` | Botones "Ver en el chat" pasan `promptChat` como `?prompt=` en la URL |
+| `next.config.js` | Agrega `*.supabase.co` en remotePatterns y Tesseract.js en serverExternalPackages |
+| `package.json` | Script `npm run verificar` agregado |
+
+---
+
+### Flujo de conexión Demo → Chat (cero tokens extra)
+
+```
+Usuario en /demos
+    ↓ clic "Ver en el chat →"
+/chat?prompt=Configura+la+campaña...
+    ↓ useSearchParams detecta el parámetro
+setInputValue(decodeURIComponent(prompt))
+    ↓ toast "Prompt cargado desde demos ✨"
+Textarea pre-llenado — usuario solo hace clic en Enviar
+```
+
+---
+
+### Flujo del middleware
+
+```
+GET /dashboard (sin sesión)
+    ↓ middleware.ts
+supabase.auth.getSession() → null
+    ↓
+redirect(/?auth=required)
+    ↓ app/chat/page.tsx (si se va a /chat) o app/page.tsx
+Si /?auth=required: setAuthOpen(true) + toast "Inicia sesión..."
+```
+
+---
+
+### Comandos para presentar el proyecto
+
+```bash
+# 1. Cargar los 3 demos en Supabase
+npm run seed
+
+# 2. Verificar que todo está configurado
+npm run verificar
+
+# 3. Iniciar el servidor Next.js
+npm run dev
+
+# 4. (Opcional) Iniciar el bot de Telegram
+npm run bot
+```
+
+---
+
+### Checklist de 10 puntos pre-presentación
+
+- [ ] `npm run seed` ejecutado correctamente (3 demos ✅)
+- [ ] `npm run verificar` sin ❌ en variables requeridas y tablas
+- [ ] `/c/sabor-ganador-campero` carga y la ruleta gira
+- [ ] `/c/eco-puntos-walmart-puma` carga con formulario de teléfono
+- [ ] `/c/cupones-flash-mcdonalds` carga y genera código
+- [ ] `/validar` valida un código existente correctamente
+- [ ] `/chat` analiza un prompt y redirige al wizard
+- [ ] `/wizard` pre-llenado desde localStorage tras análisis
+- [ ] `/dashboard` requiere login (middleware redirige a `/?auth=required`)
+- [ ] `/demos` muestra las 3 cards y botones "Ver en el chat" pre-cargan prompts
+
+---
+
+### Deploy a Vercel
+
+```bash
+# 1. Instalar Vercel CLI
+npm i -g vercel
+
+# 2. Login
+vercel login
+
+# 3. Deploy (primera vez — configura el proyecto)
+vercel
+
+# 4. Configurar variables de entorno en Vercel dashboard:
+#    Settings → Environment Variables → agregar todas las de .env.example
+
+# 5. Deploy a producción
+vercel --prod
+```
+
+Variables de entorno que DEBES agregar en Vercel antes del deploy:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `GROQ_API_KEY`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `HASH_SECRET`
+- `NEXT_PUBLIC_APP_URL` (el dominio de Vercel, ej: `https://freepol.vercel.app`)
+- `RESEND_API_KEY` (opcional pero recomendado)
+- `TELEGRAM_BOT_TOKEN` (opcional — el bot necesita webhook en producción)
+
+---
+
+### Pendientes actualizados tras el Módulo 8
+
+- [x] ~~Middleware de autenticación~~ ✓
+- [x] ~~Página 404 personalizada~~ ✓
+- [x] ~~Loading pages globales y específicos~~ ✓
+- [x] ~~Layout aislado para `/c/[slug]`~~ ✓
+- [x] ~~SEO completo en `app/layout.tsx`~~ ✓
+- [x] ~~`vercel.json` configurado~~ ✓
+- [x] ~~`.env.example` creado~~ ✓
+- [x] ~~`npm run verificar` (script de verificación)~~ ✓
+- [x] ~~Flujo Demo → Chat con prompts pre-cargados~~ ✓
+- [ ] Crear imagen `public/og-image.png` (1200×630px) para Open Graph
+- [ ] Bot de Telegram en producción: activar webhook en Vercel
+  - `POST https://api.telegram.org/bot[TOKEN]/setWebhook?url=https://tudominio.vercel.app/api/telegram-webhook`
+- [ ] Verificar dominio `freepol.app` en Resend dashboard para correos reales
+- [ ] `sitemap.xml` y `robots.txt` para SEO avanzado
+- [ ] `/dashboard/equipo` — gestión de miembros del equipo
+- [ ] `/api/campana/[id]/duplicar` — duplicar campaña
+
+---
+
+*Actualización agregada el 20 de marzo de 2026 — Módulo 8 (Final).*
+
+---
+
+## Módulo 9 — Deploy a Vercel en Producción
+
+### Fecha: 23 de marzo de 2026
+
+---
+
+### Resumen del módulo
+
+Se realizó el despliegue completo del proyecto a Vercel. Se corrigió el warning de `metadataBase` en `app/layout.tsx` para que Open Graph funcione correctamente en producción. Se configuraron las 9 variables de entorno requeridas en el panel de Vercel y se realizaron 2 deploys (el primero con las 4 variables ya existentes de un deploy previo, el segundo con las 5 variables faltantes para que el build las incluya).
+
+---
+
+### URLs de producción
+
+| URL | Descripción |
+|-----|-------------|
+| **https://freepol.vercel.app** | URL principal de producción |
+| https://freepol-1ck2552s8-astral910s-projects.vercel.app | URL del último deploy específico |
+| https://vercel.com/astral910s-projects/freepol | Panel de Vercel del proyecto |
+
+---
+
+### Archivos modificados
+
+| Archivo | Cambio |
+|---------|--------|
+| `app/layout.tsx` | Agregado `metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://freepol.app')` para resolver warning de OG images |
+
+---
+
+### Variables de entorno configuradas en Vercel
+
+Todas las variables están configuradas en los entornos **Development, Preview y Production**:
+
+| Variable | Estado |
+|----------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | ✅ Configurada |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ Configurada |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ Configurada |
+| `GROQ_API_KEY` | ✅ Configurada |
+| `UPSTASH_REDIS_REST_URL` | ✅ Configurada |
+| `UPSTASH_REDIS_REST_TOKEN` | ✅ Configurada |
+| `HASH_SECRET` | ✅ Configurada |
+| `RESEND_API_KEY` | ✅ Configurada |
+| `NEXT_PUBLIC_APP_URL` | ✅ Configurada (`https://freepol.vercel.app`) |
+
+---
+
+### Pendientes post-deploy
+
+- [ ] **Actualizar Supabase Auth** → Settings → URL Configuration → agregar `https://freepol.vercel.app` como Site URL y Redirect URL
+- [ ] **Correr `npm run seed`** apuntando a producción para cargar los 3 demos en la BD
+- [ ] **Telegram webhook en producción**: `POST https://api.telegram.org/bot[TOKEN]/setWebhook?url=https://freepol.vercel.app/api/telegram-webhook`
+- [ ] **Verificar dominio** `freepol.app` en Resend para correos con remitente real
+- [ ] **Agregar dominio personalizado** en Vercel → Settings → Domains (si se tiene `freepol.app`)
+- [ ] Crear imagen `public/og-image.png` (1200×630px) para Open Graph en redes sociales
+
+---
+
+*Actualización agregada el 23 de marzo de 2026 — Módulo 9 (Deploy a Vercel).*
+
+---
+
+## Módulo 10 — Integración WhatsApp con Twilio Sandbox
+
+### Fecha: 23 de marzo de 2026
+
+---
+
+### Resumen del módulo
+
+Se integró WhatsApp Business mediante Twilio Sandbox. El sistema ahora envía notificaciones automáticas por WhatsApp cuando un participante gana un premio (junto al correo ya existente), y también incluye un bot conversacional que responde a mensajes entrantes. Las variables de Twilio fueron agregadas a Vercel y el deploy fue ejecutado exitosamente.
+
+---
+
+### Archivos creados
+
+| Archivo | Descripción |
+|---------|-------------|
+| `lib/whatsapp.ts` | Cliente Twilio con 3 funciones: `enviarMensajeWhatsApp`, `enviarCodigoPorWhatsApp`, `enviarBienvenidaWhatsApp`. Normaliza automáticamente números al formato `whatsapp:+502XXXXXXXX` |
+| `app/api/whatsapp-webhook/route.ts` | Bot conversacional que Twilio llama cuando alguien escribe al sandbox. Maneja: saludos, ver puntos, canjear, selección de campaña por número. Responde con TwiML |
+| `app/api/test-whatsapp/route.ts` | Endpoint GET solo en desarrollo: `?telefono=50249135546` envía un mensaje de prueba para verificar Twilio |
+
+---
+
+### Archivos modificados
+
+| Archivo | Cambio |
+|---------|--------|
+| `app/api/girar-ruleta/route.ts` | Tras generar el código: si el participante tiene teléfono, llama `enviarCodigoPorWhatsApp()` como fire-and-forget |
+| `app/api/generar-codigo/route.ts` | Misma lógica que girar-ruleta para cupones directos |
+| `app/api/registrar-participante/route.ts` | Si `condicion === 'telefono'` y el participante tiene teléfono, envía mensaje de bienvenida con `enviarBienvenidaWhatsApp()` |
+| `components/campana/LandingCampana.tsx` | Agrega nota `"📱 Te enviaremos tu código por WhatsApp al ganar"` debajo del input de teléfono |
+
+---
+
+### Variables de entorno configuradas
+
+| Variable | Valor | Dónde |
+|----------|-------|-------|
+| `TWILIO_ACCOUNT_SID` | `AC51d0c...` | `.env.local` + Vercel |
+| `TWILIO_AUTH_TOKEN` | `68c2e6...` | `.env.local` + Vercel |
+| `TWILIO_WHATSAPP_NUMBER` | `whatsapp:+14155238886` | `.env.local` + Vercel |
+
+---
+
+### Cómo funciona el bot (webhook)
+
+```
+Usuario escribe en WhatsApp → Twilio → POST /api/whatsapp-webhook
+
+Comandos reconocidos:
+  "hola" / "inicio" / "start"  → Lista de campañas activas
+  "mis puntos" / "saldo"        → Saldo de puntos del usuario
+  "canjear"                     → Genera código si tiene suficientes puntos
+  "1" / "2" / "3"               → Selecciona y se registra en esa campaña
+  (cualquier otro)              → Mensaje de ayuda con comandos
+```
+
+---
+
+### Cómo configurar el webhook en Twilio
+
+**Para producción (ya deployado):**
+1. Ir a [twilio.com/console](https://twilio.com/console)
+2. Messaging → Settings → WhatsApp Sandbox Settings
+3. En "When a message comes in" poner:
+   `https://freepol.vercel.app/api/whatsapp-webhook`
+4. Método: HTTP POST → Guardar
+
+**Para desarrollo local con ngrok:**
+```bash
+# Terminal 1: servidor Next.js
+npm run dev
+
+# Terminal 2: túnel ngrok
+npx ngrok http 3000
+# Copiar la URL https://xxxx.ngrok.io
+# Ponerla en Twilio como: https://xxxx.ngrok.io/api/whatsapp-webhook
+```
+
+---
+
+### Cómo probar
+
+**1. Probar envío directo (desarrollo):**
+```
+GET http://localhost:3000/api/test-whatsapp?telefono=50249135546
+```
+Debe llegar un mensaje de prueba al WhatsApp.
+
+**2. Probar el bot:**
+- Unirse al Sandbox: enviar `join [palabra]` al +14155238886
+- Escribir `hola` → debe responder con campañas
+- Escribir `1` → debe registrarte en la primera campaña
+- Escribir `mis puntos` → debe mostrar saldo
+
+**3. Probar flujo completo:**
+- Crear campaña con condición `telefono` en /wizard
+- Ir a /c/[slug] → ingresar número de teléfono → debe llegar bienvenida por WhatsApp
+- Si es tipo ruleta: girar → debe llegar el código por WhatsApp
+
+---
+
+### Flujo de notificaciones por canal
+
+| Evento | Correo | WhatsApp |
+|--------|--------|----------|
+| Registro con teléfono | ✗ | ✅ Bienvenida |
+| Registro con correo | ✅ (Resend) | ✗ |
+| Premio ganado (teléfono) | ✗ | ✅ Código + instrucciones |
+| Premio ganado (correo) | ✅ Código HTML | ✗ |
+| Canje por bot | ✗ | ✅ Código inline |
+
+---
+
+### Pendientes post-integración
+
+- [ ] **Configurar webhook en Twilio Sandbox** → URL: `https://freepol.vercel.app/api/whatsapp-webhook`
+- [ ] Unirse al sandbox enviando `join [palabra-clave]` al +14155238886 para probar
+- [ ] En producción real: migrar de Sandbox a WhatsApp Business API aprobada (solo plan Pro+)
+- [ ] Agregar `ngrok` como dependencia de desarrollo para pruebas locales del webhook
+
+---
+
+*Actualización agregada el 23 de marzo de 2026 — Módulo 10 (WhatsApp con Twilio).*

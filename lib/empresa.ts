@@ -7,7 +7,7 @@ export interface Empresa {
   color_primario: string
   color_secundario: string
   logo_url?: string
-  plan: 'free' | 'pro' | 'enterprise'
+  plan: 'free' | 'starter' | 'pro' | 'enterprise'
   owner_id: string
   industria?: string
   creado_en: string
@@ -44,6 +44,7 @@ export async function crearEmpresa(
     color_primario?: string
     color_secundario?: string
     industria?: string
+    plan?: string
   },
 ): Promise<Empresa> {
   const supabase = createClient()
@@ -56,6 +57,7 @@ export async function crearEmpresa(
       color_primario: datos.color_primario ?? '#5B5CF6',
       color_secundario: datos.color_secundario ?? '#22C55E',
       industria: datos.industria ?? 'otro',
+      plan: datos.plan ?? 'free',
       owner_id: userId,
     })
     .select()
