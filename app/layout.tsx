@@ -5,6 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://freepol.app'),
   title: {
     default: 'FREEPOL — Ecosistema de lealtad con IA',
     template: '%s | FREEPOL',
