@@ -111,10 +111,10 @@ export async function POST(request: NextRequest) {
       .update({ total_canjes: campana.total_canjes + 1 })
       .eq('id', body.campana_id)
 
-    // 9. Enviar correo con el premio (no bloquea la respuesta si falla)
+    // 9. Notificar al participante por correo y/o WhatsApp (fire-and-forget)
     const { data: participante } = await supabase
       .from('participantes')
-      .select('correo')
+      .select('correo, telefono')
       .eq('id', body.participante_id)
       .maybeSingle()
 
@@ -128,6 +128,17 @@ export async function POST(request: NextRequest) {
         codigo,
         expira_en: expira_en.toISOString(),
       }).catch((e) => console.error('[girar-ruleta] email error:', e))
+    }
+
+    if (participante?.telefono) {
+      const { enviarCodigoPorWhatsApp } = await import('@/lib/whatsapp')
+      await enviarCodigoPorWhatsApp(participante.telefono, {
+        nombre_negocio: campana.nombre_negocio,
+        nombre_campana: campana.nombre_campana,
+        premio: premioGanado.nombre,
+        codigo,
+        expira_en: expira_en.toISOString(),
+      }).catch((e) => console.error('[girar-ruleta] whatsapp error:', e))
     }
 
     // 10. Devolver resultado al cliente
