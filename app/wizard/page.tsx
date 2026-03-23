@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Zap, MessageSquareText } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
@@ -221,11 +222,8 @@ export default function WizardPage() {
             <span className="hidden sm:inline">Volver al chat</span>
           </Link>
           <span className="text-[#334155]">|</span>
-          <div className="flex items-center gap-1.5">
-            <Zap size={15} className="text-[#5B5CF6]" />
-            <span className="font-bold text-white text-sm">
-              <span className="text-[#5B5CF6]">FREE</span>POL
-            </span>
+          <div className="flex items-center">
+            <Image src="/logo-dark.svg" alt="FREEPOL" width={100} height={25} priority />
           </div>
         </div>
         <span className="text-[#64748B] text-sm">

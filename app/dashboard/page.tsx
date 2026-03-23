@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   Zap, LayoutDashboard, MessageSquare, QrCode, Users,
   Settings, LogOut, Menu, X, Bell,
@@ -135,9 +136,8 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-30 bg-[#0F172A] border-b border-[#1E293B]">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <Zap size={16} className="text-[#5B5CF6]" />
-            <span className="font-bold text-white text-sm"><span className="text-[#5B5CF6]">FREE</span>POL</span>
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <Image src="/logo-dark.svg" alt="FREEPOL" width={120} height={30} priority />
           </Link>
 
           <div className="w-px h-5 bg-[#334155] hidden md:block" />
@@ -200,9 +200,8 @@ export default function DashboardPage() {
               </SheetTrigger>
               <SheetContent side="left" className="w-64 bg-[#1E293B] border-r border-[#334155] p-0">
                 <div className="p-5 border-b border-[#334155] flex items-center justify-between">
-                  <Link href="/" className="flex items-center gap-1.5" onClick={() => setMobileOpen(false)}>
-                    <Zap size={14} className="text-[#5B5CF6]" />
-                    <span className="font-bold text-white text-sm"><span className="text-[#5B5CF6]">FREE</span>POL</span>
+                  <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
+                    <Image src="/logo-dark.svg" alt="FREEPOL" width={100} height={25} priority />
                   </Link>
                 </div>
                 <div className="p-4">

@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import Link from 'next/link'
-import { Zap, Twitter, Linkedin, Instagram } from 'lucide-react'
+import Image from 'next/image'
+import { Twitter, Linkedin, Instagram } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 
 const columnas = {
@@ -41,11 +42,8 @@ const Footer = memo(function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Columna Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-1.5 mb-4">
-              <Zap size={18} className="text-[#5B5CF6]" />
-              <span className="text-xl font-bold text-white">
-                <span className="text-[#5B5CF6]">FREE</span>POL
-              </span>
+            <Link href="/" className="flex items-center mb-4">
+              <Image src="/logo-dark.svg" alt="FREEPOL" width={130} height={32} />
             </Link>
             <p className="text-[#94A3B8] text-sm leading-relaxed max-w-xs mb-6">
               Plataforma SaaS B2B para crear campañas de fidelización con IA.

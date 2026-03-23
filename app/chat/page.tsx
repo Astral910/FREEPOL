@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid'
 import toast, { Toaster } from 'react-hot-toast'
@@ -217,7 +218,7 @@ export default function ChatPage() {
             {empresa ? (
               <span style={{ color: empresa.color_primario }}>{empresa.nombre}</span>
             ) : (
-              <><span className="text-[#5B5CF6]">FREE</span>POL</>
+              <Image src="/logo-dark.svg" alt="FREEPOL" width={110} height={28} priority />
             )}
           </span>
         </Link>
@@ -320,10 +321,7 @@ export default function ChatPage() {
             <Menu size={22} />
           </button>
           <div className="flex items-center gap-1.5">
-            <Zap size={15} className="text-[#5B5CF6]" />
-            <span className="font-bold text-white text-sm">
-              <span className="text-[#5B5CF6]">FREE</span>POL
-            </span>
+            <Image src="/logo-dark.svg" alt="FREEPOL" width={100} height={25} priority />
           </div>
           <button
             onClick={() => setTipsOpen(true)}

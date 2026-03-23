@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Zap, ArrowRight, Menu, X, Sparkles, Plus, LayoutDashboard, LogOut } from 'lucide-react'
+import { ArrowRight, Menu, X, Sparkles, Plus, LayoutDashboard, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet'
 import { Separator } from '@/components/ui/separator'
@@ -81,12 +82,14 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-1.5 group">
-            <Zap size={20} className="text-[#5B5CF6]" />
-            <span className="text-2xl font-bold">
-              <span className="text-[#5B5CF6]">FREE</span>
-              <span className="text-[#0F172A]">POL</span>
-            </span>
+          <Link href="/" className="flex items-center group">
+            <Image
+              src={scrolled ? '/logo.svg' : '/logo.svg'}
+              alt="FREEPOL"
+              width={140}
+              height={34}
+              priority
+            />
           </Link>
 
           {/* Links de navegación — solo desktop */}
@@ -182,14 +185,10 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
                 <div className="flex items-center justify-between p-5 border-b border-[#E5E7EB]">
                   <Link
                     href="/"
-                    className="flex items-center gap-1.5"
+                    className="flex items-center"
                     onClick={() => setMobileOpen(false)}
                   >
-                    <Zap size={18} className="text-[#5B5CF6]" />
-                    <span className="text-xl font-bold">
-                      <span className="text-[#5B5CF6]">FREE</span>
-                      <span className="text-[#0F172A]">POL</span>
-                    </span>
+                    <Image src="/logo.svg" alt="FREEPOL" width={120} height={30} priority />
                   </Link>
                   <SheetClose asChild>
                     <Button variant="ghost" size="icon" aria-label="Cerrar menú">
