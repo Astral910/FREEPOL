@@ -30,14 +30,31 @@ const HISTORIAL_SIMULADO = [
   { id: '3', titulo: 'Cupones Flash', tiempo: 'hace 3 días' },
 ]
 
-/** Reordena las cards de sugerencias según la industria de la empresa */
+/** Reordena las cards de sugerencias según la industria del onboarding */
 function ordenarSugerenciasPorIndustria(industria: string | undefined): string[] {
-  const orden = ['ruleta', 'puntos', 'cupon', 'factura']
-  if (!industria) return orden
-  if (industria === 'restaurantes' || industria === 'entretenimiento') return ['ruleta', 'puntos', 'cupon', 'factura']
-  if (industria === 'retail' || industria === 'gasolineras') return ['factura', 'puntos', 'ruleta', 'cupon']
-  if (industria === 'ecommerce') return ['cupon', 'ruleta', 'puntos', 'factura']
-  return orden
+  const base = ['ruleta', 'puntos', 'cupon', 'factura'] as const
+  if (!industria) return [...base]
+
+  switch (industria) {
+    case 'restaurantes':
+      return ['ruleta', 'puntos', 'cupon', 'factura']
+    case 'entretenimiento':
+      return ['ruleta', 'cupon', 'puntos', 'factura']
+    case 'retail':
+    case 'gasolineras':
+      return ['factura', 'puntos', 'ruleta', 'cupon']
+    case 'ecommerce':
+      return ['cupon', 'ruleta', 'puntos', 'factura']
+    case 'gimnasios':
+      return ['puntos', 'cupon', 'ruleta', 'factura']
+    case 'belleza':
+      return ['cupon', 'puntos', 'ruleta', 'factura']
+    case 'servicios':
+      return ['puntos', 'cupon', 'factura', 'ruleta']
+    case 'otro':
+    default:
+      return [...base]
+  }
 }
 
 /**

@@ -1,53 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Star, Ticket, Receipt, Sparkles } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import ResultadosAnalisis from '@/components/chat/ResultadosAnalisis'
+import { obtenerSugerenciasChat } from '@/lib/chat-sugerencias-industria'
 import type { EstadoChat, MensajeChat, ResultadoAnalisis } from '@/types/campana'
-
-interface SugerenciaCard {
-  icon: React.ElementType
-  color: string
-  titulo: string
-  descripcion: string
-  promptEjemplo: string
-}
-
-const SUGERENCIAS: SugerenciaCard[] = [
-  {
-    icon: Trophy,
-    color: '#5B5CF6',
-    titulo: 'Ruleta gamificada',
-    descripcion: 'Para restaurantes y cadenas de comida',
-    promptEjemplo:
-      'Quiero una ruleta para mi restaurante este mes. Los clientes validan su correo y pueden girar una vez al día. Premios: 10% descuento (50%), postre gratis (35%), combo completo gratis (15%). Vigente del 1 al 30 de este mes en WhatsApp.',
-  },
-  {
-    icon: Star,
-    color: '#22C55E',
-    titulo: 'Sistema de puntos',
-    descripcion: 'Acumulación por compras en retail',
-    promptEjemplo:
-      'Crea un sistema de puntos para mi tienda. Por cada $25 de compra = 1 punto. Con 40 puntos doy $10 de descuento. Los clientes suben su factura por WhatsApp. Sin límite de participaciones.',
-  },
-  {
-    icon: Ticket,
-    color: '#A855F7',
-    titulo: 'Cupón de descuento',
-    descripcion: 'Códigos únicos por cliente',
-    promptEjemplo:
-      'Quiero cupones flash para mis clientes. Ingresan su correo en Instagram y reciben un código único de 20% de descuento. Máximo 1000 cupones disponibles.',
-  },
-  {
-    icon: Receipt,
-    color: '#F59E0B',
-    titulo: 'Puntos por factura',
-    descripcion: 'Valida compras con foto de ticket',
-    promptEjemplo:
-      'Programa de puntos donde mis clientes suben foto de su factura de compra por Telegram. Por cada $30 de compra = 2 puntos. Al llegar a 20 puntos reciben un descuento de $15 en su próxima visita.',
-  },
-]
 
 const MENSAJES_LOADING = [
   'Analizando tu campaña...',
@@ -83,6 +41,20 @@ export default function ChatArea({
   ordenSugerencias,
 }: ChatAreaProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  /** Textos y prompts según industria del onboarding — cero tokens Groq */
+  const sugerenciasBase = useMemo(
+    () => obtenerSugerenciasChat(empresa?.industria, empresa?.nombre),
+    [empresa?.industria, empresa?.nombre],
+  )
+
+  const sugerenciasOrdenadas = useMemo(() => {
+    if (!ordenSugerencias?.length) return sugerenciasBase
+    return [...sugerenciasBase].sort(
+      (a, b) =>
+        (ordenSugerencias.indexOf(a.tipo) ?? 99) - (ordenSugerencias.indexOf(b.tipo) ?? 99),
+    )
+  }, [sugerenciasBase, ordenSugerencias])
 
   // Scroll automático al último mensaje
   useEffect(() => {
@@ -123,27 +95,16 @@ export default function ChatArea({
                 : 'Descríbela como se te ocurra. Puedes incluir el tipo de premio, las reglas, el tiempo, los canales... Entre más detalle, mejor resultado.'}
             </p>
 
-            {/* Grid de sugerencias — reordenadas por industria sin consumir tokens */}
+            {/* Grid de sugerencias — textos y prompts por industria; orden sin tokens */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl w-full mx-auto">
-              {(ordenSugerencias
-                ? [...SUGERENCIAS].sort((a, b) => {
-                    const idA = a.titulo.toLowerCase().includes('ruleta') ? 'ruleta' : a.titulo.toLowerCase().includes('puntos') ? 'puntos' : a.titulo.toLowerCase().includes('cupón') ? 'cupon' : 'factura'
-                    const idB = b.titulo.toLowerCase().includes('ruleta') ? 'ruleta' : b.titulo.toLowerCase().includes('puntos') ? 'puntos' : b.titulo.toLowerCase().includes('cupón') ? 'cupon' : 'factura'
-                    return (ordenSugerencias.indexOf(idA) ?? 4) - (ordenSugerencias.indexOf(idB) ?? 4)
-                  })
-                : SUGERENCIAS
-              ).map((s) => {
+              {sugerenciasOrdenadas.map((s) => {
                 const Icon = s.icon
-                // Interpolar nombre de empresa en el prompt si hay sesión
-                const prompt = empresa
-                  ? s.promptEjemplo.replace('mi restaurante', empresa.nombre).replace('mi tienda', empresa.nombre).replace('mis clientes', `los clientes de ${empresa.nombre}`)
-                  : s.promptEjemplo
                 return (
                   <motion.button
-                    key={s.titulo}
+                    key={s.tipo}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => onSugerencia(prompt)}
+                    onClick={() => onSugerencia(s.promptEjemplo)}
                     className="bg-[#1E293B] border border-[#334155] rounded-xl p-4 text-left cursor-pointer group transition-all duration-200 hover:border-current"
                     style={
                       { '--hover-color': s.color } as React.CSSProperties
