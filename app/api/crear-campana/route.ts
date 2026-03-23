@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createBrowserClient } from '@supabase/ssr'
+import { createServerClient } from '@/lib/supabase-server'
 import type { ConfigCampana } from '@/types/campana'
 
 /**
@@ -10,7 +10,7 @@ function generarSlug(nombre: string): string {
     nombre
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // eliminar acentos
+      .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
       .slice(0, 50) +
@@ -35,15 +35,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Usar service role para bypass de RLS en inserciones desde servidor
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    )
+    // Extraer usuario autenticado desde el Bearer JWT del header
+    let userId: string | null = null
+    const authHeader = request.headers.get('authorization')
+    if (authHeader?.startsWith('Bearer ')) {
+      const jwt = authHeader.replace('Bearer ', '')
+      const adminClient = createServerClient()
+      const { data: { user } } = await adminClient.auth.getUser(jwt)
+      userId = user?.id ?? null
+    }
 
+    const supabase = createServerClient()
     const slug = generarSlug(config.nombre_campana)
 
-    // Determinar canales como array
     const canales =
       config.canal === 'todos'
         ? ['whatsapp', 'telegram', 'instagram', 'landing']
@@ -59,6 +63,8 @@ export async function POST(request: NextRequest) {
         canales,
         estado: 'activa',
         configuracion: config,
+        // Siempre guardar el dueño si hay sesión activa
+        ...(userId ? { creado_por: userId } : {}),
       })
       .select('id, slug')
       .single()

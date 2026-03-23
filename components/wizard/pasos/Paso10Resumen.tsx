@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import toast from 'react-hot-toast'
 import confetti from 'canvas-confetti'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase'
 
 const TIPO_ICONOS = {
   ruleta: Trophy,
@@ -69,9 +70,17 @@ export default function Paso10Resumen() {
   const handleLanzar = async () => {
     setGuardando(true)
     try {
+      // Obtener JWT para que la API pueda guardar creado_por
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token ?? ''
+
       const res = await fetch('/api/crear-campana', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ config }),
       })
       const data = await res.json() as { id?: string; slug?: string; url_campana?: string; error?: string }
