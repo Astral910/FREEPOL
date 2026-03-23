@@ -1901,3 +1901,157 @@ Debe llegar un mensaje de prueba al WhatsApp.
 ---
 
 *Actualización agregada el 23 de marzo de 2026 — Módulo 10 (WhatsApp con Twilio).*
+
+---
+
+## Módulo 11 — Chat con sesión obligatoria, planes en onboarding y precios (marzo 2026)
+
+### Objetivo
+
+- Garantizar que solo usuarios autenticados con empresa (flujo completo) envíen prompts a la IA y generen configuración enlazable a `creado_por` en campañas.
+- Permitir a visitantes ver sugerencias y guía de prompts sin consumir flujo de guardado inconsistente.
+- Persistir el **plan** elegido en `empresas.plan` sin lógica de pagos reales.
+- Alinear la página **Precios** con el onboarding y el dashboard.
+
+### Git / despliegue
+
+- **Rama:** cambios en `develop`, merge a `main`.
+- **Commits relevantes en `main`:**
+  - `424d789` — `feat(auth): gate AI chat behind session, add plan selection to onboarding`
+  - `844dd73` — merge de `develop` → `main`
+- **Push:** `origin/main` y `origin/develop` actualizados en el remoto configurado del proyecto.
+- **Vercel:** al estar el proyecto conectado al repo, un push a `main` dispara build y deploy; la URL de producción (p. ej. `freepol.vercel.app`) refleja estos cambios tras el deploy exitoso.
+
+### Cambios en código (archivos)
+
+| Archivo | Cambio |
+|---------|--------|
+| `app/chat/page.tsx` | Estado `sessionCargada`; si no hay empresa (sin sesión o sin onboarding), `enviarMensaje` abre `AuthDialog` y muestra toast; sidebar botón “Iniciar sesión…” abre el dialog; `ChatInput` recibe `sinSesion` y `onLoginClick`. |
+| `components/chat/ChatInput.tsx` | Props `sinSesion`, `onLoginClick`; banner con candado + CTA; textarea y envío bloqueados sin sesión; botón circular abre login si aplica; footer distinto para visitante. |
+| `app/onboarding/page.tsx` | Flujo de **4 pasos** (empresa/industria → marca → **elección de plan** → confirmación); lectura de `?plan=` desde URL; `crearEmpresa` con `plan`; pantalla final muestra plan activado. |
+| `lib/empresa.ts` | Tipo `Empresa.plan` incluye `'starter'`; `crearEmpresa` acepta `plan?: string` e inserta `plan` (default `'free'`). |
+| `app/precios/page.tsx` | Botones por plan con `handleElegirPlan`: sin sesión → `/onboarding?plan=id`; con sesión sin empresa → mismo; con empresa → `actualizarEmpresa` y `router.push('/dashboard?plan_actualizado=1')`; Enterprise → `mailto:ventas@freepol.app`. |
+| `scripts/seed-empresas.ts` | Seed con service role: 4 empresas demo + varias campañas (sin `owner_id` obligatorio en filas demo; `creado_por` opcional). |
+| `package.json` | Script `seed:empresas` → `ts-node --esm scripts/seed-empresas.ts`. |
+
+### SQL manual en Supabase (no olvidar)
+
+El plan **Starter** debe existir en el `CHECK` de la tabla `empresas` si la base aún solo permite `free | pro | enterprise`:
+
+```sql
+ALTER TABLE empresas DROP CONSTRAINT IF EXISTS empresas_plan_check;
+ALTER TABLE empresas ADD CONSTRAINT empresas_plan_check
+  CHECK (plan IN ('free', 'starter', 'pro', 'enterprise'));
+```
+
+*(Ajustar el nombre del constraint si en tu proyecto difiere.)*
+
+### Script de empresas de prueba
+
+- Comando: `npm run seed:empresas`
+- Requiere `.env.local` con `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`.
+- Empresas insertadas (ejemplo de nombres): Pollo Campero Guatemala, Walmart Guatemala, McDonald's Guatemala, Taquería Don Chema — con campañas asociadas y slugs únicos generados.
+
+### Comportamiento esperado (QA)
+
+1. **Visitante en `/chat`:** ve sugerencias y guía; no puede enviar prompt; banner + login.
+2. **Usuario logueado con empresa:** envía prompt, flujo IA → wizard → `crear-campana` con JWT → `creado_por` correcto (ver módulo dashboard previo).
+3. **Nuevo usuario:** registro → onboarding → elige plan → empresa creada con `plan` en BD.
+4. **`/precios`:** elige plan según estado de sesión/empresa como en la tabla anterior.
+
+### Pendientes / mejoras futuras (opcional)
+
+- [ ] Toast o banner en `/dashboard` cuando `?plan_actualizado=1`
+- [ ] Restringir `/wizard` con middleware o redirección si no hay sesión (actualmente el chat ya evita generar config sin login si no envían prompt; el wizard podría abrirse por URL con datos viejos en `localStorage` — evaluar hardening)
+- [ ] Documentar en README el `seed:empresas` y el SQL del plan `starter`
+
+### Actualización de commits (post Módulo 11 inicial)
+
+| Commit (aprox.) | Mensaje |
+|-----------------|--------|
+| `cab0188` | `fix(auth): reset verify screen on dialog close, improve signup/login flow` |
+| `8a96386` | `feat(scripts): add seed-usuarios-demo for auth users, empresas and campanas` |
+| `bd24df0` | `Merge develop: seed usuarios demo` → **main** |
+
+**Ramas:** tras el merge, `main` incluye `develop` hasta el seed de usuarios; conviene ejecutar `git checkout develop && git merge main` periódicamente para alinear `develop` con el último merge en `main`.
+
+---
+
+## Módulo 12 — AuthDialog (verificación de correo) y seed de usuarios reales (marzo 2026)
+
+### Problema resuelto
+
+- Tras registrarse, la pantalla **“Revisa tu correo”** quedaba activa (`registerSuccess === true`) aunque el usuario **cerrara** el modal; al volver a abrirlo no aparecían las pestañas Iniciar sesión / Registrarse.
+- Errores de login (p. ej. correo no confirmado) no tenían forma rápida de ocultar el aviso.
+
+### Cambios en `components/AuthDialog.tsx`
+
+| Cambio | Descripción |
+|--------|-------------|
+| `handleDialogOpenChange` | Al **cerrar** el diálogo: `registerSuccess = false`, reset de countdown y `registeredEmail`, luego `onOpenChange`. El `Dialog` usa este handler en lugar de `onOpenChange` directo del padre. |
+| `salirDePantallaVerificacion` | Botones **Ir a iniciar sesión** (rellena correo en el formulario) y **Registrar otro correo** (reset del formulario de registro). |
+| `signUp` | Si Supabase devuelve **sesión inmediata** (`signupData.session` — confirmación de correo desactivada en el proyecto), cierra modal y redirige a `/onboarding` o `/dashboard` según empresa. |
+| `emailRedirectTo` | `origin + '/'` para enlaces de confirmación correctos según el dominio de la app. |
+| Login exitoso | Usa `handleDialogOpenChange(false)` para limpiar estado al cerrar. |
+| Mensaje de error en login | Enlace **“Cerrar este mensaje”** que limpia `loginError`. |
+| Texto UX | Nota de que cerrar la ventana también permite volver a entrar o registrarse. |
+
+### Nota de configuración Supabase
+
+- En **Authentication → Providers → Email**, si **“Confirm email”** está desactivado, el registro entra al flujo con sesión inmediata (útil en local).
+- Si está activado, el usuario debe usar el enlace del correo; la UI ya no bloquea el acceso a login/registro tras cerrar el modal o usar los botones de la pantalla de verificación.
+
+---
+
+## Módulo 13 — Script `seed-usuarios-demo` (Auth Admin + empresas + campañas)
+
+### Objetivo
+
+Crear **cuentas reales** en `auth.users` (correo + contraseña, correo **confirmado** por API admin), una **empresa** por usuario (`empresas.owner_id`), fila en **`empresa_miembros`** (rol `admin`) y **una campaña activa** por usuario con **`creado_por`** = UUID del usuario — para probar dashboard, login y landings con datos coherentes.
+
+### Archivos y comandos
+
+| Elemento | Detalle |
+|----------|---------|
+| Script | `scripts/seed-usuarios-demo.ts` |
+| Comando | `npm run seed:usuarios-demo` |
+| Variables | `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (**JWT `eyJ...`**, no URL `postgresql://`) |
+| Opcional | `SEED_DEMO_USER_PASSWORD` en `.env.local`; si no existe, el script usa una contraseña por defecto documentada **solo en la salida de consola** al ejecutar el comando |
+| `package.json` | Script `seed:usuarios-demo` |
+| `.env.example` | Comentario para `SEED_DEMO_USER_PASSWORD`; placeholder `RESEND_API_KEY=re_xxx` (no secretos reales) |
+
+### Cuentas demo (correos fijos en el script)
+
+Los correos están definidos en el array `CUENTAS` del script (sufijo `@freepol-demo.local`):
+
+- `demo.pollo@freepol-demo.local` — empresa/campaña tipo **ruleta**
+- `demo.retail@freepol-demo.local` — **puntos**
+- `demo.cupon@freepol-demo.local` — **cupón**
+- `demo.factura@freepol-demo.local` — **factura** (condición teléfono en config)
+
+**Contraseñas:** no se escriben en este documento por política de seguridad. Ejecutar `npm run seed:usuarios-demo` y copiar la contraseña impresa en terminal, o definir `SEED_DEMO_USER_PASSWORD` antes de correr el script.
+
+### Idempotencia
+
+- Si el usuario ya existe (mismo correo), se reutiliza su `id`.
+- Si ya existe empresa para `owner_id` o campaña con mismo `nombre_campana` y `creado_por`, el script omite duplicados y muestra mensaje en consola.
+
+### URLs de landings en consola
+
+Tras un fix del script, las URLs de ejemplo usan **`NEXT_PUBLIC_APP_URL`** (p. ej. `http://localhost:3000` o la URL de Vercel), no la URL del host de Supabase.
+
+### Seguridad
+
+- Borrar o rotar contraseñas de estas cuentas en entornos expuestos.
+- En Supabase → **Authentication → Users** se pueden eliminar usuarios demo cuando ya no se necesiten.
+
+---
+
+## Estado Git / merge (referencia)
+
+- **Flujo habitual:** desarrollo en `develop` → merge a `main` → push → deploy Vercel.
+- **Últimas incorporaciones en `main` (orden lógico):** corrección `creado_por` en campañas, WhatsApp Twilio, SEO `metadataBase`, ESLint/Supabase server para build, MVP merge, chat con sesión + onboarding 4 pasos + precios, fix AuthDialog, script `seed-usuarios-demo` y merge correspondiente.
+
+---
+
+*Actualización agregada — Módulos 11 (ampliado), 12 (AuthDialog) y 13 (seed usuarios demo). Suma al registro de auditoría sin invalidar secciones anteriores.*
