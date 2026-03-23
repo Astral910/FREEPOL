@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, KeyboardEvent } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
-import { ArrowUp, Loader2, Lightbulb } from 'lucide-react'
+import { ArrowUp, Loader2, Lightbulb, LogIn, Lock } from 'lucide-react'
 
 interface ChatInputProps {
   value: string
@@ -11,6 +11,10 @@ interface ChatInputProps {
   onOpenTips: () => void
   loading: boolean
   disabled?: boolean
+  /** true cuando ya sabemos que no hay sesión activa */
+  sinSesion?: boolean
+  /** callback para abrir el AuthDialog desde el banner */
+  onLoginClick?: () => void
 }
 
 const MAX_CHARS = 1000
@@ -18,6 +22,7 @@ const MAX_CHARS = 1000
 /**
  * Área de input del chat con textarea autosize, contador de caracteres
  * y botón de envío con estado de carga.
+ * Sin sesión muestra un banner que invita a iniciar sesión.
  * Enter envía, Shift+Enter hace salto de línea.
  */
 export default function ChatInput({
@@ -27,13 +32,14 @@ export default function ChatInput({
   onOpenTips,
   loading,
   disabled = false,
+  sinSesion = false,
+  onLoginClick,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Enfocar el textarea al montar
   useEffect(() => {
-    textareaRef.current?.focus()
-  }, [])
+    if (!sinSesion) textareaRef.current?.focus()
+  }, [sinSesion])
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -42,23 +48,45 @@ export default function ChatInput({
     }
   }
 
-  const puedeEnviar = value.trim().length >= 1 && !loading && !disabled
+  const puedeEnviar = value.trim().length >= 1 && !loading && !disabled && !sinSesion
   const contadorColor =
-    value.length > 800
-      ? 'text-orange-400'
-      : value.length > 950
-        ? 'text-red-400'
+    value.length > 950
+      ? 'text-red-400'
+      : value.length > 800
+        ? 'text-orange-400'
         : 'text-[#475569]'
 
   return (
-    <div className="flex-shrink-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A] to-transparent pt-6 pb-4 px-4 md:px-6">
-      <div className="max-w-4xl mx-auto w-full">
+    <div className="flex-shrink-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A] to-transparent pt-4 pb-4 px-4 md:px-6">
+      <div className="max-w-4xl mx-auto w-full space-y-2">
+
+        {/* Banner de login — solo si no hay sesión */}
+        {sinSesion && (
+          <div className="flex items-center justify-between gap-3 bg-[#1E293B] border border-[#5B5CF6]/40 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-2.5">
+              <Lock size={14} className="text-[#5B5CF6] flex-shrink-0" />
+              <p className="text-[#94A3B8] text-sm">
+                <span className="text-white font-medium">Inicia sesión</span> para crear y guardar tus campañas con IA
+              </p>
+            </div>
+            <button
+              onClick={onLoginClick}
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#5B5CF6] text-white text-xs font-semibold hover:brightness-110 transition-all"
+            >
+              <LogIn size={12} />
+              Entrar
+            </button>
+          </div>
+        )}
+
         {/* Caja de input */}
         <div
           className={`bg-[#1E293B] rounded-2xl border transition-all duration-200 shadow-lg ${
-            value.length > 0 || loading
-              ? 'border-[#5B5CF6] shadow-[#5B5CF6]/10'
-              : 'border-[#334155]'
+            sinSesion
+              ? 'border-[#334155] opacity-60'
+              : value.length > 0 || loading
+                ? 'border-[#5B5CF6] shadow-[#5B5CF6]/10'
+                : 'border-[#334155]'
           }`}
         >
           <div className="p-4">
@@ -66,22 +94,23 @@ export default function ChatInput({
               ref={textareaRef}
               value={value}
               onChange={(e) => {
-                if (e.target.value.length <= MAX_CHARS) {
-                  onChange(e.target.value)
-                }
+                if (e.target.value.length <= MAX_CHARS) onChange(e.target.value)
               }}
               onKeyDown={handleKeyDown}
               minRows={1}
               maxRows={6}
-              placeholder="Describe tu campaña... Ej: Quiero una ruleta para mi restaurante este mes donde los clientes validen su correo..."
-              disabled={loading || disabled}
+              placeholder={
+                sinSesion
+                  ? 'Inicia sesión para describir tu campaña...'
+                  : 'Describe tu campaña... Ej: Quiero una ruleta para mi restaurante este mes...'
+              }
+              disabled={loading || disabled || sinSesion}
               aria-label="Describe tu campaña de fidelización"
               className="w-full bg-transparent text-[#E2E8F0] placeholder-[#475569] text-base resize-none outline-none border-none leading-relaxed disabled:opacity-50 disabled:cursor-not-allowed"
             />
 
             {/* Barra inferior */}
             <div className="flex items-center justify-between mt-3">
-              {/* Lado izquierdo: contador + tips */}
               <div className="flex items-center gap-3">
                 <span className={`text-xs tabular-nums ${contadorColor}`}>
                   {value.length} / {MAX_CHARS}
@@ -97,20 +126,23 @@ export default function ChatInput({
                 </button>
               </div>
 
-              {/* Botón enviar */}
               <button
                 type="button"
-                onClick={onSend}
-                disabled={!puedeEnviar}
-                aria-label="Enviar mensaje"
+                onClick={sinSesion ? onLoginClick : onSend}
+                disabled={!sinSesion && !puedeEnviar}
+                aria-label={sinSesion ? 'Iniciar sesión' : 'Enviar mensaje'}
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
-                  puedeEnviar
-                    ? 'gradient-bg hover:scale-110 hover:shadow-lg hover:shadow-[#5B5CF6]/40 cursor-pointer'
-                    : 'bg-[#334155] opacity-30 cursor-not-allowed'
+                  sinSesion
+                    ? 'bg-[#5B5CF6]/20 border border-[#5B5CF6]/40 cursor-pointer hover:bg-[#5B5CF6]/30'
+                    : puedeEnviar
+                      ? 'gradient-bg hover:scale-110 hover:shadow-lg hover:shadow-[#5B5CF6]/40 cursor-pointer'
+                      : 'bg-[#334155] opacity-30 cursor-not-allowed'
                 }`}
               >
                 {loading ? (
                   <Loader2 size={16} className="text-white animate-spin" />
+                ) : sinSesion ? (
+                  <LogIn size={15} className="text-[#5B5CF6]" />
                 ) : (
                   <ArrowUp size={16} className="text-white" />
                 )}
@@ -119,9 +151,10 @@ export default function ChatInput({
           </div>
         </div>
 
-        {/* Texto debajo de la caja */}
-        <p className="text-center text-xs text-[#475569] mt-3">
-          FREEPOL interpreta lenguaje natural en español e inglés · Tus datos están protegidos
+        <p className="text-center text-xs text-[#475569]">
+          {sinSesion
+            ? 'Crea tu cuenta gratis · Sin tarjeta de crédito · Listo en 2 minutos'
+            : 'FREEPOL interpreta lenguaje natural en español e inglés · Tus datos están protegidos'}
         </p>
       </div>
     </div>

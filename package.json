@@ -10,6 +10,7 @@
     "bot": "ts-node --esm bot/telegram.ts",
     "bot:dev": "nodemon --exec \"ts-node --esm bot/telegram.ts\"",
     "seed": "ts-node --esm lib/seed-demos.ts",
+    "seed:empresas": "ts-node --esm scripts/seed-empresas.ts",
     "verificar": "ts-node --esm scripts/verificar-proyecto.ts"
   },
   "dependencies": {

@@ -59,6 +59,8 @@ export default function ChatPage() {
   const [tipsOpen, setTipsOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
+  // true una vez que sabemos si hay sesión o no
+  const [sessionCargada, setSessionCargada] = useState(false)
 
   // Detectar parámetros URL al montar
   useEffect(() => {
@@ -85,11 +87,15 @@ export default function ChatPage() {
   useEffect(() => {
     const cargar = async () => {
       const { data } = await supabase.auth.getSession()
-      if (!data.session) return
+      if (!data.session) {
+        setSessionCargada(true)
+        return
+      }
 
       const { getEmpresaDelUsuario } = await import('@/lib/empresa')
       const emp = await getEmpresaDelUsuario(data.session.user.id)
       setEmpresa(emp)
+      setSessionCargada(true)
 
       // Cargar últimas 3 campañas reales del usuario
       const { data: camps } = await supabase
@@ -116,6 +122,16 @@ export default function ChatPage() {
   const enviarMensaje = useCallback(async () => {
     const texto = inputValue.trim()
     if (!texto || estado === 'loading') return
+
+    // Si no hay sesión, bloquear y abrir el dialog de login
+    if (!empresa) {
+      toast('Inicia sesión para crear campañas con FREEPOL', {
+        icon: '🔐',
+        style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #5B5CF6' },
+      })
+      setAuthOpen(true)
+      return
+    }
 
     const mensajeUsuario: MensajeChat = {
       id: uuidv4(),
@@ -271,10 +287,13 @@ export default function ChatPage() {
             <span className="text-[#5B5CF6] text-sm">Ver mis campañas →</span>
           </Link>
         ) : (
-          <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] transition-colors cursor-pointer">
+          <button
+            onClick={() => setAuthOpen(true)}
+            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] transition-colors border border-[#5B5CF6]/30 bg-[#5B5CF6]/5"
+          >
             <LogIn size={15} className="text-[#5B5CF6]" />
-            <span className="text-[#5B5CF6] text-sm">Iniciar sesión para guardar</span>
-          </div>
+            <span className="text-[#5B5CF6] text-sm font-medium">Iniciar sesión para crear campañas</span>
+          </button>
         )}
       </div>
     </aside>
@@ -354,6 +373,8 @@ export default function ChatPage() {
             onOpenTips={() => setTipsOpen(true)}
             loading={estado === 'loading'}
             disabled={estado === 'results'}
+            sinSesion={sessionCargada && !empresa}
+            onLoginClick={() => setAuthOpen(true)}
           />
         )}
       </main>

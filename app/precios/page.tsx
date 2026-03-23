@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Check, X, Zap, ArrowRight } from 'lucide-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { createClient } from '@/lib/supabase'
 
 const PLANES = [
   {
@@ -11,7 +13,7 @@ const PLANES = [
     subtitulo: 'Para empezar y probar',
     color: '#64748B', borderClass: 'border-[#E5E7EB]',
     destacado: false, oscuro: false,
-    botonLabel: 'Empezar gratis', botonHref: '/chat',
+    botonLabel: 'Empezar gratis',
     botonClass: 'border border-[#E5E7EB] text-[#0F172A] hover:bg-[#F8FAFC]',
     features: [
       { label: '2 campañas activas', ok: true },
@@ -30,7 +32,7 @@ const PLANES = [
     subtitulo: 'Para negocios locales',
     color: '#22C55E', borderClass: 'border-[#22C55E]',
     destacado: false, oscuro: false,
-    botonLabel: 'Empezar con Starter', botonHref: '/chat',
+    botonLabel: 'Empezar con Starter',
     botonClass: 'bg-[#22C55E] text-white hover:opacity-90',
     badge: 'Para negocios locales',
     features: [
@@ -50,7 +52,7 @@ const PLANES = [
     subtitulo: 'Para negocios en crecimiento',
     color: '#5B5CF6', borderClass: 'border-[#5B5CF6]',
     destacado: true, oscuro: false,
-    botonLabel: 'Empezar con Pro', botonHref: '/chat',
+    botonLabel: 'Empezar con Pro',
     botonClass: 'gradient-bg text-white hover:opacity-90 shadow-lg shadow-[#5B5CF6]/20',
     badge: 'Más popular',
     features: [
@@ -70,7 +72,7 @@ const PLANES = [
     subtitulo: 'Para cadenas y empresas grandes',
     color: '#E2E8F0', borderClass: 'border-[#334155]',
     destacado: false, oscuro: true,
-    botonLabel: 'Contactar ventas', botonHref: 'mailto:ventas@freepol.app',
+    botonLabel: 'Contactar ventas',
     botonClass: 'border border-white/30 text-white hover:bg-white/10',
     features: [
       { label: 'Participantes ilimitados', ok: true },
@@ -95,7 +97,41 @@ const FAQ_PRECIOS = [
 ]
 
 export default function PreciosPage() {
+  const router = useRouter()
   const [anual, setAnual] = useState(false)
+
+  /** Seleccionar un plan: si hay sesión y empresa → actualizar plan directo;
+   *  si no hay empresa → onboarding con plan pre-seleccionado;
+   *  enterprise → mailto */
+  const handleElegirPlan = async (planId: string) => {
+    if (planId === 'enterprise') {
+      window.location.href = 'mailto:ventas@freepol.app?subject=Plan Enterprise FREEPOL'
+      return
+    }
+    const supabase = createClient()
+    const { data } = await supabase.auth.getSession()
+
+    if (!data.session) {
+      // Sin sesión: ir al onboarding con el plan pre-elegido
+      router.push(`/onboarding?plan=${planId}`)
+      return
+    }
+
+    // Con sesión: verificar si ya tiene empresa
+    const { getEmpresaDelUsuario } = await import('@/lib/empresa')
+    const empresa = await getEmpresaDelUsuario(data.session.user.id)
+
+    if (!empresa) {
+      // Tiene sesión pero no empresa → onboarding con plan pre-elegido
+      router.push(`/onboarding?plan=${planId}`)
+      return
+    }
+
+    // Ya tiene empresa → actualizar el plan directamente
+    const { actualizarEmpresa } = await import('@/lib/empresa')
+    await actualizarEmpresa(empresa.id, { plan: planId as 'free' | 'starter' | 'pro' | 'enterprise' })
+    router.push('/dashboard?plan_actualizado=1')
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -176,9 +212,12 @@ export default function PreciosPage() {
                   )}
                 </div>
 
-                <Link href={plan.botonHref} className={`block w-full py-3 rounded-xl text-center font-semibold text-sm transition-opacity ${plan.botonClass}`}>
+                <button
+                  onClick={() => handleElegirPlan(plan.id)}
+                  className={`block w-full py-3 rounded-xl text-center font-semibold text-sm transition-opacity cursor-pointer ${plan.botonClass}`}
+                >
                   {plan.botonLabel}
-                </Link>
+                </button>
 
                 <ul className="space-y-2.5">
                   {plan.features.map((f, i) => (
