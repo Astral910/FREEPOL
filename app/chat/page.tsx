@@ -86,7 +86,7 @@ export default function ChatPage() {
       setAuthOpen(true)
       toast('Inicia sesión para acceder al dashboard', {
         icon: '🔐',
-        style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E' },
+        style: { background: '#FFFFFF', color: '#0F172A', border: '1px solid #E5E7EB' },
       })
     }
 
@@ -95,7 +95,7 @@ export default function ChatPage() {
     if (promptParam) {
       setInputValue(decodeURIComponent(promptParam))
       toast('Prompt cargado desde demos ✨', {
-        style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E' },
+        style: { background: '#FFFFFF', color: '#0F172A', border: '1px solid #E5E7EB' },
       })
     }
   }, [searchParams])
@@ -144,7 +144,7 @@ export default function ChatPage() {
     if (!empresa) {
       toast('Inicia sesión para crear campañas con FREEPOL', {
         icon: '🔐',
-        style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #E8344E' },
+        style: { background: '#FFFFFF', color: '#0F172A', border: '1px solid #E8344E' },
       })
       setAuthOpen(true)
       return
@@ -206,7 +206,7 @@ export default function ChatPage() {
       setMensajes((prev) => [...prev, mensajeError])
       setEstado('idle')
     }
-  }, [inputValue, estado])
+  }, [inputValue, estado, empresa])
 
   const handleSugerencia = useCallback((prompt: string) => {
     setInputValue(prompt)
@@ -238,10 +238,7 @@ export default function ChatPage() {
     : HISTORIAL_SIMULADO
 
   const Sidebar = (
-    <aside
-      className="w-72 border-r border-[#2D2F5E] flex flex-col h-full flex-shrink-0"
-      style={{ backgroundColor: empresa?.color_primario ? `${empresa.color_primario}10` : undefined, background: '#1A1B4B' }}
-    >
+    <aside className="w-72 border-r border-[#2D2F5E] flex flex-col h-full flex-shrink-0 bg-[#1A1B4B]">
       {/* Header del sidebar */}
       <div className="p-5 border-b border-[#2D2F5E]">
         <Link href="/" className="flex items-center gap-2 mb-3 group">
@@ -249,7 +246,7 @@ export default function ChatPage() {
           <Zap size={16} className="text-[#E8344E]" />
           <span className="font-bold text-white">
             {empresa ? (
-              <span style={{ color: empresa.color_primario }}>{empresa.nombre}</span>
+              <span className="text-[#E8344E]">{empresa.nombre}</span>
             ) : (
               <Image src="/logo-dark.svg" alt="FREEPOL" width={110} height={28} priority />
             )}
@@ -317,15 +314,15 @@ export default function ChatPage() {
   )
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A] overflow-hidden">
+    <div className="flex h-screen bg-white overflow-hidden">
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
       <Toaster
         position="top-center"
         toastOptions={{
           style: {
-            background: '#1A1B4B',
-            color: '#E2E8F0',
-            border: '1px solid #2D2F5E',
+            background: '#FFFFFF',
+            color: '#0F172A',
+            border: '1px solid #E5E7EB',
             borderRadius: '12px',
           },
         }}
@@ -345,24 +342,24 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Área principal */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      {/* Área principal — fondo blanco alineado al dashboard */}
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white">
         {/* Header móvil */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[#2D2F5E] flex-shrink-0">
+        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB] bg-white flex-shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
             aria-label="Abrir menú"
-            className="text-[#94A3B8] hover:text-white transition-colors"
+            className="text-[#64748B] hover:text-[#E8344E] transition-colors"
           >
             <Menu size={22} />
           </button>
           <div className="flex items-center gap-1.5">
-            <Image src="/logo-dark.svg" alt="FREEPOL" width={100} height={25} priority />
+            <Image src="/logo.svg" alt="FREEPOL" width={100} height={25} priority />
           </div>
           <button
             onClick={() => setTipsOpen(true)}
             aria-label="Abrir guía de prompts"
-            className="text-[#94A3B8] hover:text-white transition-colors"
+            className="text-[#64748B] hover:text-[#E8344E] transition-colors"
           >
             <BookOpen size={20} />
           </button>

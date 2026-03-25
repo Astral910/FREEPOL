@@ -19,6 +19,7 @@ import type { CampanaRow } from '@/app/c/[slug]/page'
 import ComponenteRuleta from './ComponenteRuleta'
 import ComponenteCupon from './ComponenteCupon'
 import ComponentePuntos from './ComponentePuntos'
+import { BRAND_PRIMARY } from '@/lib/brand'
 
 interface FormData {
   correo?: string
@@ -84,8 +85,6 @@ export default function LandingCampana({ campana }: Props) {
     }
   }
 
-  const primarioColor = cfg.color_primario?.trim() || '#E8344E'
-
   const tipoBadge = (() => {
     const map = {
       ruleta: { label: 'Ruleta de premios', Icon: Trophy },
@@ -104,7 +103,7 @@ export default function LandingCampana({ campana }: Props) {
       <div
         className="relative overflow-hidden rounded-b-[2rem] px-4 pb-10 pt-10 shadow-sm"
         style={{
-          background: `linear-gradient(135deg, ${primarioColor} 0%, #F2839A 55%, #22C55E 120%)`,
+          background: `linear-gradient(135deg, ${BRAND_PRIMARY} 0%, #F2839A 55%, #22C55E 120%)`,
         }}
       >
         <div
@@ -127,7 +126,7 @@ export default function LandingCampana({ campana }: Props) {
             <p className="text-lg text-white/90 font-medium">{campana.nombre_campana}</p>
           </div>
           <div className="inline-flex items-center gap-2 rounded-2xl bg-white/95 px-4 py-2 text-sm font-medium text-[#0F172A] shadow-md">
-            <TipoIcon size={18} style={{ color: primarioColor }} />
+            <TipoIcon size={18} style={{ color: BRAND_PRIMARY }} />
             {tipoBadge.label}
           </div>
           {horarioActivo && (
@@ -147,7 +146,7 @@ export default function LandingCampana({ campana }: Props) {
         {cfg.mensaje_bienvenida && (
           <div
             className="rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC] p-5 space-y-3"
-            style={{ borderLeftWidth: 4, borderLeftColor: primarioColor }}
+            style={{ borderLeftWidth: 4, borderLeftColor: BRAND_PRIMARY }}
           >
             <p className="text-base text-[#0F172A] leading-relaxed">{cfg.mensaje_bienvenida}</p>
             {cfg.fecha_fin && (
@@ -183,7 +182,7 @@ export default function LandingCampana({ campana }: Props) {
                   disabled={enviando}
                   className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-60 shadow-lg"
                   style={{
-                    background: `linear-gradient(135deg, ${primarioColor}, #F2839A)`,
+                    background: `linear-gradient(135deg, ${BRAND_PRIMARY}, #F2839A)`,
                   }}
                 >
                   {enviando ? <Loader2 size={18} className="animate-spin" /> : 'Participar ahora →'}
@@ -208,7 +207,7 @@ export default function LandingCampana({ campana }: Props) {
                           },
                         })}
                         className="w-full border border-[#E5E7EB] rounded-xl py-3.5 px-4 text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 text-base"
-                        style={{ '--tw-ring-color': primarioColor } as React.CSSProperties}
+                        style={{ '--tw-ring-color': BRAND_PRIMARY } as React.CSSProperties}
                       />
                       {errors.correo && (
                         <p className="text-red-500 text-xs">{errors.correo.message}</p>
@@ -231,7 +230,7 @@ export default function LandingCampana({ campana }: Props) {
                           minLength: { value: 8, message: 'Número muy corto' },
                         })}
                         className="w-full border border-[#E5E7EB] rounded-xl py-3.5 px-4 text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 text-base"
-                        style={{ '--tw-ring-color': primarioColor } as React.CSSProperties}
+                        style={{ '--tw-ring-color': BRAND_PRIMARY } as React.CSSProperties}
                       />
                       {errors.telefono && (
                         <p className="text-red-500 text-xs">{errors.telefono.message}</p>
@@ -253,7 +252,7 @@ export default function LandingCampana({ campana }: Props) {
                     disabled={enviando}
                     className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-60 shadow-lg"
                     style={{
-                      background: `linear-gradient(135deg, ${primarioColor}, #F2839A)`,
+                      background: `linear-gradient(135deg, ${BRAND_PRIMARY}, #F2839A)`,
                     }}
                   >
                     {enviando ? (
@@ -280,11 +279,7 @@ export default function LandingCampana({ campana }: Props) {
                 <ComponenteCupon campana={campana} participanteId={participanteId} />
               )}
               {(tipo === 'puntos' || tipo === 'factura') && (
-                <ComponentePuntos
-                  campana={campana}
-                  participanteId={participanteId}
-                  colorPrimario={primarioColor}
-                />
+                <ComponentePuntos campana={campana} participanteId={participanteId} />
               )}
             </motion.div>
           )}

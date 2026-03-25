@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase'
+import { BRAND_PRIMARY, BRAND_SUCCESS } from '@/lib/brand'
 
 export interface Empresa {
   id: string
@@ -41,8 +42,6 @@ export async function crearEmpresa(
   datos: {
     nombre: string
     sitio_web?: string
-    color_primario?: string
-    color_secundario?: string
     industria?: string
     plan?: string
   },
@@ -54,8 +53,8 @@ export async function crearEmpresa(
     .insert({
       nombre: datos.nombre,
       sitio_web: datos.sitio_web ?? null,
-      color_primario: datos.color_primario ?? '#E8344E',
-      color_secundario: datos.color_secundario ?? '#22C55E',
+      color_primario: BRAND_PRIMARY,
+      color_secundario: BRAND_SUCCESS,
       industria: datos.industria ?? 'otro',
       plan: datos.plan ?? 'free',
       owner_id: userId,

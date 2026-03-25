@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Rocket, Users, Gift, TrendingUp } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js'
+import { BRAND_PRIMARY } from '@/lib/brand'
 
 interface Metricas {
   campanasActivas: number
@@ -15,7 +16,6 @@ interface Metricas {
 
 interface MetricasCardsProps {
   userId: string
-  colorPrimario?: string
   supabase: SupabaseClient
 }
 
@@ -60,7 +60,7 @@ async function fetchMetricas(supabase: SupabaseClient, userId: string): Promise<
  * 4 cards de métricas del dashboard con animaciones y Realtime.
  * Los números animan desde 0 al valor real al montar.
  */
-export default function MetricasCards({ userId, colorPrimario = '#E8344E', supabase }: MetricasCardsProps) {
+export default function MetricasCards({ userId, supabase }: MetricasCardsProps) {
   const [metricas, setMetricas] = useState<Metricas | null>(null)
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function MetricasCards({ userId, colorPrimario = '#E8344E', supab
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-5 space-y-3">
+          <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 space-y-3 shadow-sm">
             <Skeleton className="h-3 w-24" />
             <Skeleton className="h-8 w-16" />
             <Skeleton className="h-3 w-28" />
@@ -105,8 +105,8 @@ export default function MetricasCards({ userId, colorPrimario = '#E8344E', supab
       sufijo: '',
       subtexto: 'campañas en vivo',
       icono: Rocket,
-      color: colorPrimario,
-      bg: `${colorPrimario}15`,
+      color: BRAND_PRIMARY,
+      bg: `${BRAND_PRIMARY}15`,
     },
     {
       label: 'Total participantes',
@@ -147,15 +147,15 @@ export default function MetricasCards({ userId, colorPrimario = '#E8344E', supab
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.08 }}
-            className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-5 hover:border-[#E8344E]/30 transition-colors duration-200"
+            className="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-sm hover:border-[#E8344E]/35 transition-colors duration-200"
           >
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[#94A3B8] text-xs uppercase tracking-widest font-medium">{t.label}</p>
+              <p className="text-[#64748B] text-xs uppercase tracking-widest font-medium">{t.label}</p>
               <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: t.bg }}>
                 <Icono size={16} style={{ color: t.color }} />
               </div>
             </div>
-            <p className="text-3xl font-bold text-white">
+            <p className="text-3xl font-bold text-[#0F172A]">
               {metricas.totalParticipantes === 0 && t.sufijo === '%'
                 ? '—'
                 : <AnimatedNumber value={t.valor} suffix={t.sufijo} />}

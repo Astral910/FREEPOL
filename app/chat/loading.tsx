@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
  */
 export default function ChatLoading() {
   return (
-    <div className="h-screen bg-[#0A0A0A] flex overflow-hidden">
+    <div className="h-screen bg-white flex overflow-hidden">
       {/* Sidebar skeleton */}
       <aside className="hidden md:flex w-72 bg-[#1A1B4B] border-r border-[#2D2F5E] flex-col p-4 gap-4">
         <div className="flex items-center justify-between mb-2">
@@ -37,7 +37,7 @@ export default function ChatLoading() {
               <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
             </svg>
           </div>
-          <p className="text-[#475569] text-sm animate-pulse">Cargando el asistente...</p>
+          <p className="text-[#64748B] text-sm animate-pulse">Cargando el asistente...</p>
         </div>
       </div>
     </div>

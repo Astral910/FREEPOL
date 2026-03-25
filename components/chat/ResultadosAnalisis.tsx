@@ -70,22 +70,22 @@ export default function ResultadosAnalisis({
       transition={{ duration: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
       className="max-w-3xl mx-auto w-full"
     >
-      <div className="bg-[#1A1B4B] rounded-2xl border border-[#2D2F5E] p-6 space-y-6">
+      <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 space-y-6">
 
         {/* Header */}
         <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-full bg-[#022C22] flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-[#F0FDF4] border border-[#86EFAC] flex items-center justify-center flex-shrink-0">
             <CheckCircle2 size={22} className="text-[#22C55E]" />
           </div>
           <div>
-            <h2 className="text-white font-bold text-xl leading-tight">
+            <h2 className="text-[#0F172A] font-bold text-xl leading-tight">
               ¡Tu campaña está lista para configurar!
             </h2>
-            <p className="text-[#94A3B8] text-sm mt-1">
+            <p className="text-[#64748B] text-sm mt-1">
               Esto es lo que FREEPOL construirá para ti:
             </p>
             {config.nombre_campana && (
-              <div className="mt-2 inline-flex items-center gap-2 bg-[#0A0A0A] border border-[#2D2F5E] rounded-lg px-3 py-1">
+              <div className="mt-2 inline-flex items-center gap-2 bg-[#FFF0F2] border border-[#F9B8C4]/80 rounded-lg px-3 py-1">
                 <span className="text-[#64748B] text-xs">Campaña:</span>
                 <span className="text-[#E8344E] text-sm font-semibold">
                   {config.nombre_campana}
@@ -97,9 +97,9 @@ export default function ResultadosAnalisis({
 
         {/* Sección VERDE — lo que sí se puede */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 bg-[#022C22]/60 rounded-lg p-3">
-            <Check size={16} className="text-[#22C55E] flex-shrink-0" />
-            <span className="text-[#22C55E] font-semibold text-sm">
+          <div className="flex items-center gap-2 bg-[#F0FDF4] border border-[#BBF7D0] rounded-lg p-3">
+            <Check size={16} className="text-[#15803D] flex-shrink-0" />
+            <span className="text-[#15803D] font-semibold text-sm">
               Lo que configuraremos perfectamente
             </span>
           </div>
@@ -119,10 +119,10 @@ export default function ResultadosAnalisis({
                   hidden: { opacity: 0, x: -10 },
                   visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
                 }}
-                className="flex items-start gap-3 bg-[#022C22]/30 rounded-lg px-3 py-2"
+                className="flex items-start gap-3 bg-[#F0FDF4]/80 border border-[#D1FAE5]/80 rounded-lg px-3 py-2"
               >
                 <Check size={13} className="text-[#22C55E] flex-shrink-0 mt-0.5" />
-                <span className="text-[#D1FAE5] text-sm leading-relaxed">{item}</span>
+                <span className="text-[#166534] text-sm leading-relaxed">{item}</span>
               </motion.div>
             ))}
           </motion.div>
@@ -131,16 +131,16 @@ export default function ResultadosAnalisis({
         {/* Sección NARANJA — ajustes y alternativas (solo si hay) */}
         {no_puede_hacer.length > 0 && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 bg-[#431407]/50 rounded-lg p-3">
-              <AlertTriangle size={16} className="text-[#F97316] flex-shrink-0" />
-              <span className="text-[#F97316] font-semibold text-sm">
+            <div className="flex items-center gap-2 bg-[#FFF7ED] border border-[#FED7AA] rounded-lg p-3">
+              <AlertTriangle size={16} className="text-[#EA580C] flex-shrink-0" />
+              <span className="text-[#C2410C] font-semibold text-sm">
                 Ajustes que hicimos
               </span>
             </div>
-            <div className="overflow-x-auto rounded-xl border border-[#2D2F5E]">
+            <div className="overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#1A1B4B]">
+                  <tr className="bg-[#F8FAFC] border-b border-[#E5E7EB]">
                     {['Lo que pediste', 'Limitación', 'Alternativa de FREEPOL'].map((h) => (
                       <th
                         key={h}
@@ -155,11 +155,11 @@ export default function ResultadosAnalisis({
                   {alternativas.map((alt, i) => (
                     <tr
                       key={i}
-                      className={i % 2 === 0 ? 'bg-[#0A0A0A]' : 'bg-[#1A1B4B]'}
+                      className={i % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'}
                     >
-                      <td className="px-4 py-3 text-[#CBD5E1]">{alt.pidio}</td>
-                      <td className="px-4 py-3 text-[#94A3B8]">{alt.razon}</td>
-                      <td className="px-4 py-3 text-[#22C55E] font-medium">
+                      <td className="px-4 py-3 text-[#0F172A]">{alt.pidio}</td>
+                      <td className="px-4 py-3 text-[#64748B]">{alt.razon}</td>
+                      <td className="px-4 py-3 text-[#15803D] font-medium">
                         {alt.alternativa}
                       </td>
                     </tr>
@@ -179,10 +179,10 @@ export default function ResultadosAnalisis({
             {resumenCards.map((card) => (
               <div
                 key={card.label}
-                className="bg-[#0A0A0A] rounded-lg p-3 text-center border border-[#2D2F5E]/50"
+                className="bg-[#F8FAFC] rounded-lg p-3 text-center border border-[#E5E7EB]"
               >
                 <p className="text-[#64748B] text-xs mb-1">{card.label}</p>
-                <p className="text-[#E2E8F0] font-semibold text-sm leading-tight">
+                <p className="text-[#0F172A] font-semibold text-sm leading-tight">
                   {card.valor}
                 </p>
               </div>
@@ -205,7 +205,7 @@ export default function ResultadosAnalisis({
           <Button
             variant="outline"
             onClick={onAjustar}
-            className="bg-[#2D2F5E] border-[#475569] text-[#CBD5E1] rounded-xl px-6 py-3 h-auto hover:bg-[#3E4F65] hover:text-white"
+            className="bg-white border-[#E5E7EB] text-[#0F172A] rounded-xl px-6 py-3 h-auto hover:bg-[#F8FAFC]"
           >
             <RotateCcw size={14} className="mr-2" />
             Ajustar descripción
@@ -215,7 +215,7 @@ export default function ResultadosAnalisis({
         <div className="text-center">
           <button
             onClick={onReiniciar}
-            className="text-[#475569] text-sm hover:text-[#64748B] transition-colors flex items-center gap-1.5 mx-auto"
+            className="text-[#64748B] text-sm hover:text-[#E8344E] transition-colors flex items-center gap-1.5 mx-auto"
           >
             <Trash2 size={13} />
             Empezar de cero

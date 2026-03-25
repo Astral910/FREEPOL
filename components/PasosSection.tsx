@@ -1,119 +1,112 @@
 'use client'
 
-import { memo } from 'react'
-import { motion } from 'framer-motion'
-import { PenLine, Brain, Settings2, Rocket } from 'lucide-react'
-import { GradientBadge } from '@/components/ui/GradientBadge'
-import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
+import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
+import { MessageSquare, Cpu, CheckCircle, Rocket } from 'lucide-react'
 
-const pasos = [
+const PASOS = [
   {
-    numero: '01',
-    icon: PenLine,
-    iconColor: '#E8344E',
+    num: '01',
     titulo: 'Describe tu campaña',
-    texto: 'Escribe en el chat qué tipo de campaña quieres, los premios y las reglas.',
+    desc: 'Cuéntale a la IA qué quieres en lenguaje natural.',
+    icon: MessageSquare,
   },
   {
-    numero: '02',
-    icon: Brain,
-    iconColor: '#F2839A',
-    titulo: 'La IA analiza',
-    texto:
-      'FREEPOL identifica qué puede hacer y te ofrece alternativas para lo que no.',
+    num: '02',
+    titulo: 'La IA analiza y configura',
+    desc: 'Detecta reglas, premios y canales compatibles.',
+    icon: Cpu,
   },
   {
-    numero: '03',
-    icon: Settings2,
-    iconColor: '#3B82F6',
-    titulo: 'Confirma en el wizard',
-    texto:
-      'Revisa la configuración pre-llenada paso a paso y ajusta lo que necesites.',
+    num: '03',
+    titulo: 'Confirmas paso a paso',
+    desc: 'Revisas en el wizard todo antes de publicar.',
+    icon: CheckCircle,
   },
   {
-    numero: '04',
+    num: '04',
+    titulo: 'Tu campaña en vivo',
+    desc: 'Landing y bots listos para tus clientes.',
     icon: Rocket,
-    iconColor: '#22C55E',
-    titulo: 'Campaña en vivo',
-    texto:
-      'Tus clientes participan desde WhatsApp o la landing generada. Métricas en tiempo real.',
   },
 ]
 
 /**
- * Sección de pasos del proceso de creación de campañas.
- * Incluye línea conectora decorativa en desktop.
+ * Pasos — fondo navy, números decorativos gigantes y pasos claros.
  */
-const PasosSection = memo(function PasosSection() {
-  const { ref, isInView } = useScrollAnimation()
+export default function PasosSection() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section className="bg-[#F8FAFC] py-24">
-      <div className="max-w-5xl mx-auto px-4 md:px-8">
-        {/* Encabezado */}
-        <div className="text-center mb-16">
-          <GradientBadge variant="blue" className="mb-4">
-            El proceso
-          </GradientBadge>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] mt-4 mb-4">
-            De la idea a la campaña{' '}
-            <span className="gradient-text">en vivo</span>
-          </h2>
-          <p className="text-[#64748B] text-lg">
-            En menos de 5 minutos, sin código, sin reuniones técnicas
-          </p>
-        </div>
-
-        {/* Pasos */}
-        <div ref={ref} className="relative">
-          {/* Línea conectora (solo desktop) */}
-          <div className="hidden md:block absolute top-8 left-[12%] right-[12%] h-px border-t-2 border-dashed border-[#E5E7EB] z-0" />
-
-          <motion.div
-            initial="hidden"
-            animate={isInView ? 'visible' : 'hidden'}
-            variants={{
-              hidden: {},
-              visible: { transition: { staggerChildren: 0.12 } },
-            }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10"
+    <section ref={ref} className="bg-[#1A1B4B] px-4 py-16 md:px-8 md:py-24">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          className="mb-12 space-y-1 font-black uppercase leading-[0.92] md:mb-16"
+          initial={{ opacity: 0, y: 36 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55 }}
+        >
+          <h2
+            className="text-[40px] text-transparent sm:text-[56px] md:text-[90px]"
+            style={{ WebkitTextStroke: '2px #ffffff' }}
           >
-            {pasos.map((paso) => {
-              const Icon = paso.icon
-              return (
-                <motion.div
-                  key={paso.numero}
-                  variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      transition: { duration: 0.5, ease: [0.25, 0.4, 0.25, 1] },
-                    },
-                  }}
-                  className="flex flex-col items-center text-center"
-                >
-                  {/* Número grande */}
-                  <span className="text-5xl font-black gradient-text leading-none mb-3">
-                    {paso.numero}
+            DE LA IDEA
+          </h2>
+          <h2 className="text-[40px] text-[#E8344E] sm:text-[56px] md:text-[90px]">
+            A LA CAMPAÑA
+          </h2>
+          <h2 className="text-[40px] text-white sm:text-[56px] md:text-[90px]">EN VIVO.</h2>
+        </motion.div>
+
+        <div className="relative grid gap-10 md:grid-cols-4 md:gap-4">
+          {/* Línea punteada desktop */}
+          <div
+            className="pointer-events-none absolute left-0 right-0 top-[52px] hidden h-px border-t border-dashed border-white/40 md:block"
+            style={{ width: 'calc(100% - 4rem)', marginLeft: '2rem' }}
+            aria-hidden
+          />
+
+          {PASOS.map((paso, i) => {
+            const Icon = paso.icon
+            return (
+              <motion.div
+                key={paso.num}
+                className="relative flex flex-col items-center text-center md:items-start md:text-left"
+                initial={{ opacity: 0, y: 32 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.45, delay: i * 0.12 }}
+              >
+                <div className="relative mb-6 flex h-28 w-full items-start justify-center md:justify-start">
+                  <span
+                    className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 text-[100px] font-black leading-none text-[#E8344E]/20 sm:text-[140px] md:-left-2 md:translate-x-0 md:text-[180px]"
+                    aria-hidden
+                  >
+                    {paso.num}
                   </span>
-
-                  {/* Ícono */}
-                  <div className="w-12 h-12 rounded-xl bg-white border border-[#E5E7EB] shadow-sm flex items-center justify-center mb-4">
-                    <Icon size={22} style={{ color: paso.iconColor }} />
+                  <div className="relative z-[1] mt-10 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-white text-[#1A1B4B] shadow-lg">
+                    <Icon size={26} strokeWidth={2} />
                   </div>
-
-                  {/* Texto */}
-                  <h3 className="text-base font-bold text-[#0F172A] mb-2">{paso.titulo}</h3>
-                  <p className="text-sm text-[#64748B] leading-relaxed">{paso.texto}</p>
-                </motion.div>
-              )
-            })}
-          </motion.div>
+                </div>
+                <h3 className="mb-2 text-xl font-black text-white">{paso.titulo}</h3>
+                <p className="max-w-[220px] text-sm leading-relaxed text-[#94A3B8]">
+                  {paso.desc}
+                </p>
+              </motion.div>
+            )
+          })}
         </div>
+
+        <motion.p
+          className="mt-10 hidden text-right text-2xl text-white/50 md:block"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.6 }}
+          aria-hidden
+        >
+          →
+        </motion.p>
       </div>
     </section>
   )
-})
-
-export default PasosSection
+}

@@ -1,54 +1,45 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
 /**
- * Skeleton de carga específico del dashboard.
+ * Estado de carga del dashboard (tema claro).
  */
 export default function DashboardLoading() {
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
-      {/* Navbar skeleton */}
-      <div className="h-16 bg-[#0A0A0A] border-b border-[#1A1B4B] px-8 flex items-center justify-between">
-        <Skeleton className="h-6 w-28 bg-[#1A1B4B]" />
-        <div className="flex gap-4">
-          <Skeleton className="h-4 w-24 bg-[#1A1B4B]" />
-          <Skeleton className="h-4 w-24 bg-[#1A1B4B]" />
-          <Skeleton className="h-8 w-8 rounded-full bg-[#1A1B4B]" />
+    <div className="min-h-screen bg-white">
+      {/* Navbar */}
+      <div className="h-16 bg-white border-b border-[#E5E7EB] px-8 flex items-center justify-between">
+        <Skeleton className="h-6 w-28 bg-[#F1F5F9]" />
+        <div className="flex gap-6">
+          <Skeleton className="h-4 w-24 bg-[#F1F5F9]" />
+          <Skeleton className="h-4 w-24 bg-[#F1F5F9]" />
+          <Skeleton className="h-8 w-8 rounded-full bg-[#F1F5F9]" />
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
-        {/* Header skeleton */}
+        {/* Header de bienvenida */}
         <div className="space-y-2">
-          <Skeleton className="h-8 w-64 bg-[#1A1B4B]" />
-          <Skeleton className="h-4 w-40 bg-[#1A1B4B]" />
+          <Skeleton className="h-8 w-64 bg-[#F1F5F9]" />
+          <Skeleton className="h-4 w-40 bg-[#F1F5F9]" />
         </div>
 
-        {/* Métricas skeleton */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Métricas */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-[#1A1B4B] rounded-2xl p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-4 w-28 bg-[#2D2F5E]" />
-                <Skeleton className="h-8 w-8 rounded-xl bg-[#2D2F5E]" />
-              </div>
-              <Skeleton className="h-8 w-20 bg-[#2D2F5E]" />
-              <Skeleton className="h-3 w-32 bg-[#2D2F5E]" />
+            <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 space-y-3 shadow-sm">
+              <Skeleton className="h-3 w-24 bg-[#F1F5F9]" />
+              <Skeleton className="h-8 w-16 bg-[#F1F5F9]" />
+              <Skeleton className="h-3 w-28 bg-[#F1F5F9]" />
             </div>
           ))}
         </div>
 
-        {/* Tabla skeleton */}
-        <div className="bg-[#1A1B4B] rounded-2xl p-5 space-y-4">
-          <Skeleton className="h-6 w-40 bg-[#2D2F5E]" />
+        {/* Lista de campañas placeholder */}
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl p-5 space-y-4 shadow-sm">
+          <Skeleton className="h-5 w-40 bg-[#F1F5F9]" />
           <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 py-2">
-                <Skeleton className="h-4 w-48 bg-[#2D2F5E]" />
-                <Skeleton className="h-6 w-20 rounded-full bg-[#2D2F5E]" />
-                <Skeleton className="h-4 w-16 bg-[#2D2F5E]" />
-                <Skeleton className="h-4 w-16 bg-[#2D2F5E]" />
-                <Skeleton className="h-8 w-8 rounded-lg bg-[#2D2F5E] ml-auto" />
-              </div>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-14 w-full rounded-xl bg-[#F1F5F9]" />
             ))}
           </div>
         </div>

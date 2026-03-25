@@ -20,12 +20,13 @@ import MetricasCards from '@/components/dashboard/MetricasCards'
 import ListaCampanas from '@/components/dashboard/ListaCampanas'
 import AlianzasSection from '@/components/dashboard/AlianzasSection'
 import type { User } from '@supabase/supabase-js'
+import { BRAND_PRIMARY, BRAND_ACCENT } from '@/lib/brand'
 
 const PLAN_BADGE: Record<string, string> = {
-  free: 'bg-[#1A1B4B] border-[#2D2F5E] text-[#94A3B8]',
-  starter: 'bg-[#064E3B]/30 border-[#22C55E] text-[#22C55E]',
-  pro: 'bg-[#1A1B4B]/30 border-[#E8344E] text-[#E8344E]',
-  enterprise: 'bg-gradient-to-r from-[#1A1B4B]/30 to-[#1A1B4B] border-[#F59E0B] text-[#F59E0B]',
+  free: 'bg-[#F8FAFC] border-[#E5E7EB] text-[#64748B]',
+  starter: 'bg-[#F0FDF4] border-[#86EFAC] text-[#15803D]',
+  pro: 'bg-[#FFF0F2] border-[#F9B8C4] text-[#E8344E]',
+  enterprise: 'bg-[#FFFBEB] border-[#FDE68A] text-[#B45309]',
 }
 
 const PLAN_LABEL: Record<string, string> = {
@@ -78,7 +79,7 @@ export default function DashboardPage() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'participantes' }, (payload) => {
         const p = payload.new as { correo?: string; nombre?: string }
         toast(`🎉 Nuevo participante: ${p.correo ?? p.nombre ?? 'anónimo'}`, {
-          style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E', borderRadius: '12px' },
+          style: { background: '#FFFFFF', color: '#0F172A', border: '1px solid #E5E7EB', borderRadius: '12px' },
         })
       })
       .subscribe()
@@ -92,8 +93,8 @@ export default function DashboardPage() {
 
   if (cargando) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] p-8 space-y-6">
-        <div className="h-16 bg-[#1A1B4B] border-b border-[#1A1B4B] rounded-b-none" />
+      <div className="min-h-screen bg-white p-8 space-y-6">
+        <div className="h-16 bg-white border-b border-[#E5E7EB] rounded-b-none" />
         <div className="max-w-7xl mx-auto space-y-6 pt-4">
           <Skeleton className="h-20 w-full rounded-2xl" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -119,7 +120,7 @@ export default function DashboardPage() {
         { href: '/validar', label: 'Validar código', icono: QrCode },
       ].map(({ href, label, icono: Icono }) => (
         <Link key={href} href={href}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#1A1B4B] transition-all md:hover:bg-transparent md:hover:text-[#E2E8F0]"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#64748B] hover:text-[#E8344E] hover:bg-[#FFF0F2] transition-all md:hover:bg-transparent md:hover:text-[#E8344E]"
           onClick={() => setMobileOpen(false)}>
           <Icono size={14} />
           {label}
@@ -129,18 +130,18 @@ export default function DashboardPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
-      <Toaster position="bottom-right" toastOptions={{ style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E', borderRadius: '12px' } }} />
+    <div className="min-h-screen bg-white">
+      <Toaster position="bottom-right" toastOptions={{ style: { background: '#FFFFFF', color: '#0F172A', border: '1px solid #E5E7EB', borderRadius: '12px' } }} />
 
       {/* Navbar */}
-      <header className="sticky top-0 z-30 bg-[#0A0A0A] border-b border-[#1A1B4B]">
+      <header className="sticky top-0 z-30 bg-white border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0">
-            <Image src="/logo-dark.svg" alt="FREEPOL" width={120} height={30} priority />
+            <Image src="/logo.svg" alt="FREEPOL" width={120} height={30} priority />
           </Link>
 
-          <div className="w-px h-5 bg-[#2D2F5E] hidden md:block" />
+          <div className="w-px h-5 bg-[#E5E7EB] hidden md:block" />
 
           {/* Links desktop */}
           <div className="hidden md:flex flex-1">{NavLinks}</div>
@@ -154,37 +155,37 @@ export default function DashboardPage() {
             {/* Avatar + dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-[#1A1B4B] transition-colors">
+                <button className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-[#F8FAFC] transition-colors">
                   <Avatar className="w-8 h-8">
-                    <AvatarFallback style={{ background: `linear-gradient(135deg, ${empresa.color_primario}, #F2839A)` }}>
+                    <AvatarFallback style={{ background: `linear-gradient(135deg, ${BRAND_PRIMARY}, ${BRAND_ACCENT})` }}>
                       {inicial}
                     </AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-[#1A1B4B] border-[#2D2F5E] text-[#E2E8F0] w-52">
+              <DropdownMenuContent align="end" className="bg-white border-[#E5E7EB] text-[#0F172A] w-52 shadow-lg">
                 <DropdownMenuLabel>
-                  <p className="text-[#E2E8F0] font-semibold normal-case text-sm">{empresa.nombre}</p>
+                  <p className="text-[#0F172A] font-semibold normal-case text-sm">{empresa.nombre}</p>
                   <p className="text-[#64748B] text-xs font-normal truncate">{usuario.email}</p>
                   <span className={`mt-1 inline-flex text-xs font-medium px-2 py-0.5 rounded-full border ${planClass}`}>
                     Plan {planLabel}
                   </span>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-[#2D2F5E]" />
-                <DropdownMenuItem asChild className="gap-2 hover:bg-[#2D2F5E] cursor-pointer">
+                <DropdownMenuSeparator className="bg-[#E5E7EB]" />
+                <DropdownMenuItem asChild className="gap-2 hover:bg-[#F8FAFC] cursor-pointer">
                   <Link href="/dashboard"><LayoutDashboard size={13} />Mi dashboard</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="gap-2 hover:bg-[#2D2F5E] cursor-pointer">
+                <DropdownMenuItem asChild className="gap-2 hover:bg-[#F8FAFC] cursor-pointer">
                   <Link href="/chat"><MessageSquare size={13} />Nueva campaña</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="gap-2 hover:bg-[#2D2F5E] cursor-pointer">
+                <DropdownMenuItem asChild className="gap-2 hover:bg-[#F8FAFC] cursor-pointer">
                   <Link href="/validar"><QrCode size={13} />Validar código</Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-[#2D2F5E]" />
-                <DropdownMenuItem asChild className="gap-2 hover:bg-[#2D2F5E] cursor-pointer">
+                <DropdownMenuSeparator className="bg-[#E5E7EB]" />
+                <DropdownMenuItem asChild className="gap-2 hover:bg-[#F8FAFC] cursor-pointer">
                   <Link href="/dashboard/config"><Settings size={13} />Configuración</Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-[#2D2F5E]" />
+                <DropdownMenuSeparator className="bg-[#E5E7EB]" />
                 <DropdownMenuItem className="gap-2 text-red-400 hover:bg-red-500/10 cursor-pointer" onClick={cerrarSesion}>
                   <LogOut size={13} />Cerrar sesión
                 </DropdownMenuItem>
@@ -194,21 +195,21 @@ export default function DashboardPage() {
             {/* Hamburguesa móvil */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild className="md:hidden">
-                <button className="text-[#94A3B8] hover:text-white transition-colors">
+                <button className="text-[#64748B] hover:text-[#0F172A] transition-colors">
                   <Menu size={20} />
                 </button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-64 bg-[#1A1B4B] border-r border-[#2D2F5E] p-0">
-                <div className="p-5 border-b border-[#2D2F5E] flex items-center justify-between">
+              <SheetContent side="left" className="w-64 bg-white border-r border-[#E5E7EB] p-0">
+                <div className="p-5 border-b border-[#E5E7EB] flex items-center justify-between">
                   <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
-                    <Image src="/logo-dark.svg" alt="FREEPOL" width={100} height={25} priority />
+                    <Image src="/logo.svg" alt="FREEPOL" width={100} height={25} priority />
                   </Link>
                 </div>
                 <div className="p-4">
                   {NavLinks}
-                  <div className="mt-4 pt-4 border-t border-[#2D2F5E] space-y-1">
+                  <div className="mt-4 pt-4 border-t border-[#E5E7EB] space-y-1">
                     <Link href="/dashboard/config" onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#2D2F5E] transition-all">
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#64748B] hover:text-[#E8344E] hover:bg-[#FFF0F2] transition-all">
                       <Settings size={14} />Configuración
                     </Link>
                     <button onClick={cerrarSesion}
@@ -231,11 +232,7 @@ export default function DashboardPage() {
           campanasActivas={campanasActivas}
         />
 
-        <MetricasCards
-          userId={usuario.id}
-          colorPrimario={empresa.color_primario}
-          supabase={supabase}
-        />
+        <MetricasCards userId={usuario.id} supabase={supabase} />
 
         <ListaCampanas userId={usuario.id} supabase={supabase} />
 

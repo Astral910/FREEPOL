@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Loader2, Mail, CheckCircle, Zap, Check } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Mail, CheckCircle, Check } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -330,10 +330,15 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
   }, [resendCountdown, registeredEmail, supabase.auth])
 
   const pwdReqs = checkPasswordRequirements(watchedPassword)
+  const pwdScore = Object.values(pwdReqs).filter(Boolean).length
 
   return (
     <Dialog open={open} onOpenChange={handleDialogOpenChange}>
-      <DialogContent className="max-w-md p-0 overflow-hidden" aria-labelledby="auth-dialog-title">
+      <DialogContent
+        overlayClassName="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+        className="max-w-md overflow-hidden rounded-3xl border border-[#E8344E]/30 bg-[#0A0A0A] p-0 text-white shadow-2xl [&>button.absolute]:text-white [&>button.absolute]:hover:bg-white/10"
+        aria-labelledby="auth-dialog-title"
+      >
         <DialogTitle className="sr-only" id="auth-dialog-title">
           Acceso a FREEPOL
         </DialogTitle>
@@ -342,20 +347,27 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
         </DialogDescription>
 
         {registerSuccess ? (
-          /* Pantalla de confirmación de correo — puede cerrarse y volver a login/registro */
-          <div className="p-8 flex flex-col items-center text-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-[#F0FDF4] flex items-center justify-center animate-bounce">
-              <Mail size={32} className="text-[#22C55E]" />
+          <div className="flex flex-col items-center gap-4 p-8 text-center">
+            <div className="relative flex h-20 w-20 items-center justify-center">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E8344E]/40" />
+              <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-[#E8344E]/20">
+                <Mail size={36} className="text-[#E8344E]" />
+              </div>
             </div>
-            <h2 className="text-xl font-bold text-[#0F172A]">Revisa tu correo</h2>
-            <p className="text-sm text-[#64748B] leading-relaxed">
+            <h2 className="text-3xl font-black uppercase text-white">Revisa tu correo</h2>
+            <p className="text-sm leading-relaxed text-[#94A3B8]">
               Enviamos un enlace a{' '}
-              <span className="font-semibold text-[#0F172A]">{registeredEmail}</span>. Haz
-              clic para activar tu cuenta y luego inicia sesión aquí.
+              <span className="font-semibold text-white">{registeredEmail}</span>. Haz clic para
+              activar tu cuenta y luego inicia sesión aquí.
             </p>
+            {resendCountdown > 0 && (
+              <p className="text-lg font-black text-[#E8344E]">
+                Reenvío disponible en {resendCountdown}s
+              </p>
+            )}
             <Button
               variant="outline"
-              className="mt-1 w-full max-w-xs"
+              className="mt-1 w-full max-w-xs border-white/20 bg-transparent text-white hover:bg-white/10"
               onClick={handleResend}
               disabled={resendCountdown > 0}
             >
@@ -363,10 +375,10 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 ? `Reenviar correo en ${resendCountdown}s`
                 : 'Reenviar correo'}
             </Button>
-            <div className="w-full max-w-xs flex flex-col gap-2 pt-2">
+            <div className="flex w-full max-w-xs flex-col gap-2 pt-2">
               <Button
                 type="button"
-                className="w-full bg-[#E8344E] text-white hover:brightness-110"
+                className="w-full bg-[#E8344E] font-bold text-white hover:brightness-110"
                 onClick={() => salirDePantallaVerificacion('login')}
               >
                 Ir a iniciar sesión
@@ -374,71 +386,81 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full border-white/25 bg-transparent text-white hover:bg-white/10"
                 onClick={() => salirDePantallaVerificacion('register')}
               >
                 Registrar otro correo
               </Button>
             </div>
-            <p className="text-xs text-[#94A3B8] max-w-xs">
-              Si cierras esta ventana también podrás entrar o registrarte de nuevo; este aviso no te bloquea.
+            <p className="max-w-xs text-xs text-[#64748B]">
+              Si cierras esta ventana también podrás entrar o registrarte de nuevo; este aviso no te
+              bloquea.
             </p>
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Header con logo */}
-            <div className="px-8 pt-8 pb-4 text-center">
-              <div className="flex items-center justify-center gap-1.5 mb-4">
-                <Zap size={18} className="text-[#E8344E]" />
-                <span className="text-lg font-bold">
-                  <span className="text-[#E8344E]">FREE</span>
-                  <span className="text-[#0F172A]">POL</span>
-                </span>
+            <div className="px-8 pb-4 pt-8 text-center">
+              <div className="mb-4 flex justify-center">
+                <img
+                  src="/Letras_efecto_fondo_negro.png"
+                  alt="FREEPOL"
+                  width={140}
+                  height={36}
+                  className="h-9 w-auto mix-blend-screen"
+                />
               </div>
-              <TabsList className="w-full">
-                <TabsTrigger value="login" className="flex-1">
+              <h2 className="mb-1 text-3xl font-black uppercase text-white">Empieza gratis</h2>
+              <p className="mb-6 text-sm text-[#94A3B8]">Tu primera campaña en 5 minutos</p>
+              <TabsList className="grid w-full grid-cols-2 gap-1 rounded-xl bg-white/10 p-1">
+                <TabsTrigger
+                  value="login"
+                  className="flex-1 rounded-lg font-bold text-[#94A3B8] transition-all data-[state=active]:bg-[#E8344E] data-[state=active]:text-white data-[state=inactive]:hover:text-white"
+                >
                   Iniciar sesión
                 </TabsTrigger>
-                <TabsTrigger value="register" className="flex-1">
+                <TabsTrigger
+                  value="register"
+                  className="flex-1 rounded-lg font-bold text-[#94A3B8] transition-all data-[state=active]:bg-[#E8344E] data-[state=active]:text-white data-[state=inactive]:hover:text-white"
+                >
                   Registrarse
                 </TabsTrigger>
               </TabsList>
             </div>
 
             {/* Tab Login */}
-            <TabsContent value="login" className="px-8 pb-8 mt-0">
-              <div className="mb-5 text-center">
-                <h2 className="text-xl font-bold text-[#0F172A]">Bienvenido de nuevo</h2>
-                <p className="text-sm text-[#64748B] mt-1">Ingresa a tu cuenta</p>
-              </div>
-
+            <TabsContent value="login" className="mt-0 px-8 pb-8">
               <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="login-email">Correo corporativo</Label>
+                  <Label htmlFor="login-email" className="text-[#94A3B8]">
+                    Correo corporativo
+                  </Label>
                   <Input
                     id="login-email"
                     type="email"
                     placeholder="empresa@correo.com"
                     aria-label="Correo corporativo"
+                    className="rounded-xl border-white/10 bg-white/5 text-white placeholder:text-[#64748B] focus-visible:border-[#E8344E] focus-visible:ring-[#E8344E]/30"
                     {...loginForm.register('email', { required: true })}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="login-password">Contraseña</Label>
+                  <Label htmlFor="login-password" className="text-[#94A3B8]">
+                    Contraseña
+                  </Label>
                   <div className="relative">
                     <Input
                       id="login-password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
                       aria-label="Contraseña"
-                      className="pr-10"
+                      className="rounded-xl border-white/10 bg-white/5 pr-10 text-white placeholder:text-[#64748B] focus-visible:border-[#E8344E] focus-visible:ring-[#E8344E]/30"
                       {...loginForm.register('password', { required: true })}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0F172A] transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] transition-colors hover:text-white"
                       aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -447,13 +469,13 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer">
+                  <label className="flex cursor-pointer items-center gap-2">
                     <input
                       type="checkbox"
-                      className="rounded border-[#E5E7EB] text-[#E8344E]"
+                      className="rounded border-white/20 bg-white/5 text-[#E8344E]"
                       {...loginForm.register('remember')}
                     />
-                    <span className="text-sm text-[#64748B]">Recordarme</span>
+                    <span className="text-sm text-[#94A3B8]">Recordarme</span>
                   </label>
                   <button type="button" className="text-sm text-[#E8344E] hover:underline">
                     ¿Olvidaste tu contraseña?
@@ -461,11 +483,11 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 </div>
 
                 {loginError && (
-                  <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-600 space-y-2">
+                  <div className="space-y-2 rounded-lg border border-red-500/40 bg-red-950/50 p-3 text-sm text-red-200">
                     <p>{loginError}</p>
                     <button
                       type="button"
-                      className="text-xs font-semibold text-[#E8344E] hover:underline"
+                      className="text-xs font-semibold text-[#F2839A] hover:underline"
                       onClick={() => setLoginError('')}
                     >
                       Cerrar este mensaje
@@ -475,12 +497,12 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
 
                 <Button
                   type="submit"
-                  className="w-full bg-[#E8344E] text-white rounded-lg py-3 h-auto font-semibold hover:brightness-110"
+                  className="h-auto w-full rounded-xl bg-[#E8344E] py-4 text-xl font-black text-white hover:scale-[1.02] hover:brightness-110"
                   disabled={loginLoading}
                 >
                   {loginLoading ? (
                     <>
-                      <Loader2 size={16} className="animate-spin mr-2" />
+                      <Loader2 size={16} className="mr-2 animate-spin" />
                       Iniciando sesión...
                     </>
                   ) : (
@@ -489,15 +511,15 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 </Button>
 
                 <div className="relative flex items-center gap-3">
-                  <Separator className="flex-1" />
-                  <span className="text-xs text-[#94A3B8] whitespace-nowrap">o</span>
-                  <Separator className="flex-1" />
+                  <Separator className="flex-1 bg-white/10" />
+                  <span className="whitespace-nowrap text-xs text-[#64748B]">o</span>
+                  <Separator className="flex-1 bg-white/10" />
                 </div>
 
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full rounded-lg flex items-center gap-3"
+                  className="flex w-full items-center gap-3 rounded-lg border-white/15 bg-transparent text-white hover:bg-white/10"
                 >
                   {/* SVG ícono de Google */}
                   <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
@@ -524,27 +546,26 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
             </TabsContent>
 
             {/* Tab Registro */}
-            <TabsContent value="register" className="px-8 pb-8 mt-0">
-              <div className="mb-5 text-center">
-                <h2 className="text-xl font-bold text-[#0F172A]">Crea tu cuenta gratis</h2>
-                <div className="flex justify-center mt-2">
-                  <Badge variant="green" className="flex items-center gap-1">
-                    <CheckCircle size={12} />
-                    Sin tarjeta de crédito
-                  </Badge>
-                </div>
-              </div>
-
+            <TabsContent value="register" className="mt-0 px-8 pb-8">
               <form
                 onSubmit={registerForm.handleSubmit(handleRegister)}
                 className="space-y-4"
               >
+                <div className="flex justify-center">
+                  <Badge variant="green" className="flex items-center gap-1 border-[#22C55E]/40 bg-[#22C55E]/15 text-[#22C55E]">
+                    <CheckCircle size={12} />
+                    Sin tarjeta de crédito
+                  </Badge>
+                </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-company">Nombre de tu empresa</Label>
+                  <Label htmlFor="reg-company" className="text-[#94A3B8]">
+                    Nombre de tu empresa
+                  </Label>
                   <Input
                     id="reg-company"
                     placeholder="Mi Empresa S.A."
                     aria-label="Nombre de la empresa"
+                    className="rounded-xl border-white/10 bg-white/5 text-white placeholder:text-[#64748B] focus-visible:border-[#E8344E] focus-visible:ring-[#E8344E]/30"
                     {...registerForm.register('company', {
                       required: 'Requerido',
                       minLength: { value: 2, message: 'Mínimo 2 caracteres' },
@@ -558,22 +579,28 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-name">Tu nombre completo</Label>
+                  <Label htmlFor="reg-name" className="text-[#94A3B8]">
+                    Tu nombre completo
+                  </Label>
                   <Input
                     id="reg-name"
                     placeholder="Juan Pérez"
                     aria-label="Nombre completo"
+                    className="rounded-xl border-white/10 bg-white/5 text-white placeholder:text-[#64748B] focus-visible:border-[#E8344E] focus-visible:ring-[#E8344E]/30"
                     {...registerForm.register('fullName', { required: 'Requerido' })}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-email">Correo corporativo</Label>
+                  <Label htmlFor="reg-email" className="text-[#94A3B8]">
+                    Correo corporativo
+                  </Label>
                   <Input
                     id="reg-email"
                     type="email"
                     placeholder="empresa@correo.com"
                     aria-label="Correo corporativo"
+                    className="rounded-xl border-white/10 bg-white/5 text-white placeholder:text-[#64748B] focus-visible:border-[#E8344E] focus-visible:ring-[#E8344E]/30"
                     {...registerForm.register('email', {
                       required: 'Requerido',
                       pattern: { value: /^\S+@\S+$/i, message: 'Correo inválido' },
@@ -582,14 +609,16 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-password">Contraseña</Label>
+                  <Label htmlFor="reg-password" className="text-[#94A3B8]">
+                    Contraseña
+                  </Label>
                   <div className="relative">
                     <Input
                       id="reg-password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
                       aria-label="Contraseña"
-                      className="pr-10"
+                      className="rounded-xl border-white/10 bg-white/5 pr-10 text-white placeholder:text-[#64748B] focus-visible:border-[#E8344E] focus-visible:ring-[#E8344E]/30"
                       {...registerForm.register('password', {
                         required: 'Requerido',
                         onChange: (e) => setWatchedPassword(e.target.value),
@@ -598,13 +627,28 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0F172A]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-white"
                       aria-label={showPassword ? 'Ocultar' : 'Mostrar'}
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  {/* Indicador de fortaleza */}
+                  <div className="mt-2 flex gap-1">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
+                          i < pwdScore
+                            ? pwdScore >= 4
+                              ? 'bg-[#22C55E]'
+                              : pwdScore >= 2
+                                ? 'bg-[#EAB308]'
+                                : 'bg-[#E8344E]'
+                            : 'bg-white/10'
+                        }`}
+                      />
+                    ))}
+                  </div>
                   <div className="mt-2 space-y-1">
                     {[
                       { key: 'length', label: '8 caracteres mínimo' },
@@ -636,20 +680,22 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-confirm">Confirmar contraseña</Label>
+                  <Label htmlFor="reg-confirm" className="text-[#94A3B8]">
+                    Confirmar contraseña
+                  </Label>
                   <div className="relative">
                     <Input
                       id="reg-confirm"
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="••••••••"
                       aria-label="Confirmar contraseña"
-                      className="pr-10"
+                      className="rounded-xl border-white/10 bg-white/5 pr-10 text-white placeholder:text-[#64748B] focus-visible:border-[#E8344E] focus-visible:ring-[#E8344E]/30"
                       {...registerForm.register('confirmPassword', { required: 'Requerido' })}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#0F172A]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-white"
                       aria-label={showConfirmPassword ? 'Ocultar' : 'Mostrar'}
                     >
                       {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -662,31 +708,31 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                   )}
                 </div>
 
-                <label className="flex items-start gap-2 cursor-pointer">
+                <label className="flex cursor-pointer items-start gap-2">
                   <input
                     type="checkbox"
-                    className="mt-0.5 rounded border-[#E5E7EB]"
+                    className="mt-0.5 rounded border-white/20 bg-white/5"
                     {...registerForm.register('terms', { required: true })}
                   />
-                  <span className="text-xs text-[#64748B] leading-relaxed">
+                  <span className="text-xs leading-relaxed text-[#94A3B8]">
                     Acepto los{' '}
-                    <a href="/terms" className="text-[#E8344E] hover:underline">
+                    <a href="/terminos" className="text-[#E8344E] hover:underline">
                       Términos de servicio
                     </a>{' '}
                     y la{' '}
-                    <a href="/privacy" className="text-[#E8344E] hover:underline">
-                      Política de Privacidad
+                    <a href="/privacidad" className="text-[#E8344E] hover:underline">
+                      Política de privacidad
                     </a>
                   </span>
                 </label>
 
                 {registerError && (
-                  <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-600">
+                  <div className="rounded-lg border border-red-500/40 bg-red-950/50 p-3 text-sm text-red-200">
                     {registerError}
                     {registerError.includes('ya está registrado') && (
                       <button
                         type="button"
-                        className="ml-2 text-[#E8344E] hover:underline"
+                        className="ml-2 text-[#F2839A] hover:underline"
                         onClick={() => setActiveTab('login')}
                       >
                         Ir a login
@@ -697,7 +743,7 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
 
                 <Button
                   type="submit"
-                  className="w-full bg-[#E8344E] text-white rounded-lg py-3 h-auto font-semibold hover:brightness-110"
+                  className="h-auto w-full rounded-xl bg-[#E8344E] py-4 text-xl font-black text-white hover:scale-[1.02] hover:brightness-110"
                   disabled={registerLoading}
                 >
                   {registerLoading ? (

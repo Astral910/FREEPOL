@@ -51,22 +51,22 @@ export default function ChatInput({
   const puedeEnviar = value.trim().length >= 1 && !loading && !disabled && !sinSesion
   const contadorColor =
     value.length > 950
-      ? 'text-red-400'
+      ? 'text-red-500'
       : value.length > 800
-        ? 'text-orange-400'
-        : 'text-[#475569]'
+        ? 'text-orange-500'
+        : 'text-[#64748B]'
 
   return (
-    <div className="flex-shrink-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A] to-transparent pt-4 pb-4 px-4 md:px-6">
+    <div className="flex-shrink-0 bg-gradient-to-t from-white via-white to-transparent border-t border-[#F1F5F9] pt-4 pb-4 px-4 md:px-6">
       <div className="max-w-4xl mx-auto w-full space-y-2">
 
         {/* Banner de login — solo si no hay sesión */}
         {sinSesion && (
-          <div className="flex items-center justify-between gap-3 bg-[#1A1B4B] border border-[#E8344E]/40 rounded-xl px-4 py-3">
+          <div className="flex items-center justify-between gap-3 bg-[#FFF0F2] border border-[#F9B8C4]/80 rounded-xl px-4 py-3">
             <div className="flex items-center gap-2.5">
               <Lock size={14} className="text-[#E8344E] flex-shrink-0" />
-              <p className="text-[#94A3B8] text-sm">
-                <span className="text-white font-medium">Inicia sesión</span> para crear y guardar tus campañas con IA
+              <p className="text-[#64748B] text-sm">
+                <span className="text-[#0F172A] font-medium">Inicia sesión</span> para crear y guardar tus campañas con IA
               </p>
             </div>
             <button
@@ -81,12 +81,12 @@ export default function ChatInput({
 
         {/* Caja de input */}
         <div
-          className={`bg-[#1A1B4B] rounded-2xl border transition-all duration-200 shadow-lg ${
+          className={`bg-white rounded-2xl border transition-all duration-200 shadow-md ${
             sinSesion
-              ? 'border-[#2D2F5E] opacity-60'
+              ? 'border-[#E5E7EB] opacity-70'
               : value.length > 0 || loading
-                ? 'border-[#E8344E] shadow-[#E8344E]/10'
-                : 'border-[#2D2F5E]'
+                ? 'border-[#E8344E] shadow-[#E8344E]/15'
+                : 'border-[#E5E7EB]'
           }`}
         >
           <div className="p-4">
@@ -106,7 +106,7 @@ export default function ChatInput({
               }
               disabled={loading || disabled || sinSesion}
               aria-label="Describe tu campaña de fidelización"
-              className="w-full bg-transparent text-[#E2E8F0] placeholder-[#475569] text-base resize-none outline-none border-none leading-relaxed disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-transparent text-[#0F172A] placeholder-[#94A3B8] text-base resize-none outline-none border-none leading-relaxed disabled:opacity-50 disabled:cursor-not-allowed"
             />
 
             {/* Barra inferior */}
@@ -118,7 +118,7 @@ export default function ChatInput({
                 <button
                   type="button"
                   onClick={onOpenTips}
-                  className="flex items-center gap-1.5 text-[#64748B] hover:text-[#94A3B8] transition-colors text-xs"
+                  className="flex items-center gap-1.5 text-[#64748B] hover:text-[#E8344E] transition-colors text-xs"
                   aria-label="Abrir guía de prompts"
                 >
                   <Lightbulb size={12} />
@@ -136,7 +136,7 @@ export default function ChatInput({
                     ? 'bg-[#E8344E]/20 border border-[#E8344E]/40 cursor-pointer hover:bg-[#E8344E]/30'
                     : puedeEnviar
                       ? 'gradient-bg hover:scale-110 hover:shadow-lg hover:shadow-[#E8344E]/40 cursor-pointer'
-                      : 'bg-[#2D2F5E] opacity-30 cursor-not-allowed'
+                      : 'bg-[#E5E7EB] opacity-60 cursor-not-allowed'
                 }`}
               >
                 {loading ? (
@@ -144,14 +144,14 @@ export default function ChatInput({
                 ) : sinSesion ? (
                   <LogIn size={15} className="text-[#E8344E]" />
                 ) : (
-                  <ArrowUp size={16} className="text-white" />
+                  <ArrowUp size={16} className={puedeEnviar ? 'text-white' : 'text-[#94A3B8]'} />
                 )}
               </button>
             </div>
           </div>
         </div>
 
-        <p className="text-center text-xs text-[#475569]">
+        <p className="text-center text-xs text-[#64748B]">
           {sinSesion
             ? 'Crea tu cuenta gratis · Sin tarjeta de crédito · Listo en 2 minutos'
             : 'FREEPOL interpreta lenguaje natural en español e inglés · Tus datos están protegidos'}

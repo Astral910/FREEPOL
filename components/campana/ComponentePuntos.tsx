@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti'
 import { QRCodeSVG } from 'qrcode.react'
 import type { CampanaRow } from '@/app/c/[slug]/page'
 import { resolverUrlPublicaCliente } from '@/lib/app-base-url'
+import { BRAND_PRIMARY } from '@/lib/brand'
 
 interface EstadoPuntos {
   total: number
@@ -23,8 +24,6 @@ interface CodigoCanjeado {
 interface Props {
   campana: CampanaRow
   participanteId: string
-  /** Color de marca para acentos (desde configuración de campaña) */
-  colorPrimario?: string
 }
 
 /**
@@ -35,7 +34,6 @@ interface Props {
 export default function ComponentePuntos({
   campana,
   participanteId,
-  colorPrimario = '#E8344E',
 }: Props) {
   const cfg = campana.configuracion
   const meta = cfg.meta_canje ?? 50
@@ -290,7 +288,7 @@ export default function ComponentePuntos({
           <motion.div
             className="h-full rounded-full"
             style={{
-              background: `linear-gradient(90deg, ${colorPrimario}, #22C55E)`,
+              background: `linear-gradient(90deg, ${BRAND_PRIMARY}, #22C55E)`,
             }}
             initial={{ width: 0 }}
             animate={{ width: `${porcentaje}%` }}
@@ -367,7 +365,7 @@ export default function ComponentePuntos({
             disabled={simulandoCompra || cargandoSaldo}
             className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 shadow-lg transition-opacity disabled:opacity-60 hover:opacity-90"
             style={{
-              background: `linear-gradient(135deg, ${colorPrimario}, #F2839A)`,
+              background: `linear-gradient(135deg, ${BRAND_PRIMARY}, #F2839A)`,
             }}
           >
             {simulandoCompra ? (

@@ -11,6 +11,7 @@ import CasosSection from '@/components/CasosSection'
 import IAPanel from '@/components/IAPanel'
 import CTAFinal from '@/components/CTAFinal'
 import Footer from '@/components/Footer'
+import MarketingChrome from '@/components/marketing/MarketingChrome'
 
 /**
  * AuthDialog se carga de forma diferida (lazy) para no bloquear
@@ -30,29 +31,30 @@ export default function HomePage() {
   }, [])
 
   return (
-    <main>
-      <Navbar onOpenAuth={handleOpenAuth} />
-      <HeroSection onOpenAuth={handleOpenAuth} />
-      <LogosBar />
-      {/* id="producto" para que el link del navbar haga scroll aquí */}
-      <div id="producto">
-        <PilaresSection />
-      </div>
-      <PasosSection />
-      {/* id="casos" para el scroll desde el botón del hero */}
-      <div id="casos">
-        <CasosSection />
-      </div>
-      <IAPanel />
-      <CTAFinal onOpenAuth={handleOpenAuth} />
-      <Footer />
+    <MarketingChrome>
+      <main className="bg-[#0A0A0A]">
+        <Navbar onOpenAuth={handleOpenAuth} />
+        <HeroSection onOpenAuth={handleOpenAuth} />
+        <LogosBar />
+        {/* id="producto" para que el link del navbar haga scroll aquí */}
+        <div id="producto">
+          <PilaresSection />
+        </div>
+        <PasosSection />
+        {/* id="casos" para el scroll desde el botón del hero */}
+        <div id="casos">
+          <CasosSection />
+        </div>
+        <IAPanel />
+        <CTAFinal onOpenAuth={handleOpenAuth} />
+        <Footer />
 
-      {/* Modal de autenticación — cargado de forma diferida */}
-      <AuthDialog
-        open={authOpen}
-        onOpenChange={setAuthOpen}
-        defaultTab={authTab}
-      />
-    </main>
+        <AuthDialog
+          open={authOpen}
+          onOpenChange={setAuthOpen}
+          defaultTab={authTab}
+        />
+      </main>
+    </MarketingChrome>
   )
 }

@@ -1,119 +1,119 @@
 'use client'
 
-import { memo } from 'react'
-import { motion } from 'framer-motion'
-import { MessageSquare, Zap, BarChart3 } from 'lucide-react'
-import { GradientBadge } from '@/components/ui/GradientBadge'
-import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
+import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
+import { Brain, Share2, ShieldCheck } from 'lucide-react'
+import { Marquee } from '@/components/ui/Marquee'
 
-const pilares = [
+const CARDS = [
   {
-    icon: MessageSquare,
-    iconColor: '#E8344E',
-    iconBg: '#FFF0F2',
-    borderColor: 'border-l-[#E8344E]',
-    titulo: 'Describe en lenguaje natural',
-    texto:
-      'Escribe exactamente lo que necesitas. Nuestra IA entiende tu negocio y lo convierte en una campaña funcional sin que toques código.',
-    badgeLabel: 'Natural Language AI',
-    badgeBg: 'bg-[#FFF0F2]',
-    badgeText: 'text-[#E8344E]',
+    titulo: 'Motor de IA',
+    descripcion:
+      'Escribe como hablas. La IA convierte tu descripción en una campaña técnicamente perfecta.',
+    bg: 'bg-[#E8344E] text-white',
+    badge: 'natural language',
+    icon: Brain,
+    iconWrap: 'bg-white/15 text-white',
   },
   {
-    icon: Zap,
-    iconColor: '#22C55E',
-    iconBg: '#F0FDF4',
-    borderColor: 'border-l-[#22C55E]',
-    titulo: 'Desplegado en todos los canales',
-    texto:
-      'Tu campaña aparece en WhatsApp, Telegram e Instagram automáticamente. Una configuración, presencia en todos lados.',
-    badgeLabel: 'Omnicanal',
-    badgeBg: 'bg-[#F0FDF4]',
-    badgeText: 'text-[#22C55E]',
+    titulo: 'Omnicanal',
+    descripcion:
+      'WhatsApp y Telegram activos desde el primer día. Instagram y más próximamente.',
+    bg: 'bg-white text-[#0A0A0A]',
+    badge: 'channels',
+    icon: Share2,
+    iconWrap: 'bg-[#E8344E]/15 text-[#E8344E]',
   },
   {
-    icon: BarChart3,
-    iconColor: '#F2839A',
-    iconBg: '#FAF5FF',
-    borderColor: 'border-l-[#F2839A]',
-    titulo: 'Tus datos, tu control',
-    texto:
-      'Todos los participantes y comportamientos quedan en tu base de datos. Re-marketing basado en comportamiento real.',
-    badgeLabel: 'Data Sovereignty',
-    badgeBg: 'bg-[#FAF5FF]',
-    badgeText: 'text-[#F2839A]',
+    titulo: 'Soberanía de datos',
+    descripcion:
+      'Tu base de datos. Tus clientes. Tu remarketing. FREEPOL no retiene nada.',
+    bg: 'bg-[#1A1B4B] text-white',
+    badge: 'data ownership',
+    icon: ShieldCheck,
+    iconWrap: 'bg-[#E8344E]/25 text-[#F2839A]',
   },
 ]
 
 /**
- * Sección de los 3 pilares de FREEPOL.
- * Cards con stagger animation al entrar en viewport.
+ * Pilares — contraste negro / cards de color / marquee divisor.
  */
-const PilaresSection = memo(function PilaresSection() {
-  const { ref, isInView } = useScrollAnimation()
+export default function PilaresSection() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section className="bg-white py-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
-        {/* Encabezado */}
-        <div className="text-center mb-16">
-          <GradientBadge variant="purple" className="mb-4">
-            Cómo funciona
-          </GradientBadge>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] mt-4 mb-4">
-            Todo lo que necesitas para fidelizar
-          </h2>
-          <p className="text-[#64748B] text-lg max-w-2xl mx-auto">
-            Tres pilares que trabajan juntos para que tus campañas funcionen solas
-          </p>
-        </div>
-
-        {/* Cards */}
-        <motion.div
-          ref={ref}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.1 } },
-          }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
-        >
-          {pilares.map((pilar) => {
-            const Icon = pilar.icon
-            return (
-              <motion.div
-                key={pilar.titulo}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: { duration: 0.5, ease: [0.25, 0.4, 0.25, 1] },
-                  },
-                }}
-                className={`bg-[#F8FAFC] border border-[#E5E7EB] border-l-4 ${pilar.borderColor} rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow duration-200`}
-              >
-                <div
-                  className="p-3 rounded-xl inline-block mb-4"
-                  style={{ backgroundColor: pilar.iconBg }}
-                >
-                  <Icon size={24} style={{ color: pilar.iconColor }} />
-                </div>
-                <h3 className="text-xl font-bold text-[#0F172A] mb-3">{pilar.titulo}</h3>
-                <p className="text-[#64748B] text-sm leading-relaxed mb-4">{pilar.texto}</p>
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${pilar.badgeBg} ${pilar.badgeText}`}
-                >
-                  {pilar.badgeLabel}
-                </span>
-              </motion.div>
-            )
-          })}
-        </motion.div>
+    <>
+      <div className="bg-[#0A0A0A] py-3">
+        <Marquee speed={22} className="py-2 font-black uppercase tracking-widest text-[#E8344E]">
+          <span>Fideliza</span>
+          <span>·</span>
+          <span>Automatiza</span>
+          <span>·</span>
+          <span>Escala</span>
+          <span>·</span>
+          <span>Fideliza</span>
+          <span>·</span>
+          <span>Automatiza</span>
+          <span>·</span>
+          <span>Escala</span>
+          <span>·</span>
+        </Marquee>
       </div>
-    </section>
-  )
-})
 
-export default PilaresSection
+      <section ref={ref} className="bg-[#0A0A0A] px-4 py-16 md:px-8 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-12 md:mb-16">
+            <motion.h2
+              className="font-black uppercase leading-[0.95] tracking-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55 }}
+            >
+              <span
+                className="block text-[56px] text-transparent sm:text-[80px] md:text-[120px]"
+                style={{ WebkitTextStroke: '3px #E8344E' }}
+              >
+                TODO
+              </span>
+              <span className="block text-[32px] text-white sm:text-4xl md:text-6xl">
+                LO QUE NECESITAS
+              </span>
+              <span className="block text-[32px] text-[#E8344E] sm:text-4xl md:text-6xl">
+                PARA FIDELIZAR
+              </span>
+            </motion.h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {CARDS.map((card, i) => {
+              const Icon = card.icon
+              return (
+                <motion.article
+                  key={card.titulo}
+                  className={`rounded-3xl p-8 md:p-10 ${card.bg} hover:scale-[1.03] transition-transform duration-300`}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, delay: i * 0.15 }}
+                >
+                  <div
+                    className={`mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl ${card.iconWrap}`}
+                  >
+                    <Icon size={48} strokeWidth={1.5} />
+                  </div>
+                  <h3 className="mb-3 text-2xl font-black md:text-3xl">{card.titulo}</h3>
+                  <p className="mb-6 text-base font-medium leading-relaxed opacity-95">
+                    {card.descripcion}
+                  </p>
+                  <span className="inline-block rotate-2 rounded-lg bg-black/20 px-3 py-1 text-xs font-black uppercase tracking-wide">
+                    {card.badge}
+                  </span>
+                </motion.article>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}

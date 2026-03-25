@@ -93,7 +93,7 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent
         side="right"
-        className="w-full sm:w-[420px] p-0 bg-[#0A0A0A] border-l border-[#2D2F5E] overflow-hidden flex flex-col"
+        className="w-full sm:w-[420px] p-0 bg-white border-l border-[#E5E7EB] overflow-hidden flex flex-col"
       >
         {/* Header con gradiente */}
         <div className="gradient-bg p-6 flex-shrink-0">
@@ -108,15 +108,15 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
         {/* Contenido con scroll */}
         <div className="flex-1 overflow-y-auto">
           <Tabs defaultValue="restaurante" className="w-full">
-            <div className="px-4 pt-4 sticky top-0 bg-[#0A0A0A] z-10 pb-2">
-              <TabsList className="w-full bg-[#1A1B4B] border border-[#2D2F5E] h-auto p-1 grid grid-cols-5 gap-1">
+            <div className="px-4 pt-4 sticky top-0 bg-white z-10 pb-2 border-b border-[#F1F5F9]">
+              <TabsList className="w-full bg-[#F8FAFC] border border-[#E5E7EB] h-auto p-1 grid grid-cols-5 gap-1">
                 {ejemplos.map((e) => {
                   const Icon = e.icon
                   return (
                     <TabsTrigger
                       key={e.id}
                       value={e.id}
-                      className="flex flex-col items-center gap-1 py-2 px-1 text-[#64748B] data-[state=active]:bg-[#2D2F5E] data-[state=active]:text-[#E8344E] rounded-lg"
+                      className="flex flex-col items-center gap-1 py-2 px-1 text-[#64748B] data-[state=active]:bg-white data-[state=active]:text-[#E8344E] data-[state=active]:shadow-sm rounded-lg"
                     >
                       <Icon size={14} />
                       <span className="text-[10px] leading-tight text-center">{e.label}</span>
@@ -128,29 +128,29 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
 
             {ejemplos.map((e) => (
               <TabsContent key={e.id} value={e.id} className="p-4 mt-0 space-y-4">
-                <p className="text-[#94A3B8] text-sm font-medium">{e.titulo}</p>
+                <p className="text-[#0F172A] text-sm font-medium">{e.titulo}</p>
 
                 {/* Prompt estilo terminal */}
-                <div className="rounded-xl overflow-hidden border border-[#2D2F5E]">
-                  <div className="bg-[#1A1B4B] px-3 py-2 flex items-center gap-2">
+                <div className="rounded-xl overflow-hidden border border-[#E5E7EB] shadow-sm">
+                  <div className="bg-[#F8FAFC] px-3 py-2 flex items-center gap-2 border-b border-[#E5E7EB]">
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
                       <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" />
                       <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
                     </div>
-                    <span className="text-[#475569] text-xs font-mono ml-1">prompt.txt</span>
+                    <span className="text-[#64748B] text-xs font-mono ml-1">prompt.txt</span>
                   </div>
-                  <div className="bg-[#0A0F1A] p-4">
-                    <pre className="text-[#22C55E] text-sm font-mono leading-relaxed whitespace-pre-wrap break-words">
+                  <div className="bg-white p-4">
+                    <pre className="text-[#15803D] text-sm font-mono leading-relaxed whitespace-pre-wrap break-words">
                       {e.prompt}
                     </pre>
                   </div>
                 </div>
 
                 {/* Badge de validación */}
-                <div className="flex items-center gap-2 bg-[#022C22] border border-[#064E3B] rounded-lg px-3 py-2">
-                  <Check size={14} className="text-[#22C55E] flex-shrink-0" />
-                  <span className="text-[#22C55E] text-xs font-medium">
+                <div className="flex items-center gap-2 bg-[#F0FDF4] border border-[#BBF7D0] rounded-lg px-3 py-2">
+                  <Check size={14} className="text-[#15803D] flex-shrink-0" />
+                  <span className="text-[#15803D] text-xs font-medium">
                     FREEPOL puede hacer esto exactamente
                   </span>
                 </div>
@@ -181,7 +181,7 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
                   {e.tips.map((tip, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <span className="text-[#E8344E] text-xs mt-0.5 flex-shrink-0">→</span>
-                      <span className="text-[#94A3B8] text-xs leading-relaxed">{tip}</span>
+                      <span className="text-[#64748B] text-xs leading-relaxed">{tip}</span>
                     </div>
                   ))}
                 </div>
@@ -206,7 +206,7 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
                   <span className="text-[#E8344E] font-bold text-xs mt-0.5 flex-shrink-0">
                     {i + 1}.
                   </span>
-                  <span className="text-[#4338CA] text-xs leading-relaxed">{tip}</span>
+                  <span className="text-[#64748B] text-xs leading-relaxed">{tip}</span>
                 </li>
               ))}
             </ul>

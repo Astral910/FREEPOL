@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Zap, Building2, Palette, CheckCircle2, Loader2,
+  Building2, CheckCircle2, Loader2,
   UtensilsCrossed, ShoppingBag, Fuel, Globe,
   Dumbbell, Sparkles, Briefcase, Music, Rocket,
   Star, Crown, Check,
@@ -78,7 +78,7 @@ const PLANES = [
       'Campañas ilimitadas',
       'Hasta 10,000 participantes/mes',
       'Bot de Instagram',
-      'Personalización completa de marca',
+      'Reportes y exportación avanzados',
       'Colaboraciones entre empresas',
     ],
   },
@@ -107,9 +107,9 @@ function DarkInput({ id, label, value, onChange, placeholder, optional = false }
 }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="flex items-center gap-2 text-[#94A3B8] text-sm">
+      <label htmlFor={id} className="flex items-center gap-2 text-sm text-[#94A3B8]">
         {label}
-        {optional && <span className="text-[#475569] text-xs">(opcional)</span>}
+        {optional && <span className="text-xs text-[#475569]">(opcional)</span>}
       </label>
       <input
         id={id}
@@ -117,18 +117,17 @@ function DarkInput({ id, label, value, onChange, placeholder, optional = false }
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] transition-all"
+        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-[#64748B] transition-all focus:border-[#E8344E] focus:outline-none focus:ring-1 focus:ring-[#E8344E]/40"
       />
     </div>
   )
 }
 
 /**
- * Onboarding de 4 pasos para nuevas empresas.
+ * Onboarding de 3 pasos para nuevas empresas.
  * Paso 1: Datos de empresa e industria
- * Paso 2: Colores de marca
- * Paso 3: Selección de plan (solo visual, sin cobro real)
- * Paso 4: Confirmación y creación
+ * Paso 2: Selección de plan (solo visual, sin cobro real)
+ * Paso 3: Confirmación y creación
  */
 export default function OnboardingPage() {
   const router = useRouter()
@@ -142,18 +141,14 @@ export default function OnboardingPage() {
   const [sitioWeb, setSitioWeb] = useState('')
   const [industria, setIndustria] = useState('otro')
 
-  // Paso 2
-  const [colorPrimario, setColorPrimario] = useState('#E8344E')
-  const [colorSecundario, setColorSecundario] = useState('#22C55E')
-
-  // Paso 3 — Plan
+  // Paso 2 — Plan
   const [planSeleccionado, setPlanSeleccionado] = useState('free')
 
-  // Paso 4
+  // Paso 3
   const [creando, setCreando] = useState(false)
   const [empresaCreada, setEmpresaCreada] = useState(false)
 
-  const TOTAL_PASOS = 4
+  const TOTAL_PASOS = 3
   const progreso = (paso / TOTAL_PASOS) * 100
 
   useEffect(() => {
@@ -193,8 +188,6 @@ export default function OnboardingPage() {
       await crearEmpresa(userId, {
         nombre,
         sitio_web: sitioWeb || undefined,
-        color_primario: colorPrimario,
-        color_secundario: colorSecundario,
         industria,
         plan: planSeleccionado,
       })
@@ -204,7 +197,7 @@ export default function OnboardingPage() {
         particleCount: 130,
         spread: 80,
         origin: { y: 0.5 },
-        colors: [colorPrimario, colorSecundario, '#F2839A', '#F59E0B'],
+        colors: ['#E8344E', '#22C55E', '#F2839A', '#F59E0B'],
       })
     } catch {
       toast.error('Error al crear la empresa. Intenta de nuevo.')
@@ -253,31 +246,44 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
-      <Toaster position="top-center" toastOptions={{ style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E', borderRadius: '12px' } }} />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: '#0A0A0A',
+            color: '#F8FAFC',
+            border: '1px solid rgba(232, 52, 78, 0.35)',
+            borderRadius: '12px',
+          },
+        }}
+      />
 
-      {/* Header */}
-      <header className="flex-shrink-0 px-6 py-5 border-b border-[#1A1B4B] flex items-center gap-2">
-        <Zap size={18} className="text-[#E8344E]" />
-        <span className="font-bold text-white"><span className="text-[#E8344E]">FREE</span>POL</span>
-        <span className="ml-4 text-sm text-[#64748B]">Configuración inicial</span>
+      <header className="flex flex-shrink-0 items-center gap-3 border-b border-white/10 px-6 py-5">
+        <img
+          src="/Letras_efecto_fondo_negro.png"
+          alt="FREEPOL"
+          width={120}
+          height={30}
+          className="h-8 w-auto mix-blend-screen"
+        />
+        <span className="text-sm font-semibold text-[#94A3B8]">Configuración inicial</span>
       </header>
 
-      {/* Barra progreso */}
-      <Progress value={progreso} className="rounded-none" />
+      <Progress value={progreso} className="h-2 rounded-none bg-white/10" />
 
       <div className="flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-lg">
 
           {/* Indicador de pasos */}
           <div className="flex items-center justify-center gap-1 mb-8">
-            {[1, 2, 3, 4].map((n) => (
-              <div key={n} className={`flex items-center gap-1 ${n < 4 ? 'flex-1' : ''}`}>
+            {[1, 2, 3].map((n) => (
+              <div key={n} className={`flex items-center gap-1 ${n < 3 ? 'flex-1' : ''}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-all ${
                   n < paso ? 'gradient-bg text-white' : n === paso ? 'border-2 border-[#E8344E] text-[#E8344E]' : 'border-2 border-[#2D2F5E] text-[#475569]'
                 }`}>
                   {n < paso ? '✓' : n}
                 </div>
-                {n < 4 && <div className={`flex-1 h-px transition-colors ${n < paso ? 'bg-[#E8344E]' : 'bg-[#2D2F5E]'}`} />}
+                {n < 3 && <div className={`flex-1 h-px transition-colors ${n < paso ? 'bg-[#E8344E]' : 'bg-[#2D2F5E]'}`} />}
               </div>
             ))}
           </div>
@@ -291,7 +297,7 @@ export default function OnboardingPage() {
                   <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center mb-4">
                     <Building2 size={22} className="text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white">Cuéntanos sobre tu empresa</h2>
+                  <h2 className="text-4xl font-black text-white">Cuéntanos sobre tu empresa</h2>
                   <p className="text-[#94A3B8]">Esta información personaliza tus campañas</p>
                 </div>
                 <div className="space-y-4">
@@ -305,7 +311,8 @@ export default function OnboardingPage() {
                         const activo = industria === ind.valor
                         return (
                           <button key={ind.valor} onClick={() => setIndustria(ind.valor)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${activo ? 'border-[#E8344E] bg-[#1A1B4B]' : 'border-[#2D2F5E] bg-[#1A1B4B] hover:border-[#E8344E]/40'}`}>
+                            type="button"
+                            className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all ${activo ? 'border-[#E8344E] bg-[#E8344E]/10' : 'border-white/10 bg-white/5 hover:border-[#E8344E]/40'}`}>
                             <Icono size={16} className={activo ? 'text-[#E8344E]' : 'text-[#475569]'} />
                             <span className={`text-sm ${activo ? 'text-[#E2E8F0] font-medium' : 'text-[#94A3B8]'}`}>{ind.label}</span>
                           </button>
@@ -317,62 +324,14 @@ export default function OnboardingPage() {
               </motion.div>
             )}
 
-            {/* PASO 2 — Colores de marca */}
+            {/* PASO 2 — Selección de plan */}
             {paso === 2 && (
               <motion.div key="paso2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
                 <div className="space-y-2 mb-6">
                   <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center mb-4">
-                    <Palette size={22} className="text-white" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-white">Personaliza tu marca</h2>
-                  <p className="text-[#94A3B8]">Así se verán las landing pages de tus campañas</p>
-                </div>
-                <div className="space-y-5">
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { label: 'Color primario', value: colorPrimario, onChange: setColorPrimario },
-                      { label: 'Color secundario', value: colorSecundario, onChange: setColorSecundario },
-                    ].map((c) => (
-                      <div key={c.label} className="space-y-2">
-                        <label className="text-[#94A3B8] text-sm">{c.label}</label>
-                        <div className="flex items-center gap-3 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl p-3">
-                          <input type="color" value={c.value} onChange={(e) => c.onChange(e.target.value)}
-                            className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent" />
-                          <span className="text-[#E2E8F0] font-mono text-sm">{c.value}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="bg-[#0A0A0A] border border-[#2D2F5E] rounded-2xl p-4 space-y-3">
-                    <p className="text-[#475569] text-xs uppercase tracking-wide">Preview de tu campaña</p>
-                    <div className="bg-white rounded-xl p-4 space-y-3">
-                      <div className="text-center">
-                        <p className="font-bold text-lg" style={{ color: colorPrimario }}>{nombre || 'Tu empresa'}</p>
-                        <p className="text-[#64748B] text-sm">Campaña de fidelización</p>
-                      </div>
-                      <div className="bg-[#F8FAFC] rounded-lg p-3 text-sm text-[#0F172A] text-center">
-                        ¡Participa y gana premios increíbles!
-                      </div>
-                      <div className="flex gap-2 justify-center">
-                        <span className="text-xs px-3 py-1 rounded-full font-medium text-white" style={{ backgroundColor: colorSecundario }}>Activa</span>
-                        <button className="text-sm px-4 py-2 rounded-lg text-white font-medium" style={{ backgroundColor: colorPrimario }}>
-                          Participar →
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* PASO 3 — Selección de plan */}
-            {paso === 3 && (
-              <motion.div key="paso3" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
-                <div className="space-y-2 mb-6">
-                  <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center mb-4">
                     <Crown size={22} className="text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white">Elige tu plan</h2>
+                  <h2 className="text-4xl font-black text-white">Elige tu plan</h2>
                   <p className="text-[#94A3B8]">Puedes cambiar de plan en cualquier momento desde tu perfil</p>
                 </div>
                 <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto pr-1">
@@ -383,7 +342,8 @@ export default function OnboardingPage() {
                       <button
                         key={plan.id}
                         onClick={() => setPlanSeleccionado(plan.id)}
-                        className={`w-full text-left rounded-2xl border-2 p-4 transition-all ${activo ? `${plan.border} ${plan.bg}` : 'border-[#2D2F5E] bg-[#1A1B4B] hover:border-[#E8344E]/30'}`}
+                        type="button"
+                        className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${activo ? 'border-[#E8344E] bg-[#E8344E]/10' : 'border-white/10 bg-white/5 hover:border-[#E8344E]/30'}`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3">
@@ -428,35 +388,28 @@ export default function OnboardingPage() {
               </motion.div>
             )}
 
-            {/* PASO 4 — Confirmación */}
-            {paso === 4 && (
-              <motion.div key="paso4" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
+            {/* PASO 3 — Confirmación */}
+            {paso === 3 && (
+              <motion.div key="paso3" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
                 <div className="space-y-2 mb-6">
                   <div className="w-12 h-12 rounded-xl gradient-bg flex items-center justify-center mb-4">
                     <CheckCircle2 size={22} className="text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white">¡Todo listo para empezar!</h2>
+                  <h2 className="text-4xl font-black text-white">¡Todo listo para empezar!</h2>
                   <p className="text-[#94A3B8]">Confirma los datos de tu empresa</p>
                 </div>
-                <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-5 space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[
                       { label: 'Empresa', valor: nombre },
                       { label: 'Industria', valor: INDUSTRIAS.find((i) => i.valor === industria)?.label ?? industria },
                       { label: 'Sitio web', valor: sitioWeb || 'No especificado' },
                     ].map((item) => (
-                      <div key={item.label} className="bg-[#0A0A0A] rounded-xl p-3">
+                      <div key={item.label} className="rounded-xl bg-[#0A0A0A] p-3 sm:col-span-1">
                         <p className="text-[#64748B] text-xs uppercase tracking-wide mb-1">{item.label}</p>
                         <p className="text-[#E2E8F0] font-semibold text-sm truncate">{item.valor}</p>
                       </div>
                     ))}
-                    <div className="bg-[#0A0A0A] rounded-xl p-3">
-                      <p className="text-[#64748B] text-xs uppercase tracking-wide mb-2">Colores</p>
-                      <div className="flex gap-2">
-                        <div className="w-6 h-6 rounded-full border border-[#2D2F5E]" style={{ backgroundColor: colorPrimario }} />
-                        <div className="w-6 h-6 rounded-full border border-[#2D2F5E]" style={{ backgroundColor: colorSecundario }} />
-                      </div>
-                    </div>
                   </div>
                   {/* Plan seleccionado */}
                   {(() => {
@@ -482,21 +435,22 @@ export default function OnboardingPage() {
 
           {/* Navegación */}
           <div className="flex items-center justify-between mt-8">
-            <button onClick={retroceder} disabled={paso === 1}
-              className="px-5 py-3 rounded-xl bg-[#1A1B4B] border border-[#2D2F5E] text-[#CBD5E1] text-sm hover:bg-[#2D2F5E] disabled:opacity-0 disabled:pointer-events-none transition-all">
+            <button type="button" onClick={retroceder} disabled={paso === 1}
+              className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-[#CBD5E1] transition-all hover:bg-white/10 disabled:pointer-events-none disabled:opacity-0">
               ← Atrás
             </button>
 
             {paso < TOTAL_PASOS ? (
               <button
+                type="button"
                 onClick={avanzar}
                 disabled={paso === 1 && !nombre.trim()}
-                className="px-6 py-3 rounded-xl gradient-bg text-white font-semibold text-sm disabled:opacity-40 hover:opacity-90 transition-opacity">
+                className="w-full rounded-xl bg-[#E8344E] px-6 py-4 text-sm font-black text-white transition-opacity hover:brightness-110 disabled:opacity-40 sm:w-auto">
                 Siguiente →
               </button>
             ) : (
-              <button onClick={handleFinalizar} disabled={creando}
-                className="px-6 py-3 rounded-xl gradient-bg text-white font-bold text-sm flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60">
+              <button type="button" onClick={handleFinalizar} disabled={creando}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#E8344E] px-6 py-4 text-sm font-black text-white transition-opacity hover:brightness-110 disabled:opacity-60 sm:w-auto">
                 {creando ? <><Loader2 size={16} className="animate-spin" /> Creando...</> : '🚀 Crear mi empresa'}
               </button>
             )}

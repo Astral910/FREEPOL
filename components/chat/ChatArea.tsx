@@ -62,7 +62,7 @@ export default function ChatArea({
   }, [mensajes, estado])
 
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto bg-white">
       <AnimatePresence mode="wait">
 
         {/* Estado idle — pantalla de bienvenida */}
@@ -84,12 +84,12 @@ export default function ChatArea({
             </motion.div>
 
             {/* Saludo personalizado si hay empresa — solo interpolación, CERO tokens */}
-            <h1 className="text-3xl font-bold text-white text-center mb-3">
+            <h1 className="text-3xl font-bold text-[#0F172A] text-center mb-3">
               {empresa
                 ? `Hola, ${empresa.nombre} 👋`
                 : '¿Qué campaña tienes en mente?'}
             </h1>
-            <p className="text-[#94A3B8] text-center max-w-lg mx-auto leading-relaxed mb-10">
+            <p className="text-[#64748B] text-center max-w-lg mx-auto leading-relaxed mb-10">
               {empresa
                 ? `Soy tu asistente FREEPOL. ¿Qué campaña quieres crear hoy para ${empresa.nombre}?`
                 : 'Descríbela como se te ocurra. Puedes incluir el tipo de premio, las reglas, el tiempo, los canales... Entre más detalle, mejor resultado.'}
@@ -105,7 +105,7 @@ export default function ChatArea({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => onSugerencia(s.promptEjemplo)}
-                    className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl p-4 text-left cursor-pointer group transition-all duration-200 hover:border-current"
+                    className="bg-white border border-[#E5E7EB] rounded-xl p-4 text-left cursor-pointer group transition-all duration-200 shadow-sm hover:border-current"
                     style={
                       { '--hover-color': s.color } as React.CSSProperties
                     }
@@ -114,8 +114,8 @@ export default function ChatArea({
                       e.currentTarget.style.backgroundColor = `${s.color}0D`
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#2D2F5E'
-                      e.currentTarget.style.backgroundColor = '#1A1B4B'
+                      e.currentTarget.style.borderColor = '#E5E7EB'
+                      e.currentTarget.style.backgroundColor = '#FFFFFF'
                     }}
                   >
                     <div className="flex items-start gap-3">
@@ -126,7 +126,7 @@ export default function ChatArea({
                         <Icon size={16} style={{ color: s.color }} />
                       </div>
                       <div>
-                        <p className="text-[#E2E8F0] font-semibold text-sm">{s.titulo}</p>
+                        <p className="text-[#0F172A] font-semibold text-sm">{s.titulo}</p>
                         <p className="text-[#64748B] text-xs mt-0.5">{s.descripcion}</p>
                       </div>
                     </div>
@@ -143,7 +143,7 @@ export default function ChatArea({
             key="mensajes"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col gap-4 p-4 md:p-6 max-w-4xl mx-auto w-full"
+            className="flex flex-col gap-4 p-4 md:p-6 max-w-4xl mx-auto w-full bg-white"
           >
             {mensajes.map((msg) => (
               <motion.div
@@ -164,13 +164,13 @@ export default function ChatArea({
                   className={`max-w-[75%] rounded-2xl px-4 py-3 ${
                     msg.rol === 'usuario'
                       ? 'bg-[#E8344E] text-white rounded-tr-none'
-                      : 'bg-[#1A1B4B] text-[#E2E8F0] rounded-tl-none border border-[#2D2F5E]'
+                      : 'bg-[#F8FAFC] text-[#0F172A] rounded-tl-none border border-[#E5E7EB] shadow-sm'
                   }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.contenido}</p>
                   <p
                     className={`text-xs mt-1.5 ${
-                      msg.rol === 'usuario' ? 'text-white/60' : 'text-[#475569]'
+                      msg.rol === 'usuario' ? 'text-white/60' : 'text-[#64748B]'
                     }`}
                   >
                     {msg.timestamp.toLocaleTimeString('es-GT', {
@@ -196,8 +196,8 @@ export default function ChatArea({
                     <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
                       <Sparkles size={14} className="text-white animate-spin" />
                     </div>
-                    <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl rounded-tl-none px-4 py-3">
-                      <p className="text-[#94A3B8] text-sm">{texto}</p>
+                    <div className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl rounded-tl-none px-4 py-3 shadow-sm">
+                      <p className="text-[#64748B] text-sm">{texto}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -214,7 +214,7 @@ export default function ChatArea({
             key="results"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="p-4 md:p-6 max-w-4xl mx-auto w-full"
+            className="p-4 md:p-6 max-w-4xl mx-auto w-full bg-white"
           >
             <ResultadosAnalisis
               resultado={resultado}

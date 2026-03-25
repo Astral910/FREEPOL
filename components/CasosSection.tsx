@@ -1,172 +1,128 @@
 'use client'
 
-import { memo } from 'react'
-import { motion } from 'framer-motion'
-import { Trophy, Star, Ticket, UtensilsCrossed } from 'lucide-react'
-import { GradientBadge } from '@/components/ui/GradientBadge'
-import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
-
-const casos = [
-  {
-    empresa: 'Pollo Campero',
-    colorTop: '#E8000D',
-    badgeBg: 'bg-red-50',
-    badgeText: 'text-red-600',
-    badgeLabel: 'Ruleta gamificada',
-    icon: Trophy,
-    numero: '01',
-    titulo: 'Campaña mensual masiva',
-    descripcion:
-      'Ruleta omnicanal con 3 premios y probabilidades configuradas. El usuario valida su correo, gira una vez y recibe su código QR único en WhatsApp.',
-    metricas: '1 giro por correo · 3 premios · QR en 24h',
-    linkColor: '#E8000D',
-  },
-  {
-    empresa: 'Walmart + Puma',
-    colorTop: '#0071CE',
-    badgeBg: 'bg-blue-50',
-    badgeText: 'text-blue-600',
-    badgeLabel: 'Puntos por factura',
-    icon: Star,
-    numero: '02',
-    titulo: 'Alianza retail-combustible',
-    descripcion:
-      'El usuario sube su factura de Walmart por Telegram. La IA la lee con OCR, asigna Eco-Puntos y genera descuentos en gasolinera al llegar a la meta.',
-    metricas: '$10 = 1 punto · Meta 50 pts · $5 descuento',
-    linkColor: '#0071CE',
-  },
-  {
-    empresa: "McDonald's",
-    colorTop: '#FFC72C',
-    badgeBg: 'bg-yellow-50',
-    badgeText: 'text-yellow-700',
-    badgeLabel: 'Cupón + deep link',
-    icon: Ticket,
-    numero: '03',
-    titulo: 'De redes sociales a la app',
-    descripcion:
-      'Código único por usuario generado desde Instagram. Un clic lleva directo al carrito en la app de McDonald\'s. Control de stock automático.',
-    metricas: 'Código único · Deep linking · Límite 5,000 usos',
-    linkColor: '#B45309',
-  },
-  {
-    empresa: 'Taquería Don Chema',
-    colorTop: '#F97316',
-    badgeBg: 'bg-orange-50',
-    badgeText: 'text-orange-600',
-    badgeLabel: 'Negocio local',
-    icon: UtensilsCrossed,
-    numero: '04',
-    titulo: 'Fidelización para el negocio local',
-    descripcion:
-      'Una taquería de barrio lanzó su primera ruleta en 20 minutos. Sus clientes acumulan puntos por cada visita y los canjean por tacos gratis. Sin app, sin complicaciones.',
-    metricas: '20 min configuración · WhatsApp · 300+ clientes fidelizados',
-    linkColor: '#F97316',
-  },
-]
+import { useRef } from 'react'
+import Link from 'next/link'
+import { motion, useInView } from 'framer-motion'
+import { Sticker } from '@/components/ui/Sticker'
+import { ArrowRight } from 'lucide-react'
 
 /**
- * Sección de casos de uso reales de FREEPOL.
- * Cada card entra alternando desde los lados.
+ * Casos de uso asimétricos con demos enlazadas.
  */
-const CasosSection = memo(function CasosSection() {
-  const { ref, isInView } = useScrollAnimation()
+export default function CasosSection() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section id="casos" className="bg-white py-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
-        {/* Encabezado */}
-        <div className="text-center mb-16">
-          <GradientBadge variant="green" className="mb-4">
-            Casos reales
-          </GradientBadge>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] mt-4">
-            Lo que las empresas están construyendo
+    <section ref={ref} className="bg-white px-4 py-16 md:px-8 md:py-24">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          className="relative mb-12 md:mb-16"
+          initial={{ opacity: 0, y: 28 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="absolute -right-2 -top-6 md:right-0 md:top-0">
+            <Sticker rotation={-2} bgColor="#0A0A0A" textColor="#FFFFFF">
+              Casos reales
+            </Sticker>
+          </div>
+          <h2 className="text-4xl font-black uppercase leading-tight text-[#0A0A0A] md:text-6xl">
+            Lo que las empresas
+            <br />
+            <span className="text-[#E8344E]">están construyendo</span>
           </h2>
+        </motion.div>
+
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:gap-6">
+          <motion.article
+            className="flex-1 rounded-3xl border border-[#0A0A0A] bg-[#0A0A0A] p-8 text-white shadow-xl transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl lg:max-w-[58%]"
+            initial={{ opacity: 0, x: -48 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.55, delay: 0.05 }}
+          >
+            <div className="mb-4">
+              <Sticker rotation={-3} bgColor="#E8344E" borderClass="border border-white/30">
+                Ruleta gamificada
+              </Sticker>
+            </div>
+            <p
+              className="mb-4 text-4xl font-black uppercase text-transparent md:text-6xl"
+              style={{ WebkitTextStroke: '2px #E8344E' }}
+            >
+              Pollo Campero
+            </p>
+            <div className="mb-6 rounded-xl border border-[#22C55E]/40 bg-black p-4 font-mono text-sm leading-relaxed text-[#22C55E]">
+              &ldquo;Ruleta con 3 premios, un giro por correo, códigos QR 24h…&rdquo;
+            </div>
+            <div className="mb-6 flex flex-wrap gap-2">
+              {['60% descuento', '30% pieza gratis', '10% menú'].map((m) => (
+                <span
+                  key={m}
+                  className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-bold"
+                >
+                  {m}
+                </span>
+              ))}
+            </div>
+            <Link
+              href="/c/sabor-ganador-campero"
+              data-cursor="pointer"
+              className="inline-flex items-center gap-2 font-black text-[#E8344E] hover:text-[#F2839A]"
+            >
+              Ver demo en vivo <ArrowRight size={18} />
+            </Link>
+          </motion.article>
+
+          <motion.article
+            className="flex flex-1 flex-col justify-between rounded-3xl bg-[#E8344E] p-8 text-white shadow-xl transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl lg:max-w-[42%]"
+            initial={{ opacity: 0, x: 48 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.55, delay: 0.12 }}
+          >
+            <div>
+              <div className="mb-4">
+                <Sticker rotation={3} bgColor="#0A0A0A" textColor="#FFFFFF">
+                  Puntos por factura
+                </Sticker>
+              </div>
+              <h3 className="mb-3 text-2xl font-black">Walmart + Puma</h3>
+              <p className="text-sm font-medium leading-relaxed text-white/90">
+                Eco-puntos por factura; suben ticket por Telegram y canjean en combustible.
+              </p>
+            </div>
+            <Link
+              href="/c/eco-puntos-walmart-puma"
+              data-cursor="pointer"
+              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-3 font-black text-[#0A0A0A] hover:brightness-95"
+            >
+              Ver demo <ArrowRight size={18} />
+            </Link>
+          </motion.article>
         </div>
 
-        {/* Cards */}
-        <motion.div
-          ref={ref}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.15 } },
-          }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        <motion.article
+          className="mt-8 rounded-3xl bg-[#1A1B4B] p-8 text-white shadow-xl transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55, delay: 0.2 }}
         >
-          {casos.map((caso, index) => {
-            const Icon = caso.icon
-            return (
-              <motion.div
-                key={caso.empresa}
-                variants={{
-                  hidden: {
-                    opacity: 0,
-                    x: index % 2 === 0 ? -30 : 30,
-                  },
-                  visible: {
-                    opacity: 1,
-                    x: 0,
-                    transition: { duration: 0.6, ease: [0.25, 0.4, 0.25, 1] },
-                  },
-                }}
-                className="relative bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-200 p-6"
-                style={{ borderTop: `4px solid ${caso.colorTop}` }}
-              >
-                {/* Número decorativo de fondo */}
-                <span
-                  className="absolute top-4 right-4 text-8xl font-black leading-none select-none pointer-events-none"
-                  style={{ color: `${caso.colorTop}15` }}
-                  aria-hidden="true"
-                >
-                  {caso.numero}
-                </span>
-
-                {/* Badge */}
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${caso.badgeBg} ${caso.badgeText}`}
-                >
-                  {caso.badgeLabel}
-                </span>
-
-                {/* Ícono */}
-                <div className="mb-3">
-                  <Icon size={24} style={{ color: caso.colorTop }} />
-                </div>
-
-                {/* Empresa y título */}
-                <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wide mb-1">
-                  {caso.empresa}
-                </p>
-                <h3 className="text-lg font-bold text-[#0F172A] mb-3">{caso.titulo}</h3>
-
-                {/* Descripción */}
-                <p className="text-sm text-[#64748B] leading-relaxed mb-4">
-                  {caso.descripcion}
-                </p>
-
-                {/* Métricas */}
-                <div className="bg-[#F8FAFC] rounded-lg px-3 py-2 mb-4">
-                  <p className="text-xs text-[#64748B] font-medium">{caso.metricas}</p>
-                </div>
-
-                {/* Link */}
-                <a
-                  href="#"
-                  className="text-sm font-semibold hover:underline transition-colors"
-                  style={{ color: caso.linkColor }}
-                >
-                  Ver demo →
-                </a>
-              </motion.div>
-            )
-          })}
-        </motion.div>
+          <Sticker rotation={0} bgColor="#E8344E" className="mb-4">
+            Cupón + deep link
+          </Sticker>
+          <h3 className="mb-3 text-2xl font-black md:text-3xl">McDonald&apos;s Guatemala</h3>
+          <p className="mb-6 max-w-3xl text-sm leading-relaxed text-[#94A3B8]">
+            Cupones flash desde la landing: correo único, deep link a la app, límite de participantes.
+          </p>
+          <Link
+            href="/c/cupones-flash-mcdonalds"
+            data-cursor="pointer"
+            className="inline-flex items-center gap-2 font-black text-[#E8344E] hover:text-[#F2839A]"
+          >
+            Ver demo <ArrowRight size={18} />
+          </Link>
+        </motion.article>
       </div>
     </section>
   )
-})
-
-export default CasosSection
+}

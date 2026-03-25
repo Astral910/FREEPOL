@@ -1,51 +1,64 @@
 'use client'
 
-import { memo } from 'react'
-import { motion } from 'framer-motion'
-import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
+import { Sticker } from '@/components/ui/Sticker'
 
-const marcas = ['Pollo Campero', 'Walmart', "McDonald's", 'Grupo Puma', 'Claro']
+const MARCAS = ['Retail', 'Restaurantes', 'Gasolineras', 'E-commerce', 'Servicios']
 
 /**
- * Barra de logos de marcas de referencia.
- * Se anima al entrar en el viewport con fadeIn.
+ * Franja roja tipo declaración — marcas ficticias / categorías como prueba social.
  */
-const LogosBar = memo(function LogosBar() {
-  const { ref, isInView } = useScrollAnimation()
+export default function LogosBar() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-40px' })
 
   return (
-    <section className="bg-[#F8FAFC] border-y border-[#E5E7EB] py-12">
-      <div ref={ref} className="max-w-7xl mx-auto px-4 md:px-8">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5 }}
-          className="text-center text-sm text-[#64748B] uppercase tracking-widest font-medium mb-8"
-        >
-          Desde taquerías locales hasta cadenas nacionales
-        </motion.p>
+    <section ref={ref} className="relative overflow-hidden bg-[#E8344E] py-14 md:py-16">
+      <motion.div
+        className="pointer-events-none absolute left-6 top-6 z-10 hidden md:block"
+        initial={{ opacity: 0, rotate: -12 }}
+        animate={isInView ? { opacity: 1, rotate: -3 } : {}}
+        transition={{ duration: 0.4 }}
+      >
+        <Sticker rotation={-3}>100% SIN CÓDIGO</Sticker>
+      </motion.div>
+      <motion.div
+        className="pointer-events-none absolute bottom-6 right-6 z-10 hidden md:block"
+        initial={{ opacity: 0, rotate: 12 }}
+        animate={isInView ? { opacity: 1, rotate: 3 } : {}}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        <Sticker rotation={3}>⚡ EN MINUTOS</Sticker>
+      </motion.div>
 
+      <div className="relative z-[1] mx-auto max-w-7xl px-4 text-center md:px-8">
+        <motion.p
+          className="mb-8 inline-block -rotate-1 text-lg font-black uppercase tracking-[0.2em] text-white"
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.45 }}
+        >
+          Las marcas que ya fidelizan con IA
+        </motion.p>
         <motion.div
+          className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 md:gap-x-5"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="flex justify-center items-center gap-8 md:gap-12 flex-wrap"
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
-          {marcas.map((marca, index) => (
-            <motion.span
-              key={marca}
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.4, delay: 0.1 + index * 0.08 }}
-              className="text-xl font-bold text-[#CBD5E1] hover:text-[#94A3B8] transition-colors duration-200 cursor-default select-none"
-            >
-              {marca}
-            </motion.span>
+          {MARCAS.map((nombre, i) => (
+            <span key={nombre} className="contents">
+              <span className="cursor-default text-2xl font-black text-white transition-colors duration-200 hover:bg-white hover:text-black md:text-3xl">
+                {nombre}
+              </span>
+              {i < MARCAS.length - 1 && (
+                <span className="text-white/70 select-none">·</span>
+              )}
+            </span>
           ))}
         </motion.div>
       </div>
     </section>
   )
-})
-
-export default LogosBar
+}

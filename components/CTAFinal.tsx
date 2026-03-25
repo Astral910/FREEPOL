@@ -1,77 +1,92 @@
 'use client'
 
-import { memo } from 'react'
-import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
+import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
+import { Sticker } from '@/components/ui/Sticker'
 
 interface CTAFinalProps {
   onOpenAuth: (tab?: 'login' | 'register') => void
 }
 
 /**
- * Sección de llamada a la acción final con gradiente IA.
- * Incluye elementos decorativos y dos botones principales.
+ * CTA final dramático sobre rojo FREEPOL.
  */
-const CTAFinal = memo(function CTAFinal({ onOpenAuth }: CTAFinalProps) {
-  const router = useRouter()
-  const { ref, isInView } = useScrollAnimation()
+export default function CTAFinal({ onOpenAuth }: CTAFinalProps) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section className="relative overflow-hidden py-32 gradient-bg">
-      {/* Elementos decorativos */}
-      <div
-        aria-hidden="true"
-        className="absolute top-0 left-0 w-96 h-96 rounded-full bg-white/5 blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-white/5 blur-3xl translate-x-1/2 translate-y-1/2 pointer-events-none"
-      />
+    <section
+      ref={ref}
+      className="relative overflow-hidden bg-[#E8344E] px-4 py-20 md:px-8 md:py-28"
+    >
+      <p
+        className="pointer-events-none absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 select-none text-[80px] font-black uppercase leading-none text-transparent opacity-[0.12] sm:text-[140px] md:text-[200px]"
+        style={{ WebkitTextStroke: '2px #ffffff' }}
+        aria-hidden
+      >
+        FREEPOL
+      </p>
 
-      <div ref={ref} className="relative max-w-4xl mx-auto px-4 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
+      <div className="pointer-events-none absolute right-6 top-8 z-10 hidden md:block">
+        <Sticker rotation={5} bgColor="#0A0A0A" textColor="#FFFFFF">
+          Sin tarjeta de crédito
+        </Sticker>
+      </div>
+      <div className="pointer-events-none absolute left-6 top-10 z-10 hidden md:block">
+        <Sticker rotation={-4} bgColor="#FFFFFF" textColor="#0A0A0A" borderClass="border-2 border-[#0A0A0A]">
+          En 5 minutos
+        </Sticker>
+      </div>
+
+      <div className="relative z-[1] mx-auto max-w-4xl text-center">
+        <motion.h2
+          className="font-black uppercase leading-[0.95] text-[#0A0A0A]"
+          initial={{ opacity: 0, y: 32 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          transition={{ duration: 0.55 }}
         >
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            ¿Listo para tu primera campaña?
-          </h2>
-          <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-            Únete a las empresas que ya fidelizan con inteligencia artificial
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                className="px-10 py-4 h-auto rounded-xl bg-white text-[#E8344E] font-bold text-base hover:bg-white/90 shadow-xl transition-all duration-200"
-                onClick={() => router.push('/chat')}
-              >
-                Crear cuenta gratis
-              </Button>
-            </motion.div>
-
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <a href="/demos">
-                <Button
-                  variant="outline"
-                  className="px-10 py-4 h-auto rounded-xl border-white/40 text-white bg-transparent hover:bg-white/10 text-base transition-all duration-200"
-                >
-                  Ver una demo
-                </Button>
-              </a>
-            </motion.div>
-          </div>
-
-          <p className="text-white/60 text-sm">
-            Sin tarjeta de crédito · Cancela cuando quieras
-          </p>
+          <span
+            className="block text-4xl text-transparent md:text-7xl"
+            style={{ WebkitTextStroke: '2px #ffffff' }}
+          >
+            ¿Listo para
+          </span>
+          <span className="block text-4xl text-white md:text-7xl">tu primera</span>
+          <span className="block text-4xl md:text-7xl">campaña?</span>
+        </motion.h2>
+        <motion.p
+          className="mx-auto mt-6 max-w-xl text-lg text-white/90"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.2 }}
+        >
+          Tu primera campaña, gratis. Sin tarjeta de crédito. Lista en 5 minutos.
+        </motion.p>
+        <motion.div
+          className="mt-10"
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ delay: 0.25 }}
+        >
+          <button
+            type="button"
+            data-cursor="pointer"
+            onClick={() => onOpenAuth('register')}
+            className="btn-shimmer relative overflow-hidden rounded-full bg-[#0A0A0A] px-16 py-6 text-2xl font-black text-white transition-transform hover:scale-110"
+          >
+            Empezar ahora
+          </button>
         </motion.div>
+        <motion.p
+          className="mt-8 text-lg text-white/80"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.35 }}
+        >
+          Únete a las empresas que ya fidelizan con IA
+        </motion.p>
       </div>
     </section>
   )
-})
-
-export default CTAFinal
+}

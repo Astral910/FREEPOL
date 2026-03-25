@@ -76,7 +76,7 @@ export default function AlianzasSection({ userId, userEmail, supabase }: Alianza
       <div className="flex items-center gap-2">
         <Handshake size={18} className="text-[#E8344E]" />
         <div>
-          <h2 className="text-white font-semibold text-lg">Colaboraciones</h2>
+          <h2 className="text-[#0F172A] font-semibold text-lg">Colaboraciones</h2>
           <p className="text-[#64748B] text-xs">Empresas aliadas en tus campañas</p>
         </div>
       </div>
@@ -85,11 +85,11 @@ export default function AlianzasSection({ userId, userEmail, supabase }: Alianza
         {alianzas.map((a) => {
           const estilo = ESTADO_STYLE[a.estado] ?? ESTADO_STYLE.pendiente
           return (
-            <div key={a.id} className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl p-4 space-y-3">
+            <div key={a.id} className="bg-white border border-[#E5E7EB] rounded-xl p-4 space-y-3 shadow-sm">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="text-[#E2E8F0] font-medium text-sm">{a.nombre_campana}</p>
-                  <p className="text-[#475569] text-xs">{a.correo_aliado}</p>
+                  <p className="text-[#0F172A] font-medium text-sm">{a.nombre_campana}</p>
+                  <p className="text-[#64748B] text-xs">{a.correo_aliado}</p>
                 </div>
                 <span className={`text-xs px-2.5 py-1 rounded-full border flex-shrink-0 font-medium ${estilo.clase}`}>
                   {estilo.label}
@@ -99,7 +99,7 @@ export default function AlianzasSection({ userId, userEmail, supabase }: Alianza
               {a.estado === 'pendiente' && (
                 <button
                   onClick={() => copiarLinkInvitacion(a.token_invitacion)}
-                  className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-[#2D2F5E] text-[#94A3B8] text-xs hover:bg-[#2D2F5E] transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-[#E5E7EB] text-[#64748B] text-xs hover:bg-[#F8FAFC] hover:text-[#E8344E] transition-colors"
                 >
                   <Copy size={12} /> Reenviar invitación (copiar link)
                 </button>

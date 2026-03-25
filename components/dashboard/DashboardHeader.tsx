@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import type { Empresa } from '@/lib/empresa'
+import { BRAND_PRIMARY, BRAND_ACCENT } from '@/lib/brand'
 
 interface DashboardHeaderProps {
   empresa: Empresa
@@ -36,10 +37,10 @@ export default function DashboardHeader({ empresa, nombreUsuario, campanasActiva
       className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
     >
       <div>
-        <p className="text-[#94A3B8] text-sm">
+        <p className="text-[#64748B] text-sm">
           {saludo}{nombreUsuario ? `, ${nombreUsuario}` : ''}
         </p>
-        <h1 className="text-2xl md:text-3xl font-bold text-white mt-0.5">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#0F172A] mt-0.5">
           {empresa.nombre}
         </h1>
         <p className="text-[#64748B] text-sm mt-1">
@@ -54,7 +55,7 @@ export default function DashboardHeader({ empresa, nombreUsuario, campanasActiva
       <Link
         href="/chat"
         className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-white font-semibold text-sm hover:opacity-90 transition-opacity self-start sm:self-auto flex-shrink-0"
-        style={{ background: `linear-gradient(135deg, ${empresa.color_primario}, #F2839A)` }}
+        style={{ background: `linear-gradient(135deg, ${BRAND_PRIMARY}, ${BRAND_ACCENT})` }}
       >
         <Plus size={15} />
         Nueva campaña

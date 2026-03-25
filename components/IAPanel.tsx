@@ -1,147 +1,135 @@
 'use client'
 
-import { memo } from 'react'
-import { motion } from 'framer-motion'
-import { UtensilsCrossed, ShoppingBag, Fuel, Globe, CheckCircle } from 'lucide-react'
-import { GradientBadge } from '@/components/ui/GradientBadge'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
-import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useInView } from 'framer-motion'
+import { Sticker } from '@/components/ui/Sticker'
+import { Check } from 'lucide-react'
 
-const prompts = [
-  {
-    id: 'restaurante',
-    label: 'Restaurante',
-    icon: UtensilsCrossed,
-    prompt: `Quiero una ruleta para mi restaurante este mes de junio.
-Los clientes validan su correo y pueden girar una vez al día.
-Premios: 10% descuento (50%), postre gratis (35%),
-combo completo gratis (15%).
-Vigente del 1 al 30 de junio.`,
-    nota: '✓ La IA puede hacer esto exactamente',
-  },
-  {
-    id: 'retail',
-    label: 'Retail',
-    icon: ShoppingBag,
-    prompt: `Crea un sistema donde mis clientes suban su factura
-de compra por WhatsApp. Por cada $25 de compra les doy
-1 punto. Cuando lleguen a 40 puntos quiero darles $10
-de descuento en su próxima compra en tienda.`,
-    nota: '✓ La IA puede hacer esto exactamente',
-  },
-  {
-    id: 'gasolinera',
-    label: 'Gasolinera',
-    icon: Fuel,
-    prompt: `Quiero una alianza con el supermercado de la zona.
-Los clientes que compren más de $30 en el super reciben
-puntos canjeables en combustible. Necesito que funcione
-por Telegram y que sea los martes y jueves de 8am a 6pm.`,
-    nota: '✓ La IA puede hacer esto exactamente',
-  },
-  {
-    id: 'ecommerce',
-    label: 'E-commerce',
-    icon: Globe,
-    prompt: `Lanza una promo de cupones flash para mi tienda online.
-Los clientes ingresan su correo y reciben un código único
-de 20% de descuento. Máximo 1000 cupones. Quiero un botón
-que los lleve directo a mi tienda Shopify.`,
-    nota: '✓ Deep linking incluido automáticamente',
-  },
-]
+const INDUSTRIAS = ['Restaurante', 'Retail', 'Gasolinera', 'E-commerce'] as const
+
+const PROMPTS: Record<(typeof INDUSTRIAS)[number], string> = {
+  Restaurante:
+    'Ruleta para mi restaurante: 15% dto, postre gratis, menú — WhatsApp, un giro por correo.',
+  Retail:
+    'Puntos en mi tienda: $25 = 1 punto, 30 puntos = $15 dto, canal WhatsApp.',
+  Gasolinera:
+    'Alianza con super: facturas $30+ acumulan puntos para $5 de descuento en combustible.',
+  'E-commerce':
+    'Cupón flash: 25% dto, máximo 500 códigos, botón a mi tienda online.',
+}
 
 /**
- * Sección de panel de IA con guía de prompts.
- * Muestra ejemplos reales de prompts en formato terminal.
+ * Panel de IA — tabs por industria + terminal con efecto máquina de escribir.
  */
-const IAPanel = memo(function IAPanel() {
-  const { ref, isInView } = useScrollAnimation()
+export default function IAPanel() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-80px' })
+  const [tab, setTab] = useState<(typeof INDUSTRIAS)[number]>('Restaurante')
+  const [typed, setTyped] = useState('')
+  const full = PROMPTS[tab]
+
+  useEffect(() => {
+    setTyped('')
+    let i = 0
+    const id = window.setInterval(() => {
+      i += 1
+      setTyped(full.slice(0, i))
+      if (i >= full.length) clearInterval(id)
+    }, 28)
+    return () => clearInterval(id)
+  }, [full, tab])
 
   return (
-    <section id="prompts" className="bg-white py-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+    <section ref={ref} className="bg-[#0A0A0A] px-4 py-16 md:px-8 md:py-24">
+      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
         <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 36 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start"
+          transition={{ duration: 0.55 }}
         >
-          {/* Columna izquierda — sticky */}
-          <div className="lg:sticky lg:top-28">
-            <GradientBadge variant="purple" className="mb-4">
-              Guía de prompts
-            </GradientBadge>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] mt-4 mb-4 leading-tight">
-              Escríbelo como se te ocurra.{' '}
-              <span className="gradient-text">La IA lo entiende.</span>
-            </h2>
-            <p className="text-[#64748B] text-lg leading-relaxed mb-8">
-              No necesitas saber programar ni usar términos técnicos. FREEPOL fue
-              entrenada para entender cómo hablan los empresarios.
-            </p>
-            <Button
-              variant="outline"
-              className="border-[#E8344E] text-[#E8344E] hover:bg-[#F0F0FF] rounded-lg"
+          <h2 className="font-black uppercase leading-[0.95] tracking-tight text-white">
+            <span
+              className="block text-4xl text-transparent md:text-7xl"
+              style={{ WebkitTextStroke: '2px #ffffff' }}
             >
-              Acceder a la guía completa →
-            </Button>
+              Escríbelo
+            </span>
+            <span className="block text-4xl md:text-7xl">como se te</span>
+            <span className="block text-4xl text-[#E8344E] md:text-7xl">ocurra.</span>
+          </h2>
+          <p className="mt-5 max-w-md text-lg text-[#94A3B8]">
+            FREEPOL fue entrenada para entender cómo hablan los empresarios de Latinoamérica. Sin
+            tecnicismos.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-2">
+            {INDUSTRIAS.map((ind) => (
+              <button
+                key={ind}
+                type="button"
+                data-cursor="pointer"
+                onClick={() => setTab(ind)}
+                className={`rounded-full px-4 py-2 text-sm font-bold transition-colors ${
+                  tab === ind
+                    ? 'bg-[#E8344E] text-white'
+                    : 'bg-white/10 text-white/80 hover:bg-white/15'
+                }`}
+              >
+                {ind}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="relative"
+          initial={{ opacity: 0, y: 36 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55, delay: 0.12 }}
+        >
+          <motion.span
+            className="absolute -left-2 -top-10 z-10 text-4xl"
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            aria-hidden
+          >
+            🤖
+          </motion.span>
+          <div className="absolute -right-4 top-4 z-10 hidden sm:block">
+            <Sticker rotation={5} bgColor="#E8344E" borderClass="border border-white/40">
+              AI powered
+            </Sticker>
           </div>
 
-          {/* Columna derecha — tabs con prompts */}
-          <div>
-            <Tabs defaultValue="restaurante" className="w-full">
-              <TabsList className="w-full mb-6 grid grid-cols-4 h-auto p-1">
-                {prompts.map((p) => {
-                  const Icon = p.icon
-                  return (
-                    <TabsTrigger
-                      key={p.id}
-                      value={p.id}
-                      className="flex flex-col items-center gap-1 py-2 text-xs"
-                    >
-                      <Icon size={14} />
-                      <span className="hidden sm:inline">{p.label}</span>
-                    </TabsTrigger>
-                  )
-                })}
-              </TabsList>
-
-              {prompts.map((p) => (
-                <TabsContent key={p.id} value={p.id}>
-                  <div className="rounded-xl overflow-hidden border border-[#1A1B4B] shadow-lg">
-                    {/* Barra de terminal */}
-                    <div className="bg-[#1A1B4B] px-4 py-2 flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-                      <span className="ml-2 text-xs text-[#475569] font-mono">
-                        prompt.txt
-                      </span>
-                    </div>
-                    {/* Contenido del prompt */}
-                    <div className="bg-[#0A0A0A] p-5">
-                      <pre className="text-[#22C55E] text-sm font-mono leading-relaxed whitespace-pre-wrap">
-                        {p.prompt}
-                      </pre>
-                    </div>
-                  </div>
-
-                  {/* Badge de confirmación */}
-                  <div className="mt-4 flex items-center gap-2 bg-[#F0FDF4] border border-[#86EFAC] rounded-lg px-4 py-3">
-                    <CheckCircle size={16} className="text-[#22C55E] flex-shrink-0" />
-                    <span className="text-sm text-[#22C55E] font-medium">{p.nota}</span>
-                  </div>
-                </TabsContent>
-              ))}
-            </Tabs>
+          <div className="rounded-2xl border-2 border-[#E8344E] bg-[#0D0D0D] p-4 shadow-2xl">
+            <div className="mb-3 flex items-center gap-2 border-b border-white/10 pb-3">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#28C840]" />
+              <span className="ml-2 font-mono text-xs text-white/40">prompt.freepol.ai</span>
+            </div>
+            <p className="min-h-[120px] font-mono text-sm leading-relaxed text-[#22C55E] md:text-base">
+              {typed}
+              <span className="ml-0.5 inline-block min-w-[0.5ch] animate-pulse font-mono text-[#22C55E]">
+                │
+              </span>
+            </p>
           </div>
+          <motion.div
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#22C55E]/20 px-4 py-2 text-sm font-bold text-[#22C55E]"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.5 }}
+          >
+            <motion.span
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 1.2, repeat: Infinity }}
+            >
+              <Check size={18} strokeWidth={3} />
+            </motion.span>
+            Reglas y premios detectados automáticamente
+          </motion.div>
         </motion.div>
       </div>
     </section>
   )
-})
-
-export default IAPanel
+}

@@ -165,13 +165,13 @@ export default function CampanaMetricasPage() {
 
   if (cargando) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] p-6 md:p-8 space-y-6">
-        <Skeleton className="h-10 w-48 rounded-xl" />
-        <Skeleton className="h-24 w-full rounded-2xl" />
+      <div className="min-h-screen bg-white p-6 md:p-8 space-y-6">
+        <Skeleton className="h-10 w-48 rounded-xl bg-[#F1F5F9]" />
+        <Skeleton className="h-24 w-full rounded-2xl bg-[#F1F5F9]" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl" />)}
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-2xl bg-[#F1F5F9]" />)}
         </div>
-        <Skeleton className="h-64 rounded-2xl" />
+        <Skeleton className="h-64 rounded-2xl bg-[#F1F5F9]" />
       </div>
     )
   }
@@ -183,14 +183,14 @@ export default function CampanaMetricasPage() {
     : '0'
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
-      <Toaster position="top-center" toastOptions={{ style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E', borderRadius: '12px' } }} />
+    <div className="min-h-screen bg-white">
+      <Toaster position="top-center" toastOptions={{ style: { background: '#FFFFFF', color: '#0F172A', border: '1px solid #E5E7EB', borderRadius: '12px' } }} />
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 space-y-8">
 
         {/* Header / Breadcrumb */}
         <div className="space-y-4">
-          <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-[#64748B] text-sm hover:text-[#94A3B8] transition-colors">
+          <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-[#64748B] text-sm hover:text-[#E8344E] transition-colors">
             <ArrowLeft size={13} /> Dashboard
           </Link>
 
@@ -200,7 +200,7 @@ export default function CampanaMetricasPage() {
                 <TipoIcono size={18} className="text-white" />
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl font-bold text-white">{campana.nombre_campana}</h1>
+                <h1 className="text-xl md:text-2xl font-bold text-[#0F172A]">{campana.nombre_campana}</h1>
                 <p className="text-[#64748B] text-sm">{campana.nombre_negocio}</p>
               </div>
               <span className={`text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${campana.estado === 'activa' ? 'bg-green-500/10 text-green-400' : 'bg-orange-500/10 text-orange-400'}`}>
@@ -210,11 +210,11 @@ export default function CampanaMetricasPage() {
 
             <div className="flex items-center gap-2">
               <a href={`/c/${campana.slug}`} target="_blank" rel="noreferrer"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#2D2F5E] text-[#94A3B8] text-sm hover:text-[#E2E8F0] hover:bg-[#1A1B4B] transition-all">
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#E5E7EB] text-[#64748B] text-sm hover:text-[#E8344E] hover:bg-[#FFF0F2] transition-all">
                 <ExternalLink size={13} /> Ver landing
               </a>
               <button onClick={toggleEstado} disabled={toggling}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#2D2F5E] text-[#94A3B8] text-sm hover:text-[#E2E8F0] hover:bg-[#1A1B4B] transition-all disabled:opacity-50">
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#E5E7EB] text-[#64748B] text-sm hover:text-[#E8344E] hover:bg-[#FFF0F2] transition-all disabled:opacity-50">
                 {campana.estado === 'activa' ? <><Pause size={13} /> Pausar</> : <><Play size={13} /> Activar</>}
               </button>
             </div>
@@ -238,9 +238,9 @@ export default function CampanaMetricasPage() {
           ].map((m) => {
             const Icono = m.icono
             return (
-              <div key={m.label} className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-4">
+              <div key={m.label} className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-sm">
                 <Icono size={16} style={{ color: m.color }} className="mb-2" />
-                <p className="text-2xl font-bold text-white">{m.valor}</p>
+                <p className="text-2xl font-bold text-[#0F172A]">{m.valor}</p>
                 <p className="text-[#64748B] text-xs mt-0.5">{m.label}</p>
               </div>
             )
@@ -249,13 +249,13 @@ export default function CampanaMetricasPage() {
 
         {/* Distribución de premios — solo ruleta */}
         {campana.tipo === 'ruleta' && distribucion.length > 0 && (
-          <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-6 space-y-4">
-            <h2 className="text-white font-semibold">Distribución de premios</h2>
+          <div className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-6 space-y-4">
+            <h2 className="text-[#0F172A] font-semibold">Distribución de premios</h2>
             <div className="space-y-4">
               {distribucion.map((p) => (
                 <div key={p.nombre} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#E2E8F0] font-medium">{p.nombre}</span>
+                    <span className="text-[#0F172A] font-medium">{p.nombre}</span>
                     <div className="flex items-center gap-3 text-xs text-[#64748B]">
                       <span>Teórico: {p.probabilidadTeorica}%</span>
                       <span className="text-[#94A3B8]">Real: {p.porcentajeReal.toFixed(1)}%</span>
@@ -263,14 +263,14 @@ export default function CampanaMetricasPage() {
                     </div>
                   </div>
                   <div className="flex gap-1 h-4">
-                    <div className="flex-1 bg-[#0A0A0A] rounded-full overflow-hidden">
+                    <div className="flex-1 bg-[#E5E7EB] rounded-full overflow-hidden">
                       <div className="h-full bg-[#E8344E]/40 rounded-full transition-all" style={{ width: `${p.probabilidadTeorica}%` }} />
                     </div>
-                    <div className="flex-1 bg-[#0A0A0A] rounded-full overflow-hidden">
+                    <div className="flex-1 bg-[#E5E7EB] rounded-full overflow-hidden">
                       <div className="h-full bg-[#22C55E] rounded-full transition-all" style={{ width: `${Math.min(p.porcentajeReal, 100)}%` }} />
                     </div>
                   </div>
-                  <div className="flex justify-between text-xs text-[#2D2F5E]">
+                  <div className="flex justify-between text-xs text-[#94A3B8]">
                     <span>Probabilidad configurada</span>
                     <span>Resultado real</span>
                   </div>
@@ -282,18 +282,18 @@ export default function CampanaMetricasPage() {
 
         {/* Mecánica de puntos — solo puntos/factura */}
         {(campana.tipo === 'puntos' || campana.tipo === 'factura') && campana.configuracion.meta_canje && (
-          <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-6 space-y-4">
-            <h2 className="text-white font-semibold">Mecánica de puntos</h2>
+          <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 space-y-4 shadow-sm">
+            <h2 className="text-[#0F172A] font-semibold">Mecánica de puntos</h2>
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-[#0A0A0A] rounded-xl p-4">
+              <div className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl p-4">
                 <p className="text-2xl font-bold text-[#E8344E]">{campana.configuracion.puntos_por_monto ?? '?'}</p>
                 <p className="text-[#64748B] text-xs">puntos por ${campana.configuracion.monto_base ?? '?'}</p>
               </div>
-              <div className="bg-[#0A0A0A] rounded-xl p-4">
+              <div className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl p-4">
                 <p className="text-2xl font-bold text-[#F59E0B]">{campana.configuracion.meta_canje}</p>
                 <p className="text-[#64748B] text-xs">puntos para canjear</p>
               </div>
-              <div className="bg-[#0A0A0A] rounded-xl p-4">
+              <div className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl p-4">
                 <p className="text-2xl font-bold text-[#22C55E]">{campana.total_canjes}</p>
                 <p className="text-[#64748B] text-xs">metas alcanzadas</p>
               </div>
@@ -302,40 +302,40 @@ export default function CampanaMetricasPage() {
         )}
 
         {/* Tabla participantes */}
-        <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-[#2D2F5E] flex items-center justify-between">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
+          <div className="px-5 py-4 border-b border-[#E5E7EB] flex items-center justify-between">
             <div>
-              <h2 className="text-white font-semibold">Últimos participantes</h2>
+              <h2 className="text-[#0F172A] font-semibold">Últimos participantes</h2>
               <p className="text-[#64748B] text-xs">Mostrando hasta 50 recientes</p>
             </div>
             <button onClick={exportarCSV}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#2D2F5E] text-[#94A3B8] text-sm hover:bg-[#2D2F5E] hover:text-[#E2E8F0] transition-all">
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#E5E7EB] text-[#64748B] text-sm hover:bg-[#F8FAFC] hover:text-[#E8344E] transition-all">
               <Download size={13} /> Exportar CSV
             </button>
           </div>
 
           {participantes.length === 0 ? (
-            <div className="p-10 text-center text-[#475569] text-sm">
+            <div className="p-10 text-center text-[#64748B] text-sm">
               Aún no hay participantes en esta campaña.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#2D2F5E]">
+                  <tr className="border-b border-[#E5E7EB]">
                     {['Participante', 'Registrado', 'Premio', 'Estado código'].map((h) => (
                       <th key={h} className="text-left text-[#64748B] text-xs uppercase tracking-wide px-5 py-3 font-medium whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2D2F5E]/80">
+                <tbody className="divide-y divide-[#F1F5F9]">
                   {participantes.map((p) => {
                     const codigo = p.codigos?.[0]
                     const identidad = p.correo ?? p.telefono ?? p.nombre ?? 'Anónimo'
                     return (
-                      <tr key={p.id} className="hover:bg-[#0A0A0A]/30 transition-colors">
+                      <tr key={p.id} className="hover:bg-[#FFF0F2]/40 transition-colors">
                         <td className="px-5 py-3">
-                          <p className="text-[#E2E8F0] text-sm">{identidad}</p>
+                          <p className="text-[#0F172A] text-sm">{identidad}</p>
                         </td>
                         <td className="px-5 py-3 text-[#64748B] text-xs whitespace-nowrap">
                           {formatDistanceToNow(new Date(p.creado_en), { addSuffix: true, locale: es })}

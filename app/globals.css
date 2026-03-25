@@ -14,12 +14,25 @@
   --border: #E5E7EB;
   --text-primary: #0F172A;
   --text-soft: #64748B;
+  --freepol-red: #E8344E;
+  --freepol-red-dark: #CC2840;
+  --freepol-red-light: #EC4D63;
+  --freepol-pink: #F2839A;
+  --freepol-navy: #1A1B4B;
+  --freepol-black: #0a0a0a;
+  --freepol-white: #ffffff;
+  --freepol-cream: #fff5f6;
   /* Nombre lógico de marca; el valor efectivo de la familia lo completa next/font en <html> */
   --font-sloth: 'Sloth', sans-serif;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: #e8344e;
+  color: #ffffff;
 }
 
 body {
@@ -93,4 +106,55 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
+}
+
+/* Marquee infinito (MarketingLanding) */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 28s) linear infinite;
+}
+
+/* Brillo que cruza botones CTA */
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-12deg);
+  }
+}
+
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  animation: shimmer-sweep 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Cursor personalizado en marketing (desktop): oculta cursor nativo */
+@media (min-width: 768px) {
+  .marketing-custom-cursor,
+  .marketing-custom-cursor * {
+    cursor: none !important;
+  }
 }
