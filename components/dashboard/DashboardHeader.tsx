@@ -54,7 +54,7 @@ export default function DashboardHeader({ empresa, nombreUsuario, campanasActiva
       <Link
         href="/chat"
         className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-white font-semibold text-sm hover:opacity-90 transition-opacity self-start sm:self-auto flex-shrink-0"
-        style={{ background: `linear-gradient(135deg, ${empresa.color_primario}, #A855F7)` }}
+        style={{ background: `linear-gradient(135deg, ${empresa.color_primario}, #F2839A)` }}
       >
         <Plus size={15} />
         Nueva campaña

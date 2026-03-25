@@ -93,7 +93,7 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent
         side="right"
-        className="w-full sm:w-[420px] p-0 bg-[#0F172A] border-l border-[#334155] overflow-hidden flex flex-col"
+        className="w-full sm:w-[420px] p-0 bg-[#0A0A0A] border-l border-[#2D2F5E] overflow-hidden flex flex-col"
       >
         {/* Header con gradiente */}
         <div className="gradient-bg p-6 flex-shrink-0">
@@ -108,15 +108,15 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
         {/* Contenido con scroll */}
         <div className="flex-1 overflow-y-auto">
           <Tabs defaultValue="restaurante" className="w-full">
-            <div className="px-4 pt-4 sticky top-0 bg-[#0F172A] z-10 pb-2">
-              <TabsList className="w-full bg-[#1E293B] border border-[#334155] h-auto p-1 grid grid-cols-5 gap-1">
+            <div className="px-4 pt-4 sticky top-0 bg-[#0A0A0A] z-10 pb-2">
+              <TabsList className="w-full bg-[#1A1B4B] border border-[#2D2F5E] h-auto p-1 grid grid-cols-5 gap-1">
                 {ejemplos.map((e) => {
                   const Icon = e.icon
                   return (
                     <TabsTrigger
                       key={e.id}
                       value={e.id}
-                      className="flex flex-col items-center gap-1 py-2 px-1 text-[#64748B] data-[state=active]:bg-[#334155] data-[state=active]:text-[#5B5CF6] rounded-lg"
+                      className="flex flex-col items-center gap-1 py-2 px-1 text-[#64748B] data-[state=active]:bg-[#2D2F5E] data-[state=active]:text-[#E8344E] rounded-lg"
                     >
                       <Icon size={14} />
                       <span className="text-[10px] leading-tight text-center">{e.label}</span>
@@ -131,8 +131,8 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
                 <p className="text-[#94A3B8] text-sm font-medium">{e.titulo}</p>
 
                 {/* Prompt estilo terminal */}
-                <div className="rounded-xl overflow-hidden border border-[#334155]">
-                  <div className="bg-[#1E293B] px-3 py-2 flex items-center gap-2">
+                <div className="rounded-xl overflow-hidden border border-[#2D2F5E]">
+                  <div className="bg-[#1A1B4B] px-3 py-2 flex items-center gap-2">
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
                       <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" />
@@ -180,7 +180,7 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
                   </p>
                   {e.tips.map((tip, i) => (
                     <div key={i} className="flex items-start gap-2">
-                      <span className="text-[#5B5CF6] text-xs mt-0.5 flex-shrink-0">→</span>
+                      <span className="text-[#E8344E] text-xs mt-0.5 flex-shrink-0">→</span>
                       <span className="text-[#94A3B8] text-xs leading-relaxed">{tip}</span>
                     </div>
                   ))}
@@ -190,8 +190,8 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
           </Tabs>
 
           {/* Card de secreto del buen prompt */}
-          <div className="mx-4 mb-6 bg-[#EEF2FF] border border-[#C4B5FD] rounded-xl p-4">
-            <p className="text-[#5B5CF6] font-semibold text-sm mb-3">
+          <div className="mx-4 mb-6 bg-[#FFF0F2] border border-[#F9B8C4] rounded-xl p-4">
+            <p className="text-[#E8344E] font-semibold text-sm mb-3">
               💡 El secreto de un buen prompt
             </p>
             <ul className="space-y-2">
@@ -203,7 +203,7 @@ export default function TipsPanel({ open, onClose, onUsarEjemplo }: TipsPanelPro
                 'Entre más detalle, mejor resultado de la IA',
               ].map((tip, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="text-[#5B5CF6] font-bold text-xs mt-0.5 flex-shrink-0">
+                  <span className="text-[#E8344E] font-bold text-xs mt-0.5 flex-shrink-0">
                     {i + 1}.
                   </span>
                   <span className="text-[#4338CA] text-xs leading-relaxed">{tip}</span>

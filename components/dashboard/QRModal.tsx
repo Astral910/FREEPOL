@@ -63,7 +63,7 @@ export default function QRModal({ open, onOpenChange, slug, nombreCampana }: QRM
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm bg-[#1E293B] border border-[#334155] text-[#E2E8F0] p-6">
+      <DialogContent className="max-w-sm bg-[#1A1B4B] border border-[#2D2F5E] text-[#E2E8F0] p-6">
         <DialogTitle className="text-center font-bold text-lg text-white">
           QR — {nombreCampana}
         </DialogTitle>
@@ -89,11 +89,11 @@ export default function QRModal({ open, onOpenChange, slug, nombreCampana }: QRM
           </div>
 
           {/* URL copiable */}
-          <div className="w-full bg-[#0F172A] border border-[#334155] rounded-xl px-4 py-2 flex items-center gap-2">
+          <div className="w-full bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl px-4 py-2 flex items-center gap-2">
             <span className="text-[#94A3B8] text-xs truncate flex-1">
               {url || `${resolverUrlPublicaCliente()}/c/${slug}`}
             </span>
-            <button onClick={copiarLink} className="text-[#5B5CF6] hover:text-[#A855F7] transition-colors flex-shrink-0">
+            <button onClick={copiarLink} className="text-[#E8344E] hover:text-[#F2839A] transition-colors flex-shrink-0">
               <Copy size={14} />
             </button>
           </div>
@@ -101,7 +101,7 @@ export default function QRModal({ open, onOpenChange, slug, nombreCampana }: QRM
           {/* Botones */}
           <div className="flex gap-3 w-full">
             <button onClick={copiarLink}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#334155] text-[#94A3B8] text-sm hover:bg-[#334155] transition-colors">
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#2D2F5E] text-[#94A3B8] text-sm hover:bg-[#2D2F5E] transition-colors">
               <Copy size={14} /> Copiar link
             </button>
             <button onClick={descargarPNG}

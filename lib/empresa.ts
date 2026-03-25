@@ -54,7 +54,7 @@ export async function crearEmpresa(
     .insert({
       nombre: datos.nombre,
       sitio_web: datos.sitio_web ?? null,
-      color_primario: datos.color_primario ?? '#5B5CF6',
+      color_primario: datos.color_primario ?? '#E8344E',
       color_secundario: datos.color_secundario ?? '#22C55E',
       industria: datos.industria ?? 'otro',
       plan: datos.plan ?? 'free',

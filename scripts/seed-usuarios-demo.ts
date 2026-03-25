@@ -159,8 +159,8 @@ const CUENTAS: Array<{
     empresa: {
       nombre: 'FREEPOL Demo — Café',
       sitio_web: 'https://freepol.app',
-      color_primario: '#5B5CF6',
-      color_secundario: '#A855F7',
+      color_primario: '#E8344E',
+      color_secundario: '#F2839A',
       plan: 'free',
       industria: 'restaurantes',
     },
@@ -188,7 +188,7 @@ const CUENTAS: Array<{
     empresa: {
       nombre: 'FREEPOL Demo — Combustible',
       sitio_web: 'https://freepol.app',
-      color_primario: '#0F172A',
+      color_primario: '#0A0A0A',
       color_secundario: '#22C55E',
       plan: 'enterprise',
       industria: 'gasolineras',

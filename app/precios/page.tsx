@@ -50,10 +50,10 @@ const PLANES = [
   {
     id: 'pro', nombre: 'Pro', mensual: 49, anual: 39,
     subtitulo: 'Para negocios en crecimiento',
-    color: '#5B5CF6', borderClass: 'border-[#5B5CF6]',
+    color: '#E8344E', borderClass: 'border-[#E8344E]',
     destacado: true, oscuro: false,
     botonLabel: 'Empezar con Pro',
-    botonClass: 'gradient-bg text-white hover:opacity-90 shadow-lg shadow-[#5B5CF6]/20',
+    botonClass: 'gradient-bg text-white hover:opacity-90 shadow-lg shadow-[#E8344E]/20',
     badge: 'Más popular',
     features: [
       { label: 'Campañas ilimitadas', ok: true },
@@ -70,7 +70,7 @@ const PLANES = [
   {
     id: 'enterprise', nombre: 'Enterprise', mensual: 149, anual: 119,
     subtitulo: 'Para cadenas y empresas grandes',
-    color: '#E2E8F0', borderClass: 'border-[#334155]',
+    color: '#E2E8F0', borderClass: 'border-[#2D2F5E]',
     destacado: false, oscuro: true,
     botonLabel: 'Contactar ventas',
     botonClass: 'border border-white/30 text-white hover:bg-white/10',
@@ -139,11 +139,11 @@ export default function PreciosPage() {
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="font-bold text-xl">
-            <span className="text-[#5B5CF6]">FREE</span><span className="text-[#0F172A]">POL</span>
+            <span className="text-[#E8344E]">FREE</span><span className="text-[#0F172A]">POL</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/guia" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">Guía</Link>
-            <Link href="/chat" className="px-4 py-2 rounded-xl bg-[#5B5CF6] text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+            <Link href="/chat" className="px-4 py-2 rounded-xl bg-[#E8344E] text-white text-sm font-semibold hover:opacity-90 transition-opacity">
               Probar gratis →
             </Link>
           </div>
@@ -154,7 +154,7 @@ export default function PreciosPage() {
 
         {/* Hero */}
         <section className="text-center space-y-5">
-          <span className="inline-block bg-[#EEF2FF] border border-[#C4B5FD] text-[#5B5CF6] text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide">
+          <span className="inline-block bg-[#FFF0F2] border border-[#F9B8C4] text-[#E8344E] text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide">
             Precios
           </span>
           <h1 className="text-4xl md:text-5xl font-bold text-[#0F172A]">
@@ -168,7 +168,7 @@ export default function PreciosPage() {
             <span className={`text-sm font-medium ${!anual ? 'text-[#0F172A]' : 'text-[#94A3B8]'}`}>Mensual</span>
             <button
               onClick={() => setAnual(!anual)}
-              className={`w-12 h-6 rounded-full relative transition-colors duration-200 ${anual ? 'bg-[#5B5CF6]' : 'bg-[#E5E7EB]'}`}
+              className={`w-12 h-6 rounded-full relative transition-colors duration-200 ${anual ? 'bg-[#E8344E]' : 'bg-[#E5E7EB]'}`}
             >
               <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${anual ? 'translate-x-7' : 'translate-x-1'}`} />
             </button>
@@ -187,7 +187,7 @@ export default function PreciosPage() {
             {PLANES.map((plan) => (
               <div
                 key={plan.id}
-                className={`rounded-2xl border-2 p-6 space-y-5 flex flex-col relative ${plan.borderClass} ${plan.oscuro ? 'bg-[#0F172A]' : plan.destacado ? 'bg-[#F8FAFC] shadow-xl shadow-[#5B5CF6]/10' : 'bg-white'}`}
+                className={`rounded-2xl border-2 p-6 space-y-5 flex flex-col relative ${plan.borderClass} ${plan.oscuro ? 'bg-[#0A0A0A]' : plan.destacado ? 'bg-[#F8FAFC] shadow-xl shadow-[#E8344E]/10' : 'bg-white'}`}
               >
                 {plan.badge && (
                   <div className={`absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full ${plan.destacado ? 'gradient-bg text-white' : 'bg-[#22C55E] text-white'}`}>
@@ -253,7 +253,7 @@ export default function PreciosPage() {
         <section className="gradient-bg rounded-3xl p-10 text-center space-y-5">
           <h2 className="text-3xl font-bold text-white">Empieza gratis hoy</h2>
           <p className="text-white/80">Sin tarjeta de crédito. Cancela cuando quieras.</p>
-          <Link href="/chat" className="inline-flex items-center gap-2 bg-white text-[#5B5CF6] font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg">
+          <Link href="/chat" className="inline-flex items-center gap-2 bg-white text-[#E8344E] font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg">
             Crear mi primera campaña <ArrowRight size={16} />
           </Link>
         </section>

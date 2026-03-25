@@ -21,7 +21,7 @@ interface Props {
   participanteId: string
 }
 
-const COLORES_PREMIOS = ['#5B5CF6', '#22C55E', '#F59E0B', '#EF4444']
+const COLORES_PREMIOS = ['#E8344E', '#22C55E', '#F59E0B', '#EF4444']
 
 /** Convierte grados a radianes */
 const toRad = (deg: number) => (deg * Math.PI) / 180
@@ -92,7 +92,7 @@ function RuletaSVG({
       {/* Puntero fijo arriba */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 z-10">
         <svg width="24" height="28" viewBox="0 0 24 28">
-          <polygon points="12,28 0,0 24,0" fill="#0F172A" />
+          <polygon points="12,28 0,0 24,0" fill="#0A0A0A" />
           <polygon points="12,24 2,2 22,2" fill="white" opacity="0.15" />
         </svg>
       </div>
@@ -201,7 +201,7 @@ export default function ComponenteRuleta({ campana, participanteId }: Props) {
           particleCount: 120,
           spread: 70,
           origin: { y: 0.5 },
-          colors: ['#5B5CF6', '#22C55E', '#A855F7', '#F59E0B'],
+          colors: ['#E8344E', '#22C55E', '#F2839A', '#F59E0B'],
         })
       }, 3200)
     } catch {
@@ -259,7 +259,7 @@ export default function ComponenteRuleta({ campana, participanteId }: Props) {
               <Trophy size={32} className="text-[#F59E0B]" />
             </div>
             <h2 className="text-3xl font-black text-[#0F172A]">¡Ganaste!</h2>
-            <p className="text-xl font-bold text-[#5B5CF6]">{resultado.premio}</p>
+            <p className="text-xl font-bold text-[#E8344E]">{resultado.premio}</p>
           </div>
 
           <div className="h-px bg-[#E5E7EB]" />
@@ -296,7 +296,7 @@ export default function ComponenteRuleta({ campana, participanteId }: Props) {
             />
             <button
               onClick={descargarQR}
-              className="flex items-center gap-2 text-sm text-[#64748B] hover:text-[#5B5CF6] transition-colors"
+              className="flex items-center gap-2 text-sm text-[#64748B] hover:text-[#E8344E] transition-colors"
             >
               <Download size={14} />
               Descargar QR
@@ -337,7 +337,7 @@ export default function ComponenteRuleta({ campana, participanteId }: Props) {
       <button
         onClick={girar}
         disabled={estado === 'girando'}
-        className="w-full py-4 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-3 transition-all hover:opacity-90 disabled:opacity-60 gradient-bg shadow-lg shadow-[#5B5CF6]/20"
+        className="w-full py-4 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-3 transition-all hover:opacity-90 disabled:opacity-60 gradient-bg shadow-lg shadow-[#E8344E]/20"
       >
         {estado === 'girando' ? (
           <>

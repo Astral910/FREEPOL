@@ -31,7 +31,7 @@ const INDUSTRIAS = [
 const PLAN_INFO: Record<string, { label: string; color: string; limite: string }> = {
   free: { label: 'Free', color: '#94A3B8', limite: '2 campañas · 1,000 participantes/mes' },
   starter: { label: 'Starter', color: '#22C55E', limite: '5 campañas · 3,000 participantes/mes' },
-  pro: { label: 'Pro', color: '#5B5CF6', limite: 'Campañas ilimitadas · 10,000 participantes/mes' },
+  pro: { label: 'Pro', color: '#E8344E', limite: 'Campañas ilimitadas · 10,000 participantes/mes' },
   enterprise: { label: 'Enterprise', color: '#F59E0B', limite: 'Sin límites · OCR · API' },
 }
 
@@ -42,7 +42,7 @@ function InputOscuro({ id, label, value, onChange, placeholder, type = 'text' }:
     <div className="space-y-2">
       <label htmlFor={id} className="text-[#94A3B8] text-sm">{label}</label>
       <input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
-        className="w-full bg-[#0F172A] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] transition-all" />
+        className="w-full bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] transition-all" />
     </div>
   )
 }
@@ -63,7 +63,7 @@ export default function ConfigPage() {
   const [nombre, setNombre] = useState('')
   const [sitioWeb, setSitioWeb] = useState('')
   const [industria, setIndustria] = useState('otro')
-  const [colorPrimario, setColorPrimario] = useState('#5B5CF6')
+  const [colorPrimario, setColorPrimario] = useState('#E8344E')
   const [colorSecundario, setColorSecundario] = useState('#22C55E')
 
   const init = useCallback(async () => {
@@ -121,7 +121,7 @@ export default function ConfigPage() {
 
   if (cargando) {
     return (
-      <div className="min-h-screen bg-[#0F172A] p-8 space-y-4 max-w-2xl mx-auto">
+      <div className="min-h-screen bg-[#0A0A0A] p-8 space-y-4 max-w-2xl mx-auto">
         <Skeleton className="h-8 w-32 rounded-xl" />
         {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-2xl" />)}
       </div>
@@ -131,14 +131,14 @@ export default function ConfigPage() {
   const planInfo = PLAN_INFO[empresa?.plan ?? 'free'] ?? PLAN_INFO.free
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
-      <Toaster position="top-center" toastOptions={{ style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #334155', borderRadius: '12px' } }} />
+    <div className="min-h-screen bg-[#0A0A0A]">
+      <Toaster position="top-center" toastOptions={{ style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E', borderRadius: '12px' } }} />
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-8 space-y-8">
 
         {/* Header */}
         <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="w-9 h-9 rounded-xl bg-[#1E293B] border border-[#334155] flex items-center justify-center text-[#64748B] hover:text-[#94A3B8] transition-colors">
+          <Link href="/dashboard" className="w-9 h-9 rounded-xl bg-[#1A1B4B] border border-[#2D2F5E] flex items-center justify-center text-[#64748B] hover:text-[#94A3B8] transition-colors">
             <ArrowLeft size={15} />
           </Link>
           <div>
@@ -148,9 +148,9 @@ export default function ConfigPage() {
         </div>
 
         {/* Sección 1: Datos */}
-        <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-6 space-y-5">
-          <div className="flex items-center gap-2 pb-2 border-b border-[#334155]">
-            <Building2 size={16} className="text-[#5B5CF6]" />
+        <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-6 space-y-5">
+          <div className="flex items-center gap-2 pb-2 border-b border-[#2D2F5E]">
+            <Building2 size={16} className="text-[#E8344E]" />
             <h2 className="text-white font-semibold">Datos de la empresa</h2>
           </div>
 
@@ -160,7 +160,7 @@ export default function ConfigPage() {
           <div className="space-y-2">
             <label className="text-[#94A3B8] text-sm">Industria</label>
             <select value={industria} onChange={(e) => setIndustria(e.target.value)}
-              className="w-full bg-[#0F172A] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6]">
+              className="w-full bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E]">
               {INDUSTRIAS.map((i) => (
                 <option key={i.valor} value={i.valor}>{i.label}</option>
               ))}
@@ -175,9 +175,9 @@ export default function ConfigPage() {
         </div>
 
         {/* Sección 2: Colores */}
-        <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-6 space-y-5">
-          <div className="flex items-center gap-2 pb-2 border-b border-[#334155]">
-            <Palette size={16} className="text-[#A855F7]" />
+        <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-6 space-y-5">
+          <div className="flex items-center gap-2 pb-2 border-b border-[#2D2F5E]">
+            <Palette size={16} className="text-[#F2839A]" />
             <h2 className="text-white font-semibold">Personalización de marca</h2>
           </div>
 
@@ -188,7 +188,7 @@ export default function ConfigPage() {
             ].map((c) => (
               <div key={c.label} className="space-y-2">
                 <label className="text-[#94A3B8] text-sm">{c.label}</label>
-                <div className="flex items-center gap-3 bg-[#0F172A] border border-[#334155] rounded-xl p-3">
+                <div className="flex items-center gap-3 bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl p-3">
                   <input type="color" value={c.value} onChange={(e) => c.onChange(e.target.value)}
                     className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent" />
                   <span className="text-[#E2E8F0] font-mono text-sm">{c.value}</span>
@@ -198,7 +198,7 @@ export default function ConfigPage() {
           </div>
 
           {/* Preview */}
-          <div className="bg-[#0F172A] border border-[#334155] rounded-xl p-4 space-y-2">
+          <div className="bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl p-4 space-y-2">
             <p className="text-[#475569] text-xs uppercase tracking-wide">Preview</p>
             <div className="bg-white rounded-xl p-4 space-y-2">
               <p className="font-bold text-center text-sm" style={{ color: colorPrimario }}>{nombre || 'Tu empresa'}</p>
@@ -217,8 +217,8 @@ export default function ConfigPage() {
         </div>
 
         {/* Sección 3: Plan */}
-        <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-2 border-b border-[#334155]">
+        <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-6 space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b border-[#2D2F5E]">
             <CreditCard size={16} style={{ color: planInfo.color }} />
             <h2 className="text-white font-semibold">Plan actual</h2>
           </div>
@@ -229,21 +229,21 @@ export default function ConfigPage() {
               <p className="text-[#64748B] text-sm mt-0.5">{planInfo.limite}</p>
             </div>
             <Link href="/precios"
-              className="px-4 py-2 rounded-xl border border-[#334155] text-[#94A3B8] text-sm hover:bg-[#334155] hover:text-[#E2E8F0] transition-all">
+              className="px-4 py-2 rounded-xl border border-[#2D2F5E] text-[#94A3B8] text-sm hover:bg-[#2D2F5E] hover:text-[#E2E8F0] transition-all">
               Ver planes →
             </Link>
           </div>
 
           {empresa?.plan === 'free' && (
-            <div className="bg-[#5B5CF6]/10 border border-[#5B5CF6]/30 rounded-xl p-4">
-              <p className="text-[#5B5CF6] text-sm font-medium">Actualiza a Starter por $19/mes</p>
+            <div className="bg-[#E8344E]/10 border border-[#E8344E]/30 rounded-xl p-4">
+              <p className="text-[#E8344E] text-sm font-medium">Actualiza a Starter por $19/mes</p>
               <p className="text-[#4338CA] text-xs mt-0.5">5 campañas, 3,000 participantes y WhatsApp Business básico.</p>
             </div>
           )}
         </div>
 
         {/* Zona de peligro */}
-        <div className="bg-[#1E293B] border border-red-500/20 rounded-2xl p-6 space-y-4">
+        <div className="bg-[#1A1B4B] border border-red-500/20 rounded-2xl p-6 space-y-4">
           <div className="flex items-center gap-2 pb-2 border-b border-red-500/20">
             <AlertTriangle size={16} className="text-red-400" />
             <h2 className="text-red-400 font-semibold">Zona de peligro</h2>

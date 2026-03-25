@@ -73,11 +73,11 @@ export default function GuiaPage() {
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-1.5">
-            <span className="font-bold text-xl"><span className="text-[#5B5CF6]">FREE</span><span className="text-[#0F172A]">POL</span></span>
+            <span className="font-bold text-xl"><span className="text-[#E8344E]">FREE</span><span className="text-[#0F172A]">POL</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/precios" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">Precios</Link>
-            <Link href="/chat" className="px-4 py-2 rounded-xl bg-[#5B5CF6] text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+            <Link href="/chat" className="px-4 py-2 rounded-xl bg-[#E8344E] text-white text-sm font-semibold hover:opacity-90 transition-opacity">
               Probar IA →
             </Link>
           </div>
@@ -88,7 +88,7 @@ export default function GuiaPage() {
 
         {/* Hero */}
         <section className="text-center space-y-4">
-          <span className="inline-block bg-[#EEF2FF] border border-[#C4B5FD] text-[#5B5CF6] text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide">
+          <span className="inline-block bg-[#FFF0F2] border border-[#F9B8C4] text-[#E8344E] text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide">
             Guía completa
           </span>
           <h1 className="text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
@@ -123,7 +123,7 @@ export default function GuiaPage() {
                 <span className="text-xl">✅</span>
                 <h3 className="font-bold text-green-700">Prompt detallado</h3>
               </div>
-              <div className="bg-[#0F172A] rounded-xl p-4 font-mono text-sm text-[#22C55E] border border-green-900">
+              <div className="bg-[#0A0A0A] rounded-xl p-4 font-mono text-sm text-[#22C55E] border border-green-900">
                 &ldquo;Quiero una ruleta para Los Pollos del 1 al 30 de junio. Clientes validan correo, 1 giro. Premios: 15% dto (60%), postre gratis (30%), menú gratis (10%). Por WhatsApp.&rdquo;
               </div>
               <p className="text-green-700 text-sm">
@@ -138,11 +138,11 @@ export default function GuiaPage() {
           <h2 className="text-2xl font-bold text-[#0F172A]">Los 5 ingredientes de un prompt perfecto</h2>
           <Accordion type="single" collapsible className="space-y-2">
             {[
-              { icono: Building2, color: '#5B5CF6', titulo: 'El nombre de tu negocio', descripcion: 'Siempre menciona el nombre. La IA lo usa para personalizar los mensajes, los códigos de premio y la landing page.', ejemplo: '"para mi restaurante Los Pollos"' },
+              { icono: Building2, color: '#E8344E', titulo: 'El nombre de tu negocio', descripcion: 'Siempre menciona el nombre. La IA lo usa para personalizar los mensajes, los códigos de premio y la landing page.', ejemplo: '"para mi restaurante Los Pollos"' },
               { icono: Trophy, color: '#F59E0B', titulo: 'El tipo de campaña', descripcion: 'Ruleta, puntos por compra, cupón directo o validación de facturas. Si no lo dices, la IA elige el más apropiado.', ejemplo: '"una ruleta", "sistema de puntos", "un cupón de descuento"' },
               { icono: Calendar, color: '#22C55E', titulo: 'Las fechas', descripcion: 'Fechas de inicio y fin. Opcionalmente días de la semana y horario específico. La IA las pone automáticamente en la campaña.', ejemplo: '"del 1 al 30 de junio", "los martes y jueves de 8am a 6pm"' },
               { icono: MessageCircle, color: '#38BDF8', titulo: 'El canal', descripcion: 'WhatsApp, Telegram, Instagram o Landing Page. Puedes pedir varios a la vez y la IA los configura todos.', ejemplo: '"por WhatsApp y Telegram", "en Instagram"' },
-              { icono: Gift, color: '#A855F7', titulo: 'Los premios', descripcion: 'Para ruletas: nombre y porcentaje de cada premio (deben sumar 100%). Para puntos: cuántos puntos por cuánto dinero y cuál es el premio al canjear.', ejemplo: '"15% descuento (60%), postre gratis (40%)", "$25 = 1 punto, a 50 puntos = $10 de descuento"' },
+              { icono: Gift, color: '#F2839A', titulo: 'Los premios', descripcion: 'Para ruletas: nombre y porcentaje de cada premio (deben sumar 100%). Para puntos: cuántos puntos por cuánto dinero y cuál es el premio al canjear.', ejemplo: '"15% descuento (60%), postre gratis (40%)", "$25 = 1 punto, a 50 puntos = $10 de descuento"' },
             ].map((item, i) => {
               const Icono = item.icono
               return (
@@ -158,7 +158,7 @@ export default function GuiaPage() {
                   <AccordionContent>
                     <div className="pl-11 space-y-2 pb-2">
                       <p>{item.descripcion}</p>
-                      <p className="text-xs font-mono text-[#5B5CF6] bg-[#EEF2FF] rounded-lg px-3 py-2">Ejemplo: {item.ejemplo}</p>
+                      <p className="text-xs font-mono text-[#E8344E] bg-[#FFF0F2] rounded-lg px-3 py-2">Ejemplo: {item.ejemplo}</p>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -176,7 +176,7 @@ export default function GuiaPage() {
               return (
                 <div key={ind.id} className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-6 space-y-5">
                   <div className="flex items-center gap-2">
-                    <Icono size={18} className="text-[#5B5CF6]" />
+                    <Icono size={18} className="text-[#E8344E]" />
                     <h3 className="font-bold text-[#0F172A] text-lg">{ind.nombre}</h3>
                   </div>
 
@@ -184,10 +184,10 @@ export default function GuiaPage() {
                     {[{ label: 'Básico', prompt: ind.basico }, { label: 'Avanzado', prompt: ind.avanzado }].map((ej) => (
                       <div key={ej.label} className="space-y-2">
                         <span className="text-xs text-[#64748B] font-medium uppercase tracking-wide">{ej.label}</span>
-                        <div className="bg-[#0F172A] rounded-xl p-4 font-mono text-sm text-[#22C55E] leading-relaxed">
+                        <div className="bg-[#0A0A0A] rounded-xl p-4 font-mono text-sm text-[#22C55E] leading-relaxed">
                           &ldquo;{ej.prompt}&rdquo;
                         </div>
-                        <Link href={`/chat`} className="inline-flex items-center gap-1.5 text-xs text-[#5B5CF6] hover:text-[#A855F7] transition-colors">
+                        <Link href={`/chat`} className="inline-flex items-center gap-1.5 text-xs text-[#E8344E] hover:text-[#F2839A] transition-colors">
                           Usar este prompt →
                         </Link>
                       </div>
@@ -226,7 +226,7 @@ export default function GuiaPage() {
         <section className="gradient-bg rounded-3xl p-10 text-center space-y-5">
           <h2 className="text-3xl font-bold text-white">¿Listo para crear tu primera campaña?</h2>
           <p className="text-white/80">Escribe lo que tienes en mente y la IA hace el resto.</p>
-          <Link href="/chat" className="inline-flex items-center gap-2 bg-white text-[#5B5CF6] font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg">
+          <Link href="/chat" className="inline-flex items-center gap-2 bg-white text-[#E8344E] font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg">
             Abrir el asistente <ArrowRight size={16} />
           </Link>
         </section>

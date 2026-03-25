@@ -36,8 +36,8 @@ const PLANES = [
     subtitulo: 'Para empezar y probar',
     icono: Rocket,
     color: '#64748B',
-    border: 'border-[#334155]',
-    bg: 'bg-[#1E293B]',
+    border: 'border-[#2D2F5E]',
+    bg: 'bg-[#1A1B4B]',
     features: [
       '2 campañas activas',
       'Hasta 1,000 participantes/mes',
@@ -70,9 +70,9 @@ const PLANES = [
     precio: '$49',
     subtitulo: 'Para negocios en crecimiento',
     icono: Crown,
-    color: '#5B5CF6',
-    border: 'border-[#5B5CF6]',
-    bg: 'bg-[#1E1B4B]/30',
+    color: '#E8344E',
+    border: 'border-[#E8344E]',
+    bg: 'bg-[#1A1B4B]/30',
     badge: '⭐ Más popular',
     features: [
       'Campañas ilimitadas',
@@ -90,7 +90,7 @@ const PLANES = [
     icono: Sparkles,
     color: '#F59E0B',
     border: 'border-[#F59E0B]',
-    bg: 'bg-[#1E293B]',
+    bg: 'bg-[#1A1B4B]',
     features: [
       'Participantes ilimitados',
       'OCR de facturas con IA',
@@ -117,7 +117,7 @@ function DarkInput({ id, label, value, onChange, placeholder, optional = false }
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] transition-all"
+        className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] transition-all"
       />
     </div>
   )
@@ -143,7 +143,7 @@ export default function OnboardingPage() {
   const [industria, setIndustria] = useState('otro')
 
   // Paso 2
-  const [colorPrimario, setColorPrimario] = useState('#5B5CF6')
+  const [colorPrimario, setColorPrimario] = useState('#E8344E')
   const [colorSecundario, setColorSecundario] = useState('#22C55E')
 
   // Paso 3 — Plan
@@ -204,7 +204,7 @@ export default function OnboardingPage() {
         particleCount: 130,
         spread: 80,
         origin: { y: 0.5 },
-        colors: [colorPrimario, colorSecundario, '#A855F7', '#F59E0B'],
+        colors: [colorPrimario, colorSecundario, '#F2839A', '#F59E0B'],
       })
     } catch {
       toast.error('Error al crear la empresa. Intenta de nuevo.')
@@ -215,8 +215,8 @@ export default function OnboardingPage() {
 
   if (cargandoSesion) {
     return (
-      <div className="h-screen bg-[#0F172A] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[#5B5CF6] border-t-transparent animate-spin" />
+      <div className="h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[#E8344E] border-t-transparent animate-spin" />
       </div>
     )
   }
@@ -224,9 +224,9 @@ export default function OnboardingPage() {
   if (empresaCreada) {
     const planInfo = PLANES.find((p) => p.id === planSeleccionado)
     return (
-      <div className="h-screen bg-[#0F172A] flex flex-col items-center justify-center text-center px-4">
+      <div className="h-screen bg-[#0A0A0A] flex flex-col items-center justify-center text-center px-4">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }}
-          className="w-20 h-20 rounded-full gradient-bg flex items-center justify-center mb-6 shadow-xl shadow-[#5B5CF6]/30">
+          className="w-20 h-20 rounded-full gradient-bg flex items-center justify-center mb-6 shadow-xl shadow-[#E8344E]/30">
           <span className="text-4xl">🎉</span>
         </motion.div>
         <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
@@ -244,7 +244,7 @@ export default function OnboardingPage() {
         <motion.button
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
           onClick={() => router.push('/chat')}
-          className="px-8 py-4 rounded-xl gradient-bg text-white font-bold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-[#5B5CF6]/25">
+          className="px-8 py-4 rounded-xl gradient-bg text-white font-bold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-[#E8344E]/25">
           Ir a crear mi primera campaña →
         </motion.button>
       </div>
@@ -252,13 +252,13 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex flex-col">
-      <Toaster position="top-center" toastOptions={{ style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #334155', borderRadius: '12px' } }} />
+    <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
+      <Toaster position="top-center" toastOptions={{ style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E', borderRadius: '12px' } }} />
 
       {/* Header */}
-      <header className="flex-shrink-0 px-6 py-5 border-b border-[#1E293B] flex items-center gap-2">
-        <Zap size={18} className="text-[#5B5CF6]" />
-        <span className="font-bold text-white"><span className="text-[#5B5CF6]">FREE</span>POL</span>
+      <header className="flex-shrink-0 px-6 py-5 border-b border-[#1A1B4B] flex items-center gap-2">
+        <Zap size={18} className="text-[#E8344E]" />
+        <span className="font-bold text-white"><span className="text-[#E8344E]">FREE</span>POL</span>
         <span className="ml-4 text-sm text-[#64748B]">Configuración inicial</span>
       </header>
 
@@ -273,11 +273,11 @@ export default function OnboardingPage() {
             {[1, 2, 3, 4].map((n) => (
               <div key={n} className={`flex items-center gap-1 ${n < 4 ? 'flex-1' : ''}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-all ${
-                  n < paso ? 'gradient-bg text-white' : n === paso ? 'border-2 border-[#5B5CF6] text-[#5B5CF6]' : 'border-2 border-[#334155] text-[#475569]'
+                  n < paso ? 'gradient-bg text-white' : n === paso ? 'border-2 border-[#E8344E] text-[#E8344E]' : 'border-2 border-[#2D2F5E] text-[#475569]'
                 }`}>
                   {n < paso ? '✓' : n}
                 </div>
-                {n < 4 && <div className={`flex-1 h-px transition-colors ${n < paso ? 'bg-[#5B5CF6]' : 'bg-[#334155]'}`} />}
+                {n < 4 && <div className={`flex-1 h-px transition-colors ${n < paso ? 'bg-[#E8344E]' : 'bg-[#2D2F5E]'}`} />}
               </div>
             ))}
           </div>
@@ -305,8 +305,8 @@ export default function OnboardingPage() {
                         const activo = industria === ind.valor
                         return (
                           <button key={ind.valor} onClick={() => setIndustria(ind.valor)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${activo ? 'border-[#5B5CF6] bg-[#1E293B]' : 'border-[#334155] bg-[#1E293B] hover:border-[#5B5CF6]/40'}`}>
-                            <Icono size={16} className={activo ? 'text-[#5B5CF6]' : 'text-[#475569]'} />
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left transition-all ${activo ? 'border-[#E8344E] bg-[#1A1B4B]' : 'border-[#2D2F5E] bg-[#1A1B4B] hover:border-[#E8344E]/40'}`}>
+                            <Icono size={16} className={activo ? 'text-[#E8344E]' : 'text-[#475569]'} />
                             <span className={`text-sm ${activo ? 'text-[#E2E8F0] font-medium' : 'text-[#94A3B8]'}`}>{ind.label}</span>
                           </button>
                         )
@@ -335,7 +335,7 @@ export default function OnboardingPage() {
                     ].map((c) => (
                       <div key={c.label} className="space-y-2">
                         <label className="text-[#94A3B8] text-sm">{c.label}</label>
-                        <div className="flex items-center gap-3 bg-[#1E293B] border border-[#334155] rounded-xl p-3">
+                        <div className="flex items-center gap-3 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl p-3">
                           <input type="color" value={c.value} onChange={(e) => c.onChange(e.target.value)}
                             className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent" />
                           <span className="text-[#E2E8F0] font-mono text-sm">{c.value}</span>
@@ -343,7 +343,7 @@ export default function OnboardingPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="bg-[#0F172A] border border-[#334155] rounded-2xl p-4 space-y-3">
+                  <div className="bg-[#0A0A0A] border border-[#2D2F5E] rounded-2xl p-4 space-y-3">
                     <p className="text-[#475569] text-xs uppercase tracking-wide">Preview de tu campaña</p>
                     <div className="bg-white rounded-xl p-4 space-y-3">
                       <div className="text-center">
@@ -383,7 +383,7 @@ export default function OnboardingPage() {
                       <button
                         key={plan.id}
                         onClick={() => setPlanSeleccionado(plan.id)}
-                        className={`w-full text-left rounded-2xl border-2 p-4 transition-all ${activo ? `${plan.border} ${plan.bg}` : 'border-[#334155] bg-[#1E293B] hover:border-[#5B5CF6]/30'}`}
+                        className={`w-full text-left rounded-2xl border-2 p-4 transition-all ${activo ? `${plan.border} ${plan.bg}` : 'border-[#2D2F5E] bg-[#1A1B4B] hover:border-[#E8344E]/30'}`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3">
@@ -438,23 +438,23 @@ export default function OnboardingPage() {
                   <h2 className="text-2xl font-bold text-white">¡Todo listo para empezar!</h2>
                   <p className="text-[#94A3B8]">Confirma los datos de tu empresa</p>
                 </div>
-                <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-5 space-y-4">
+                <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-5 space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     {[
                       { label: 'Empresa', valor: nombre },
                       { label: 'Industria', valor: INDUSTRIAS.find((i) => i.valor === industria)?.label ?? industria },
                       { label: 'Sitio web', valor: sitioWeb || 'No especificado' },
                     ].map((item) => (
-                      <div key={item.label} className="bg-[#0F172A] rounded-xl p-3">
+                      <div key={item.label} className="bg-[#0A0A0A] rounded-xl p-3">
                         <p className="text-[#64748B] text-xs uppercase tracking-wide mb-1">{item.label}</p>
                         <p className="text-[#E2E8F0] font-semibold text-sm truncate">{item.valor}</p>
                       </div>
                     ))}
-                    <div className="bg-[#0F172A] rounded-xl p-3">
+                    <div className="bg-[#0A0A0A] rounded-xl p-3">
                       <p className="text-[#64748B] text-xs uppercase tracking-wide mb-2">Colores</p>
                       <div className="flex gap-2">
-                        <div className="w-6 h-6 rounded-full border border-[#334155]" style={{ backgroundColor: colorPrimario }} />
-                        <div className="w-6 h-6 rounded-full border border-[#334155]" style={{ backgroundColor: colorSecundario }} />
+                        <div className="w-6 h-6 rounded-full border border-[#2D2F5E]" style={{ backgroundColor: colorPrimario }} />
+                        <div className="w-6 h-6 rounded-full border border-[#2D2F5E]" style={{ backgroundColor: colorSecundario }} />
                       </div>
                     </div>
                   </div>
@@ -463,7 +463,7 @@ export default function OnboardingPage() {
                     const planInfo = PLANES.find((p) => p.id === planSeleccionado)!
                     const PlanIcono = planInfo.icono
                     return (
-                      <div className="bg-[#0F172A] rounded-xl p-3 flex items-center gap-3">
+                      <div className="bg-[#0A0A0A] rounded-xl p-3 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: `${planInfo.color}20` }}>
                           <PlanIcono size={15} style={{ color: planInfo.color }} />
@@ -483,7 +483,7 @@ export default function OnboardingPage() {
           {/* Navegación */}
           <div className="flex items-center justify-between mt-8">
             <button onClick={retroceder} disabled={paso === 1}
-              className="px-5 py-3 rounded-xl bg-[#1E293B] border border-[#334155] text-[#CBD5E1] text-sm hover:bg-[#334155] disabled:opacity-0 disabled:pointer-events-none transition-all">
+              className="px-5 py-3 rounded-xl bg-[#1A1B4B] border border-[#2D2F5E] text-[#CBD5E1] text-sm hover:bg-[#2D2F5E] disabled:opacity-0 disabled:pointer-events-none transition-all">
               ← Atrás
             </button>
 

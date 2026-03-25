@@ -92,9 +92,9 @@ export default function ValidarPage() {
         {/* Logo */}
         <div className="text-center space-y-1">
           <div className="flex items-center justify-center gap-1.5">
-            <Zap size={20} className="text-[#5B5CF6]" />
+            <Zap size={20} className="text-[#E8344E]" />
             <span className="font-bold text-xl">
-              <span className="text-[#5B5CF6]">FREE</span>
+              <span className="text-[#E8344E]">FREE</span>
               <span className="text-[#0F172A]">POL</span>
             </span>
           </div>
@@ -164,7 +164,7 @@ export default function ValidarPage() {
                 autoFocus
                 autoComplete="off"
                 autoCapitalize="characters"
-                className="w-full border-2 border-[#E5E7EB] rounded-xl py-4 px-4 font-mono text-xl text-center text-[#0F172A] tracking-widest placeholder:text-[#CBD5E1] placeholder:text-base placeholder:tracking-normal focus:outline-none focus:border-[#5B5CF6] transition-colors"
+                className="w-full border-2 border-[#E5E7EB] rounded-xl py-4 px-4 font-mono text-xl text-center text-[#0F172A] tracking-widest placeholder:text-[#CBD5E1] placeholder:text-base placeholder:tracking-normal focus:outline-none focus:border-[#E8344E] transition-colors"
               />
               <p className="text-xs text-[#94A3B8] text-center">
                 Formato: XXXX-XXXX-XXXX · Se valida automáticamente
@@ -174,7 +174,7 @@ export default function ValidarPage() {
             <button
               onClick={() => validar(codigo)}
               disabled={estado === 'validando' || codigo.length < 14}
-              className="w-full py-4 rounded-xl bg-[#5B5CF6] text-white font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              className="w-full py-4 rounded-xl bg-[#E8344E] text-white font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
             >
               {estado === 'validando' ? (
                 <>

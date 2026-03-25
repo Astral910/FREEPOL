@@ -5,7 +5,7 @@ import PasoLayout from '@/components/wizard/PasoLayout'
 import { useWizardStore } from '@/store/wizardStore'
 
 /** Colores para cada premio de la ruleta */
-const COLORES_PREMIOS = ['#5B5CF6', '#22C55E', '#F59E0B']
+const COLORES_PREMIOS = ['#E8344E', '#22C55E', '#F59E0B']
 
 /** Calcula el ángulo de cada sección del SVG de la ruleta */
 function RuletaPreview({ premios }: { premios: { nombre: string; probabilidad: number }[] }) {
@@ -35,9 +35,9 @@ function RuletaPreview({ premios }: { premios: { nombre: string; probabilidad: n
   return (
     <svg viewBox="0 0 160 160" className="w-32 h-32">
       {secciones.map((s, i) => (
-        <path key={i} d={s.d} fill={s.color} opacity={0.85} stroke="#0F172A" strokeWidth="1" />
+        <path key={i} d={s.d} fill={s.color} opacity={0.85} stroke="#0A0A0A" strokeWidth="1" />
       ))}
-      <circle cx={cx} cy={cy} r="12" fill="#0F172A" />
+      <circle cx={cx} cy={cy} r="12" fill="#0A0A0A" />
     </svg>
   )
 }
@@ -75,7 +75,7 @@ function PremiosRuleta() {
   return (
     <div className="space-y-5">
       {/* Preview de ruleta */}
-      <div className="flex items-center gap-5 bg-[#0F172A] rounded-xl p-4 border border-[#334155]">
+      <div className="flex items-center gap-5 bg-[#0A0A0A] rounded-xl p-4 border border-[#2D2F5E]">
         <RuletaPreview premios={premios} />
         <div className="space-y-2">
           {premios.map((p, i) => (
@@ -101,9 +101,9 @@ function PremiosRuleta() {
             value={p.nombre}
             onChange={(e) => actualizarPremio(i, 'nombre', e.target.value)}
             placeholder={`Premio ${i + 1}`}
-            className="flex-1 bg-[#1E293B] border border-[#334155] rounded-xl py-2.5 px-3 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] text-sm"
+            className="flex-1 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-2.5 px-3 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] text-sm"
           />
-          <div className="flex items-center gap-1 bg-[#1E293B] border border-[#334155] rounded-xl px-3 py-2.5 w-24 flex-shrink-0">
+          <div className="flex items-center gap-1 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl px-3 py-2.5 w-24 flex-shrink-0">
             <input
               type="number"
               min="0"
@@ -129,7 +129,7 @@ function PremiosRuleta() {
           <span className="text-[#64748B] text-xs">Total de probabilidades</span>
           <span className={`font-bold text-sm ${textoBarra}`}>{totalProb}% de 100%</span>
         </div>
-        <div className="h-2 bg-[#334155] rounded-full overflow-hidden">
+        <div className="h-2 bg-[#2D2F5E] rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-300 ${colorBarra}`}
             style={{ width: `${Math.min(totalProb, 100)}%` }}
@@ -155,7 +155,7 @@ function PremiosRuleta() {
       {premios.length < 3 && (
         <button
           onClick={agregarPremio}
-          className="flex items-center gap-2 text-[#5B5CF6] text-sm hover:text-[#A855F7] transition-colors"
+          className="flex items-center gap-2 text-[#E8344E] text-sm hover:text-[#F2839A] transition-colors"
         >
           <Plus size={16} />
           Agregar premio {premios.length + 1} (opcional)
@@ -181,7 +181,7 @@ function PremiosPuntos() {
       <div className="space-y-3">
         <label className="text-[#94A3B8] text-sm">¿Cuántos puntos por cada $X de compra?</label>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#1E293B] border border-[#334155] rounded-xl px-4 py-3 flex-1">
+          <div className="flex items-center gap-2 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl px-4 py-3 flex-1">
             <input
               type="number"
               min="1"
@@ -192,7 +192,7 @@ function PremiosPuntos() {
             <span className="text-[#475569] text-sm">puntos</span>
           </div>
           <span className="text-[#64748B] text-sm">por cada</span>
-          <div className="flex items-center gap-2 bg-[#1E293B] border border-[#334155] rounded-xl px-4 py-3 flex-1">
+          <div className="flex items-center gap-2 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl px-4 py-3 flex-1">
             <span className="text-[#475569] text-sm">$</span>
             <input
               type="number"
@@ -212,17 +212,17 @@ function PremiosPuntos() {
           min="1"
           value={metaCanje}
           onChange={(e) => setConfig('meta_canje', Number(e.target.value))}
-          className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6]"
+          className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E]"
         />
       </div>
 
       {/* Calculadora visual */}
-      <div className="bg-[#0F172A] border border-[#334155] rounded-xl p-4 space-y-1">
+      <div className="bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl p-4 space-y-1">
         <p className="text-[#64748B] text-xs uppercase tracking-wide">Calculadora</p>
         <p className="text-[#94A3B8] text-sm">
           Si un cliente compra{' '}
           <span className="text-[#E2E8F0] font-semibold">${montoBase}</span>, gana{' '}
-          <span className="text-[#5B5CF6] font-semibold">{puntosPorMonto} punto{puntosPorMonto !== 1 ? 's' : ''}</span>.
+          <span className="text-[#E8344E] font-semibold">{puntosPorMonto} punto{puntosPorMonto !== 1 ? 's' : ''}</span>.
         </p>
         <p className="text-[#94A3B8] text-sm">
           Necesita{' '}
@@ -248,13 +248,13 @@ function PremiosCupon() {
           value={config.premios[0]?.nombre ?? ''}
           onChange={(e) => setConfig('premios', [{ nombre: e.target.value, probabilidad: 100 }])}
           placeholder="Ej: 25% de descuento en tu próxima compra"
-          className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6]"
+          className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E]"
         />
       </div>
 
-      <div className="flex items-center gap-3 p-4 bg-[#1E293B] border border-[#334155] rounded-xl">
+      <div className="flex items-center gap-3 p-4 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl">
         <div
-          className={`w-10 h-6 rounded-full transition-colors duration-200 relative cursor-pointer ${conDeepLink ? 'bg-[#5B5CF6]' : 'bg-[#334155]'}`}
+          className={`w-10 h-6 rounded-full transition-colors duration-200 relative cursor-pointer ${conDeepLink ? 'bg-[#E8344E]' : 'bg-[#2D2F5E]'}`}
           onClick={() => setConDeepLink(!conDeepLink)}
         >
           <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${conDeepLink ? 'translate-x-5' : 'translate-x-1'}`} />
@@ -271,7 +271,7 @@ function PremiosCupon() {
           value={config.deep_link_url ?? ''}
           onChange={(e) => setConfig('deep_link_url', e.target.value)}
           placeholder="https://tutienda.com/producto"
-          className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6]"
+          className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E]"
         />
       )}
     </div>

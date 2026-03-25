@@ -27,12 +27,12 @@ interface CardResumenProps {
 
 function CardResumen({ label, valor, paso, onEditar }: CardResumenProps) {
   return (
-    <div className="group relative bg-[#0F172A] border border-[#334155] rounded-xl p-3">
+    <div className="group relative bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl p-3">
       <p className="text-[#64748B] text-xs uppercase tracking-wide mb-1">{label}</p>
       <p className="text-[#E2E8F0] font-semibold text-sm leading-snug">{valor}</p>
       <button
         onClick={() => onEditar(paso)}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-[#475569] hover:text-[#5B5CF6] transition-all"
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-[#475569] hover:text-[#E8344E] transition-all"
         aria-label={`Editar ${label}`}
       >
         <Pencil size={13} />
@@ -97,7 +97,7 @@ export default function Paso10Resumen() {
         particleCount: 150,
         spread: 80,
         origin: { y: 0.6 },
-        colors: ['#5B5CF6', '#A855F7', '#22C55E', '#F59E0B'],
+        colors: ['#E8344E', '#F2839A', '#22C55E', '#F59E0B'],
       })
 
       setCompletado(true)
@@ -160,10 +160,10 @@ export default function Paso10Resumen() {
 
         {/* Mensaje de bienvenida */}
         {config.mensaje_bienvenida && (
-          <div className="relative group bg-[#0F172A] border border-[#334155] rounded-xl p-4">
+          <div className="relative group bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl p-4">
             <p className="text-[#64748B] text-xs uppercase tracking-wide mb-2">Mensaje de bienvenida</p>
             <p className="text-[#E2E8F0] text-sm leading-relaxed">{config.mensaje_bienvenida}</p>
-            <button onClick={() => setPaso(9)} className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-[#475569] hover:text-[#5B5CF6] transition-all">
+            <button onClick={() => setPaso(9)} className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-[#475569] hover:text-[#E8344E] transition-all">
               <Pencil size={13} />
             </button>
           </div>
@@ -196,7 +196,7 @@ export default function Paso10Resumen() {
           <Button
             onClick={handleLanzar}
             disabled={guardando}
-            className="w-full gradient-bg text-white py-4 h-auto text-lg font-bold rounded-xl flex items-center justify-center gap-3 hover:opacity-90 shadow-xl shadow-[#5B5CF6]/20"
+            className="w-full gradient-bg text-white py-4 h-auto text-lg font-bold rounded-xl flex items-center justify-center gap-3 hover:opacity-90 shadow-xl shadow-[#E8344E]/20"
           >
             {guardando ? (
               <>

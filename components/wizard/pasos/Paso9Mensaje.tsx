@@ -76,7 +76,7 @@ export default function Paso9Mensaje() {
             onChange={(e) => handleChange(e.target.value)}
             rows={4}
             placeholder="Describe el mensaje de bienvenida de tu campaña..."
-            className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] resize-none transition-all"
+            className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] resize-none transition-all"
           />
         </div>
 
@@ -85,7 +85,7 @@ export default function Paso9Mensaje() {
           onClick={regenerar}
           disabled={generando}
           variant="outline"
-          className="border-[#5B5CF6] text-[#5B5CF6] hover:bg-[#5B5CF6]/10 flex items-center gap-2"
+          className="border-[#E8344E] text-[#E8344E] hover:bg-[#E8344E]/10 flex items-center gap-2"
         >
           {generando ? (
             <Loader2 size={15} className="animate-spin" />
@@ -126,7 +126,7 @@ export default function Paso9Mensaje() {
             <button
               key={s.label}
               onClick={s.fn}
-              className="text-xs px-3 py-1 rounded-full bg-[#1E293B] border border-[#334155] text-[#94A3B8] hover:border-[#5B5CF6]/50 hover:text-[#5B5CF6] transition-colors"
+              className="text-xs px-3 py-1 rounded-full bg-[#1A1B4B] border border-[#2D2F5E] text-[#94A3B8] hover:border-[#E8344E]/50 hover:text-[#E8344E] transition-colors"
             >
               {s.label}
             </button>

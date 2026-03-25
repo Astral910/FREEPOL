@@ -84,7 +84,7 @@ const IAPanel = memo(function IAPanel() {
             </p>
             <Button
               variant="outline"
-              className="border-[#5B5CF6] text-[#5B5CF6] hover:bg-[#F0F0FF] rounded-lg"
+              className="border-[#E8344E] text-[#E8344E] hover:bg-[#F0F0FF] rounded-lg"
             >
               Acceder a la guía completa →
             </Button>
@@ -111,9 +111,9 @@ const IAPanel = memo(function IAPanel() {
 
               {prompts.map((p) => (
                 <TabsContent key={p.id} value={p.id}>
-                  <div className="rounded-xl overflow-hidden border border-[#1E293B] shadow-lg">
+                  <div className="rounded-xl overflow-hidden border border-[#1A1B4B] shadow-lg">
                     {/* Barra de terminal */}
-                    <div className="bg-[#1E293B] px-4 py-2 flex items-center gap-2">
+                    <div className="bg-[#1A1B4B] px-4 py-2 flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
                       <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" />
                       <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
@@ -122,7 +122,7 @@ const IAPanel = memo(function IAPanel() {
                       </span>
                     </div>
                     {/* Contenido del prompt */}
-                    <div className="bg-[#0F172A] p-5">
+                    <div className="bg-[#0A0A0A] p-5">
                       <pre className="text-[#22C55E] text-sm font-mono leading-relaxed whitespace-pre-wrap">
                         {p.prompt}
                       </pre>

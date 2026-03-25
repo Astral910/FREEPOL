@@ -37,7 +37,7 @@ const CONDICIONES: {
     icono: Zap,
     nombre: 'Participación libre',
     descripcion: 'Sin barreras de entrada',
-    badge: { texto: 'Sin datos del cliente', color: '#94A3B8', bg: '#1E293B' },
+    badge: { texto: 'Sin datos del cliente', color: '#94A3B8', bg: '#1A1B4B' },
   },
 ]
 
@@ -60,14 +60,14 @@ export default function Paso4Condicion() {
               onClick={() => setConfig('condicion', c.valor)}
               className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all duration-200 ${
                 seleccionado
-                  ? 'border-[#5B5CF6] bg-[#1E293B] shadow-md shadow-[#5B5CF6]/10'
-                  : 'border-[#334155] bg-[#1E293B] hover:border-[#5B5CF6]/40'
+                  ? 'border-[#E8344E] bg-[#1A1B4B] shadow-md shadow-[#E8344E]/10'
+                  : 'border-[#2D2F5E] bg-[#1A1B4B] hover:border-[#E8344E]/40'
               }`}
             >
-              <div className="w-10 h-10 rounded-xl bg-[#0F172A] flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#0A0A0A] flex items-center justify-center flex-shrink-0">
                 <Icono
                   size={20}
-                  className={seleccionado ? 'text-[#5B5CF6]' : 'text-[#475569]'}
+                  className={seleccionado ? 'text-[#E8344E]' : 'text-[#475569]'}
                 />
               </div>
               <div className="flex-1">
@@ -88,7 +88,7 @@ export default function Paso4Condicion() {
               <div
                 className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
                   seleccionado
-                    ? 'border-[#5B5CF6] bg-[#5B5CF6]'
+                    ? 'border-[#E8344E] bg-[#E8344E]'
                     : 'border-[#475569] bg-transparent'
                 }`}
               >

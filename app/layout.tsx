@@ -1,8 +1,39 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+/** Tipografía oficial de marca — Sloth (reemplaza Inter en todo el proyecto) */
+const sloth = localFont({
+  src: [
+    {
+      path: '../public/fonts/Sloth-Light.ttf',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/Sloth-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/Sloth-SemiBold.ttf',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/Sloth-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/Sloth-ExtraBold.ttf',
+      weight: '800',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-sloth',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://freepol.app'),
@@ -60,8 +91,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={inter.variable}>
-      <body className={`${inter.variable} font-inter antialiased bg-white text-[#0F172A]`}>
+    <html lang="es" className={sloth.variable}>
+      <body className={`${sloth.variable} font-sans antialiased bg-white text-[#0F172A]`}>
         {children}
       </body>
     </html>

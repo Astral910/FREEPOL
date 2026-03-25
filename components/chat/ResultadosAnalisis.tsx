@@ -70,7 +70,7 @@ export default function ResultadosAnalisis({
       transition={{ duration: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
       className="max-w-3xl mx-auto w-full"
     >
-      <div className="bg-[#1E293B] rounded-2xl border border-[#334155] p-6 space-y-6">
+      <div className="bg-[#1A1B4B] rounded-2xl border border-[#2D2F5E] p-6 space-y-6">
 
         {/* Header */}
         <div className="flex items-start gap-4">
@@ -85,9 +85,9 @@ export default function ResultadosAnalisis({
               Esto es lo que FREEPOL construirá para ti:
             </p>
             {config.nombre_campana && (
-              <div className="mt-2 inline-flex items-center gap-2 bg-[#0F172A] border border-[#334155] rounded-lg px-3 py-1">
+              <div className="mt-2 inline-flex items-center gap-2 bg-[#0A0A0A] border border-[#2D2F5E] rounded-lg px-3 py-1">
                 <span className="text-[#64748B] text-xs">Campaña:</span>
-                <span className="text-[#5B5CF6] text-sm font-semibold">
+                <span className="text-[#E8344E] text-sm font-semibold">
                   {config.nombre_campana}
                 </span>
               </div>
@@ -137,10 +137,10 @@ export default function ResultadosAnalisis({
                 Ajustes que hicimos
               </span>
             </div>
-            <div className="overflow-x-auto rounded-xl border border-[#334155]">
+            <div className="overflow-x-auto rounded-xl border border-[#2D2F5E]">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#1E293B]">
+                  <tr className="bg-[#1A1B4B]">
                     {['Lo que pediste', 'Limitación', 'Alternativa de FREEPOL'].map((h) => (
                       <th
                         key={h}
@@ -155,7 +155,7 @@ export default function ResultadosAnalisis({
                   {alternativas.map((alt, i) => (
                     <tr
                       key={i}
-                      className={i % 2 === 0 ? 'bg-[#0F172A]' : 'bg-[#1E293B]'}
+                      className={i % 2 === 0 ? 'bg-[#0A0A0A]' : 'bg-[#1A1B4B]'}
                     >
                       <td className="px-4 py-3 text-[#CBD5E1]">{alt.pidio}</td>
                       <td className="px-4 py-3 text-[#94A3B8]">{alt.razon}</td>
@@ -179,7 +179,7 @@ export default function ResultadosAnalisis({
             {resumenCards.map((card) => (
               <div
                 key={card.label}
-                className="bg-[#0F172A] rounded-lg p-3 text-center border border-[#334155]/50"
+                className="bg-[#0A0A0A] rounded-lg p-3 text-center border border-[#2D2F5E]/50"
               >
                 <p className="text-[#64748B] text-xs mb-1">{card.label}</p>
                 <p className="text-[#E2E8F0] font-semibold text-sm leading-tight">
@@ -205,7 +205,7 @@ export default function ResultadosAnalisis({
           <Button
             variant="outline"
             onClick={onAjustar}
-            className="bg-[#334155] border-[#475569] text-[#CBD5E1] rounded-xl px-6 py-3 h-auto hover:bg-[#3E4F65] hover:text-white"
+            className="bg-[#2D2F5E] border-[#475569] text-[#CBD5E1] rounded-xl px-6 py-3 h-auto hover:bg-[#3E4F65] hover:text-white"
           >
             <RotateCcw size={14} className="mr-2" />
             Ajustar descripción

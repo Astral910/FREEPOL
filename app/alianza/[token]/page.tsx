@@ -108,7 +108,7 @@ export default function AlianzaTokenPage() {
   if (cargando) {
     return (
       <div className="h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[#5B5CF6] border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-[#E8344E] border-t-transparent animate-spin" />
       </div>
     )
   }
@@ -121,7 +121,7 @@ export default function AlianzaTokenPage() {
         </div>
         <h1 className="text-xl font-bold text-[#0F172A]">Invitación no encontrada</h1>
         <p className="text-[#64748B] max-w-sm">{error || 'Esta invitación no existe o ya fue procesada.'}</p>
-        <Link href="/" className="px-6 py-3 rounded-xl bg-[#5B5CF6] text-white font-semibold hover:opacity-90 transition-opacity">
+        <Link href="/" className="px-6 py-3 rounded-xl bg-[#E8344E] text-white font-semibold hover:opacity-90 transition-opacity">
           Volver al inicio
         </Link>
       </div>
@@ -138,7 +138,7 @@ export default function AlianzaTokenPage() {
         <p className="text-[#64748B] max-w-sm">
           Tus cajeros ya pueden validar los códigos de la campaña{' '}
           <strong>{alianza.campanas?.nombre_campana}</strong> desde{' '}
-          <Link href="/validar" className="text-[#5B5CF6] hover:underline">/validar</Link>.
+          <Link href="/validar" className="text-[#E8344E] hover:underline">/validar</Link>.
         </p>
         <Link href="/validar" className="px-8 py-4 rounded-xl bg-[#22C55E] text-white font-bold hover:opacity-90 transition-opacity">
           Ir a validar códigos →
@@ -155,7 +155,7 @@ export default function AlianzaTokenPage() {
         </div>
         <h1 className="text-xl font-bold text-[#0F172A]">Invitación rechazada</h1>
         <p className="text-[#64748B]">La colaboración fue rechazada correctamente.</p>
-        <Link href="/" className="text-sm text-[#5B5CF6] hover:underline">Volver al inicio</Link>
+        <Link href="/" className="text-sm text-[#E8344E] hover:underline">Volver al inicio</Link>
       </div>
     )
   }
@@ -165,7 +165,7 @@ export default function AlianzaTokenPage() {
     return (
       <div className="h-screen bg-white flex flex-col items-center justify-center text-center px-4 gap-4">
         <p className="text-[#64748B]">Esta invitación ya fue {alianza.estado === 'activa' ? 'aceptada' : 'rechazada'}.</p>
-        <Link href="/" className="text-sm text-[#5B5CF6] hover:underline">Volver al inicio</Link>
+        <Link href="/" className="text-sm text-[#E8344E] hover:underline">Volver al inicio</Link>
       </div>
     )
   }
@@ -175,8 +175,8 @@ export default function AlianzaTokenPage() {
       <div className="bg-white border border-[#E5E7EB] rounded-2xl p-8 max-w-md w-full shadow-sm space-y-6">
         {/* Header */}
         <div className="flex items-center gap-2 mb-2">
-          <Zap size={16} className="text-[#5B5CF6]" />
-          <span className="font-bold text-sm"><span className="text-[#5B5CF6]">FREE</span>POL</span>
+          <Zap size={16} className="text-[#E8344E]" />
+          <span className="font-bold text-sm"><span className="text-[#E8344E]">FREE</span>POL</span>
         </div>
 
         <div className="flex flex-col items-center text-center gap-3">
@@ -200,8 +200,8 @@ export default function AlianzaTokenPage() {
         </div>
 
         {/* Qué implica */}
-        <div className="bg-[#EEF2FF] border border-[#C4B5FD] rounded-xl p-4">
-          <p className="text-[#5B5CF6] text-sm font-medium mb-2">¿Qué implica aceptar?</p>
+        <div className="bg-[#FFF0F2] border border-[#F9B8C4] rounded-xl p-4">
+          <p className="text-[#E8344E] text-sm font-medium mb-2">¿Qué implica aceptar?</p>
           <ul className="space-y-1.5">
             {[
               'Tus cajeros podrán validar los códigos QR de esta campaña',

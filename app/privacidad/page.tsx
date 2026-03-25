@@ -12,7 +12,7 @@ export default function PrivacidadPage() {
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="font-bold text-lg">
-            <span className="text-[#5B5CF6]">FREE</span><span className="text-[#0F172A]">POL</span>
+            <span className="text-[#E8344E]">FREE</span><span className="text-[#0F172A]">POL</span>
           </Link>
           <Link href="/" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">
             ← Volver al inicio
@@ -85,7 +85,7 @@ export default function PrivacidadPage() {
           </ul>
           <p className="mt-3">
             Para solicitar eliminación de datos, escribe a:{' '}
-            <a href="mailto:privacidad@freepol.app" className="text-[#5B5CF6] hover:underline">privacidad@freepol.app</a>
+            <a href="mailto:privacidad@freepol.app" className="text-[#E8344E] hover:underline">privacidad@freepol.app</a>
           </p>
         </Section>
 
@@ -134,11 +134,11 @@ export default function PrivacidadPage() {
 
         <Section titulo="11. Contacto">
           Para ejercer tus derechos o resolver dudas sobre privacidad:{' '}
-          <a href="mailto:privacidad@freepol.app" className="text-[#5B5CF6] hover:underline">privacidad@freepol.app</a>
+          <a href="mailto:privacidad@freepol.app" className="text-[#E8344E] hover:underline">privacidad@freepol.app</a>
         </Section>
 
         <div className="mt-12 pt-8 border-t border-[#E5E7EB] flex gap-6 text-sm">
-          <Link href="/terminos" className="text-[#5B5CF6] hover:underline">Términos de Servicio</Link>
+          <Link href="/terminos" className="text-[#E8344E] hover:underline">Términos de Servicio</Link>
           <Link href="/precios" className="text-[#64748B] hover:text-[#0F172A]">Precios</Link>
           <Link href="/" className="text-[#64748B] hover:text-[#0F172A]">Inicio</Link>
         </div>

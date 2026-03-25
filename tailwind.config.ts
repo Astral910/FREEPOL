@@ -11,15 +11,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#5B5CF6',
+        primary: '#E8344E',
         secondary: '#22C55E',
+        accent: '#F2839A',
+        navy: '#1A1B4B',
+        dark: '#0A0A0A',
         border: '#E5E7EB',
         card: '#F8FAFC',
         'text-primary': '#0F172A',
         'text-soft': '#64748B',
       },
       fontFamily: {
-        inter: ['var(--font-inter)', 'sans-serif'],
+        sans: ['var(--font-sloth)', 'sans-serif'],
+        sloth: ['var(--font-sloth)', 'sans-serif'],
       },
       animation: {
         'pulse-dot': 'pulse-dot 2s ease-in-out infinite',

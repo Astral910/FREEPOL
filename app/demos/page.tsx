@@ -68,11 +68,11 @@ export default function DemosPage() {
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="font-bold text-xl">
-            <span className="text-[#5B5CF6]">FREE</span><span className="text-[#0F172A]">POL</span>
+            <span className="text-[#E8344E]">FREE</span><span className="text-[#0F172A]">POL</span>
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/precios" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">Precios</Link>
-            <Link href="/chat" className="px-4 py-2 rounded-xl bg-[#5B5CF6] text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+            <Link href="/chat" className="px-4 py-2 rounded-xl bg-[#E8344E] text-white text-sm font-semibold hover:opacity-90 transition-opacity">
               Crear campaña →
             </Link>
           </div>
@@ -83,7 +83,7 @@ export default function DemosPage() {
 
         {/* Hero */}
         <section className="text-center space-y-5">
-          <span className="inline-block bg-[#EEF2FF] border border-[#C4B5FD] text-[#5B5CF6] text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide">
+          <span className="inline-block bg-[#FFF0F2] border border-[#F9B8C4] text-[#E8344E] text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide">
             Casos de uso reales
           </span>
           <h1 className="text-4xl md:text-5xl font-bold text-[#0F172A] leading-tight">
@@ -142,8 +142,8 @@ export default function DemosPage() {
                       <Terminal size={11} />
                       Prompt usado
                     </div>
-                    <div className="bg-[#0F172A] rounded-xl p-3 font-mono text-xs text-[#22C55E] leading-relaxed max-h-24 overflow-hidden relative">
-                      <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-[#0F172A] to-transparent" />
+                    <div className="bg-[#0A0A0A] rounded-xl p-3 font-mono text-xs text-[#22C55E] leading-relaxed max-h-24 overflow-hidden relative">
+                      <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
                       &ldquo;{demo.prompt}&rdquo;
                     </div>
                   </div>
@@ -174,7 +174,7 @@ export default function DemosPage() {
         <section className="gradient-bg rounded-3xl p-10 text-center space-y-5">
           <h2 className="text-3xl font-bold text-white">¿Quieres crear tu propia campaña?</h2>
           <p className="text-white/80">Describe lo que necesitas en lenguaje natural. La IA configura todo.</p>
-          <Link href="/chat" className="inline-flex items-center gap-2 bg-white text-[#5B5CF6] font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg">
+          <Link href="/chat" className="inline-flex items-center gap-2 bg-white text-[#E8344E] font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-opacity shadow-lg">
             Abrir el asistente de IA <ArrowRight size={16} />
           </Link>
         </section>

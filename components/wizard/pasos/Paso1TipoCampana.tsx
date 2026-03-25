@@ -26,15 +26,15 @@ const TIPOS = [
   {
     valor: 'cupon' as TipoCampana,
     icono: Ticket,
-    color: '#5B5CF6',
-    colorBg: '#1E1B4B',
+    color: '#E8344E',
+    colorBg: '#1A1B4B',
     nombre: 'Cupón Directo',
     descripcion: 'Código único de descuento por registro',
   },
   {
     valor: 'factura' as TipoCampana,
     icono: Receipt,
-    color: '#A855F7',
+    color: '#F2839A',
     colorBg: '#2E1065',
     nombre: 'Puntos por Factura',
     descripcion: 'Valida compras con foto del ticket',
@@ -62,8 +62,8 @@ export default function Paso1TipoCampana() {
               whileTap={{ scale: 0.97 }}
               className={`relative text-left rounded-2xl border-2 p-5 transition-all duration-200 cursor-pointer ${
                 seleccionado
-                  ? 'border-[#5B5CF6] bg-[#1E293B] shadow-lg shadow-[#5B5CF6]/15'
-                  : 'border-[#334155] bg-[#1E293B] hover:border-[#5B5CF6]/50'
+                  ? 'border-[#E8344E] bg-[#1A1B4B] shadow-lg shadow-[#E8344E]/15'
+                  : 'border-[#2D2F5E] bg-[#1A1B4B] hover:border-[#E8344E]/50'
               }`}
             >
               {/* Ícono */}

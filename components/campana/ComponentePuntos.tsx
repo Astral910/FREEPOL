@@ -35,7 +35,7 @@ interface Props {
 export default function ComponentePuntos({
   campana,
   participanteId,
-  colorPrimario = '#5B5CF6',
+  colorPrimario = '#E8344E',
 }: Props) {
   const cfg = campana.configuracion
   const meta = cfg.meta_canje ?? 50
@@ -202,7 +202,7 @@ export default function ComponentePuntos({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.4 },
-        colors: ['#5B5CF6', '#22C55E', '#A855F7'],
+        colors: ['#E8344E', '#22C55E', '#F2839A'],
       })
     } catch {
       setError('Error de conexión')
@@ -349,7 +349,7 @@ export default function ComponentePuntos({
       {/* Demo: acumular puntos sin factura (solo tipo puntos) */}
       {tipo === 'puntos' && !puntos.alcanzadaMeta && (
         <div className="space-y-3">
-          <div className="bg-gradient-to-br from-[#F8FAFC] to-[#EEF2FF] border border-[#E5E7EB] rounded-2xl p-5 space-y-3">
+          <div className="bg-gradient-to-br from-[#F8FAFC] to-[#FFF0F2] border border-[#E5E7EB] rounded-2xl p-5 space-y-3">
             <p className="text-sm font-medium text-[#0F172A]">¿Cómo acumular puntos?</p>
             <p className="text-sm text-[#64748B]">
               Por cada ${cfg.monto_base ?? 10} de compra, ganas{' '}
@@ -367,7 +367,7 @@ export default function ComponentePuntos({
             disabled={simulandoCompra || cargandoSaldo}
             className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 shadow-lg transition-opacity disabled:opacity-60 hover:opacity-90"
             style={{
-              background: `linear-gradient(135deg, ${colorPrimario}, #A855F7)`,
+              background: `linear-gradient(135deg, ${colorPrimario}, #F2839A)`,
             }}
           >
             {simulandoCompra ? (
@@ -418,7 +418,7 @@ export default function ComponentePuntos({
           type="button"
           onClick={() => void canjearPuntos()}
           disabled={canjeando}
-          className="w-full py-4 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2 gradient-bg shadow-lg shadow-[#5B5CF6]/20 hover:opacity-90 disabled:opacity-60 transition-opacity"
+          className="w-full py-4 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2 gradient-bg shadow-lg shadow-[#E8344E]/20 hover:opacity-90 disabled:opacity-60 transition-opacity"
         >
           {canjeando ? (
             <>

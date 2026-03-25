@@ -33,13 +33,13 @@ export default function PasoLayout({
       {/* Encabezado del paso */}
       <div className="space-y-4">
         {/* Ícono */}
-        <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-[#5B5CF6]/20">
+        <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-[#E8344E]/20">
           <Icono size={26} className="text-white" />
         </div>
 
         {/* Badge opcional */}
         {badge && (
-          <span className="inline-block bg-[#EEF2FF] border border-[#C4B5FD] text-[#5B5CF6] text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide">
+          <span className="inline-block bg-[#FFF0F2] border border-[#F9B8C4] text-[#E8344E] text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide">
             {badge}
           </span>
         )}
@@ -51,7 +51,7 @@ export default function PasoLayout({
         </div>
 
         {/* Separador */}
-        <div className="h-px bg-[#334155]" />
+        <div className="h-px bg-[#2D2F5E]" />
       </div>
 
       {/* Contenido del paso */}

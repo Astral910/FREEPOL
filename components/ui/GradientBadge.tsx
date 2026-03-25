@@ -7,7 +7,7 @@ interface GradientBadgeProps {
 }
 
 const variantStyles = {
-  purple: 'bg-[#F0F0FF] border-[#C4B5FD] text-[#5B5CF6]',
+  purple: 'bg-[#F0F0FF] border-[#F9B8C4] text-[#E8344E]',
   green: 'bg-[#F0FDF4] border-[#86EFAC] text-[#22C55E]',
   blue: 'bg-[#EFF6FF] border-[#93C5FD] text-[#3B82F6]',
 }

@@ -60,7 +60,7 @@ async function fetchMetricas(supabase: SupabaseClient, userId: string): Promise<
  * 4 cards de métricas del dashboard con animaciones y Realtime.
  * Los números animan desde 0 al valor real al montar.
  */
-export default function MetricasCards({ userId, colorPrimario = '#5B5CF6', supabase }: MetricasCardsProps) {
+export default function MetricasCards({ userId, colorPrimario = '#E8344E', supabase }: MetricasCardsProps) {
   const [metricas, setMetricas] = useState<Metricas | null>(null)
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function MetricasCards({ userId, colorPrimario = '#5B5CF6', supab
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-[#1E293B] border border-[#334155] rounded-2xl p-5 space-y-3">
+          <div key={i} className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-5 space-y-3">
             <Skeleton className="h-3 w-24" />
             <Skeleton className="h-8 w-16" />
             <Skeleton className="h-3 w-28" />
@@ -123,8 +123,8 @@ export default function MetricasCards({ userId, colorPrimario = '#5B5CF6', supab
       sufijo: '',
       subtexto: 'premios entregados',
       icono: Gift,
-      color: '#A855F7',
-      bg: '#A855F715',
+      color: '#F2839A',
+      bg: '#F2839A15',
     },
     {
       label: 'Tasa de conversión',
@@ -147,7 +147,7 @@ export default function MetricasCards({ userId, colorPrimario = '#5B5CF6', supab
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.08 }}
-            className="bg-[#1E293B] border border-[#334155] rounded-2xl p-5 hover:border-[#5B5CF6]/30 transition-colors duration-200"
+            className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-5 hover:border-[#E8344E]/30 transition-colors duration-200"
           >
             <div className="flex items-center justify-between mb-3">
               <p className="text-[#94A3B8] text-xs uppercase tracking-widest font-medium">{t.label}</p>

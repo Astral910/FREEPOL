@@ -117,8 +117,8 @@ export default function WizardPage() {
 
   if (cargando) {
     return (
-      <div className="h-screen bg-[#0F172A] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[#5B5CF6] border-t-transparent animate-spin" />
+      <div className="h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[#E8344E] border-t-transparent animate-spin" />
       </div>
     )
   }
@@ -126,8 +126,8 @@ export default function WizardPage() {
   // Sin datos: pedir que vuelva al chat
   if (!hayDatos) {
     return (
-      <div className="h-screen bg-[#0F172A] flex flex-col items-center justify-center text-center px-4">
-        <div className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mb-6 shadow-lg shadow-[#5B5CF6]/30">
+      <div className="h-screen bg-[#0A0A0A] flex flex-col items-center justify-center text-center px-4">
+        <div className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mb-6 shadow-lg shadow-[#E8344E]/30">
           <MessageSquareText size={28} className="text-white" />
         </div>
         <h1 className="text-2xl font-bold text-white mb-3">Primero describe tu campaña</h1>
@@ -149,12 +149,12 @@ export default function WizardPage() {
   // Pantalla de éxito (completado)
   if (completado) {
     return (
-      <div className="h-screen bg-[#0F172A] flex flex-col items-center justify-center text-center px-4">
+      <div className="h-screen bg-[#0A0A0A] flex flex-col items-center justify-center text-center px-4">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="w-20 h-20 rounded-full gradient-bg flex items-center justify-center mb-6 shadow-xl shadow-[#5B5CF6]/30"
+          className="w-20 h-20 rounded-full gradient-bg flex items-center justify-center mb-6 shadow-xl shadow-[#E8344E]/30"
         >
           <span className="text-4xl">🎉</span>
         </motion.div>
@@ -172,7 +172,7 @@ export default function WizardPage() {
           transition={{ delay: 0.4 }}
           className="text-[#94A3B8] mb-8 max-w-sm"
         >
-          Tu campaña <strong className="text-[#5B5CF6]">{config.nombre_campana}</strong> ya
+          Tu campaña <strong className="text-[#E8344E]">{config.nombre_campana}</strong> ya
           está activa. Redirigiendo al dashboard...
         </motion.p>
         <div className="flex gap-3">
@@ -185,7 +185,7 @@ export default function WizardPage() {
           <Button
             variant="outline"
             onClick={() => router.push('/chat')}
-            className="border-[#334155] text-[#94A3B8] rounded-xl px-6"
+            className="border-[#2D2F5E] text-[#94A3B8] rounded-xl px-6"
           >
             Crear otra campaña
           </Button>
@@ -195,14 +195,14 @@ export default function WizardPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#0F172A] overflow-hidden">
+    <div className="flex flex-col h-screen bg-[#0A0A0A] overflow-hidden">
       <Toaster
         position="top-center"
         toastOptions={{
           style: {
-            background: '#1E293B',
+            background: '#1A1B4B',
             color: '#E2E8F0',
-            border: '1px solid #334155',
+            border: '1px solid #2D2F5E',
             borderRadius: '12px',
           },
         }}
@@ -212,7 +212,7 @@ export default function WizardPage() {
       <Progress value={progreso} className="h-1 w-full rounded-none flex-shrink-0" />
 
       {/* Header */}
-      <header className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-[#1E293B] flex-shrink-0">
+      <header className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-[#1A1B4B] flex-shrink-0">
         <div className="flex items-center gap-3">
           <Link
             href="/chat"
@@ -221,7 +221,7 @@ export default function WizardPage() {
             <ArrowLeft size={15} />
             <span className="hidden sm:inline">Volver al chat</span>
           </Link>
-          <span className="text-[#334155]">|</span>
+          <span className="text-[#2D2F5E]">|</span>
           <div className="flex items-center">
             <Image src="/logo-dark.svg" alt="FREEPOL" width={100} height={25} priority />
           </div>
@@ -251,7 +251,7 @@ export default function WizardPage() {
       </div>
 
       {/* Footer de navegación — fijo abajo */}
-      <footer className="flex-shrink-0 border-t border-[#1E293B] px-4 md:px-8 py-4">
+      <footer className="flex-shrink-0 border-t border-[#1A1B4B] px-4 md:px-8 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
           {/* Botón atrás */}
           <div className="w-32">
@@ -259,7 +259,7 @@ export default function WizardPage() {
               <Button
                 onClick={handleAnterior}
                 disabled={guardando}
-                className="bg-[#1E293B] text-[#CBD5E1] border border-[#334155] hover:bg-[#334155] rounded-xl flex items-center gap-2 w-full"
+                className="bg-[#1A1B4B] text-[#CBD5E1] border border-[#2D2F5E] hover:bg-[#2D2F5E] rounded-xl flex items-center gap-2 w-full"
               >
                 <ArrowLeft size={15} />
                 Atrás
@@ -276,8 +276,8 @@ export default function WizardPage() {
                   i + 1 === paso
                     ? 'w-6 h-2 gradient-bg'
                     : i + 1 < paso
-                      ? 'w-2 h-2 bg-[#5B5CF6]/60'
-                      : 'w-2 h-2 bg-[#334155]'
+                      ? 'w-2 h-2 bg-[#E8344E]/60'
+                      : 'w-2 h-2 bg-[#2D2F5E]'
                 }`}
               />
             ))}

@@ -31,9 +31,9 @@ export default function Paso8Limites() {
       <div className="space-y-6">
         {/* Toggle límite de participantes */}
         <div className="space-y-3">
-          <div className="flex items-center gap-3 p-4 bg-[#1E293B] border border-[#334155] rounded-xl">
+          <div className="flex items-center gap-3 p-4 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl">
             <div
-              className={`w-10 h-6 rounded-full transition-colors duration-200 relative cursor-pointer flex-shrink-0 ${conLimite ? 'bg-[#5B5CF6]' : 'bg-[#334155]'}`}
+              className={`w-10 h-6 rounded-full transition-colors duration-200 relative cursor-pointer flex-shrink-0 ${conLimite ? 'bg-[#E8344E]' : 'bg-[#2D2F5E]'}`}
               onClick={toggleLimite}
             >
               <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${conLimite ? 'translate-x-5' : 'translate-x-1'}`} />
@@ -55,7 +55,7 @@ export default function Paso8Limites() {
                   setConfig('limite_participantes', e.target.value ? Number(e.target.value) : null)
                 }
                 placeholder="Ej: 5000"
-                className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6]"
+                className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E]"
               />
             </div>
           )}
@@ -75,11 +75,11 @@ export default function Paso8Limites() {
                   onClick={() => setConfig('horas_expiracion_codigo', e.horas)}
                   className={`flex flex-col items-center justify-center py-3 px-4 rounded-xl border-2 transition-all duration-200 ${
                     seleccionado
-                      ? 'border-[#5B5CF6] bg-[#1E293B] shadow-sm shadow-[#5B5CF6]/10'
-                      : 'border-[#334155] bg-[#1E293B] hover:border-[#5B5CF6]/40'
+                      ? 'border-[#E8344E] bg-[#1A1B4B] shadow-sm shadow-[#E8344E]/10'
+                      : 'border-[#2D2F5E] bg-[#1A1B4B] hover:border-[#E8344E]/40'
                   }`}
                 >
-                  <span className={`font-bold text-sm ${seleccionado ? 'text-[#5B5CF6]' : 'text-[#E2E8F0]'}`}>
+                  <span className={`font-bold text-sm ${seleccionado ? 'text-[#E8344E]' : 'text-[#E2E8F0]'}`}>
                     {e.label}
                   </span>
                   {e.badge && (

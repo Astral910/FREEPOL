@@ -33,8 +33,8 @@ function WizardInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full bg-[#1E293B] border rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] transition-all duration-200 ${
-          error ? 'border-red-500' : 'border-[#334155]'
+        className={`w-full bg-[#1A1B4B] border rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] transition-all duration-200 ${
+          error ? 'border-red-500' : 'border-[#2D2F5E]'
         }`}
       />
       {error && <p className="text-red-400 text-xs">{error}</p>}
@@ -86,12 +86,12 @@ export default function Paso2Identidad() {
 
         {/* Preview en tiempo real */}
         {(preview.negocio || preview.campana) && (
-          <div className="bg-[#0F172A] border border-[#334155] rounded-xl p-4 mt-2">
+          <div className="bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl p-4 mt-2">
             <p className="text-[#475569] text-xs uppercase tracking-wide mb-2">
               Tu campaña se verá así:
             </p>
             <p className="text-[#E2E8F0] font-semibold text-base">
-              <span className="text-[#5B5CF6]">
+              <span className="text-[#E8344E]">
                 {preview.negocio || 'Tu empresa'}
               </span>{' '}
               presenta:{' '}

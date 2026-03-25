@@ -92,9 +92,9 @@ export default function Paso8bAliado() {
     >
       <div className="space-y-5">
         {/* Toggle activar aliado */}
-        <div className="flex items-center gap-3 p-4 bg-[#1E293B] border border-[#334155] rounded-xl">
+        <div className="flex items-center gap-3 p-4 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl">
           <div
-            className={`w-10 h-6 rounded-full transition-colors duration-200 relative cursor-pointer flex-shrink-0 ${conAliado ? 'bg-[#5B5CF6]' : 'bg-[#334155]'}`}
+            className={`w-10 h-6 rounded-full transition-colors duration-200 relative cursor-pointer flex-shrink-0 ${conAliado ? 'bg-[#E8344E]' : 'bg-[#2D2F5E]'}`}
             onClick={() => handleToggle(!conAliado)}
           >
             <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${conAliado ? 'translate-x-5' : 'translate-x-1'}`} />
@@ -106,11 +106,11 @@ export default function Paso8bAliado() {
         </div>
 
         {!conAliado && (
-          <div className="bg-[#0F172A] border border-[#334155] rounded-xl p-4 space-y-2">
+          <div className="bg-[#0A0A0A] border border-[#2D2F5E] rounded-xl p-4 space-y-2">
             <p className="text-[#64748B] text-sm leading-relaxed">
               Las alianzas te permiten que los cajeros de otra empresa puedan
               validar los códigos QR de esta campaña desde su panel{' '}
-              <span className="text-[#5B5CF6]">/validar</span>.
+              <span className="text-[#E8344E]">/validar</span>.
               Ideal para campañas de puntos cruzados.
             </p>
             <p className="text-[#475569] text-xs">Activa el switch para configurar un aliado.</p>
@@ -140,7 +140,7 @@ export default function Paso8bAliado() {
                 value={correo}
                 onChange={(e) => handleCorreoChange(e.target.value)}
                 placeholder="admin@empresa-aliada.com"
-                className={`w-full bg-[#1E293B] border rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] transition-all ${error ? 'border-red-500' : 'border-[#334155]'}`}
+                className={`w-full bg-[#1A1B4B] border rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] transition-all ${error ? 'border-red-500' : 'border-[#2D2F5E]'}`}
               />
               {error && <p className="text-red-400 text-xs">{error}</p>}
               <p className="text-[#475569] text-xs">
@@ -160,12 +160,12 @@ export default function Paso8bAliado() {
                 value={nombreEmpresa}
                 onChange={(e) => handleNombreChange(e.target.value)}
                 placeholder="Ej: Gasolineras Puma"
-                className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] transition-all"
+                className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] transition-all"
               />
             </div>
 
             {/* Checkbox de confirmación */}
-            <div className="flex items-start gap-3 p-4 bg-[#1E293B] border border-[#334155] rounded-xl">
+            <div className="flex items-start gap-3 p-4 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl">
               <Checkbox
                 id="check-aliado"
                 checked={entendido}

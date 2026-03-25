@@ -84,7 +84,7 @@ export default function LandingCampana({ campana }: Props) {
     }
   }
 
-  const primarioColor = cfg.color_primario?.trim() || '#5B5CF6'
+  const primarioColor = cfg.color_primario?.trim() || '#E8344E'
 
   const tipoBadge = (() => {
     const map = {
@@ -104,7 +104,7 @@ export default function LandingCampana({ campana }: Props) {
       <div
         className="relative overflow-hidden rounded-b-[2rem] px-4 pb-10 pt-10 shadow-sm"
         style={{
-          background: `linear-gradient(135deg, ${primarioColor} 0%, #A855F7 55%, #22C55E 120%)`,
+          background: `linear-gradient(135deg, ${primarioColor} 0%, #F2839A 55%, #22C55E 120%)`,
         }}
       >
         <div
@@ -141,7 +141,7 @@ export default function LandingCampana({ campana }: Props) {
 
       <div className="max-w-lg mx-auto px-4 -mt-6 pb-10 space-y-6 relative z-[1]">
         {/* Tarjeta principal: bienvenida + flujo */}
-        <div className="rounded-2xl border border-[#E5E7EB] bg-white shadow-xl shadow-[#0F172A]/[0.06] p-6 space-y-6">
+        <div className="rounded-2xl border border-[#E5E7EB] bg-white shadow-xl shadow-[#0A0A0A]/[0.06] p-6 space-y-6">
 
         {/* ZONA 2 — Mensaje de bienvenida */}
         {cfg.mensaje_bienvenida && (
@@ -183,7 +183,7 @@ export default function LandingCampana({ campana }: Props) {
                   disabled={enviando}
                   className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-60 shadow-lg"
                   style={{
-                    background: `linear-gradient(135deg, ${primarioColor}, #A855F7)`,
+                    background: `linear-gradient(135deg, ${primarioColor}, #F2839A)`,
                   }}
                 >
                   {enviando ? <Loader2 size={18} className="animate-spin" /> : 'Participar ahora →'}
@@ -253,7 +253,7 @@ export default function LandingCampana({ campana }: Props) {
                     disabled={enviando}
                     className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-60 shadow-lg"
                     style={{
-                      background: `linear-gradient(135deg, ${primarioColor}, #A855F7)`,
+                      background: `linear-gradient(135deg, ${primarioColor}, #F2839A)`,
                     }}
                   >
                     {enviando ? (

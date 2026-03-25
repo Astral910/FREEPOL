@@ -28,11 +28,11 @@ const HeroSection = memo(function HeroSection({ onOpenAuth }: HeroSectionProps) 
       {/* Fondos decorativos difusos */}
       <div
         aria-hidden="true"
-        className="absolute top-20 left-10 w-96 h-96 rounded-full bg-[#5B5CF6]/10 blur-3xl pointer-events-none"
+        className="absolute top-20 left-10 w-96 h-96 rounded-full bg-[#E8344E]/10 blur-3xl pointer-events-none"
       />
       <div
         aria-hidden="true"
-        className="absolute top-40 right-10 w-80 h-80 rounded-full bg-[#A855F7]/10 blur-3xl pointer-events-none"
+        className="absolute top-40 right-10 w-80 h-80 rounded-full bg-[#F2839A]/10 blur-3xl pointer-events-none"
       />
       {/* Patrón de puntos SVG */}
       <div
@@ -50,7 +50,7 @@ const HeroSection = memo(function HeroSection({ onOpenAuth }: HeroSectionProps) 
         >
           <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse-dot" />
           <span className="text-sm text-[#64748B]">Nuevo — Campañas con IA en minutos</span>
-          <ArrowRight size={14} className="text-[#5B5CF6]" />
+          <ArrowRight size={14} className="text-[#E8344E]" />
         </motion.div>
 
         {/* Título principal */}
@@ -88,7 +88,7 @@ const HeroSection = memo(function HeroSection({ onOpenAuth }: HeroSectionProps) 
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <Button
-              className="px-8 py-4 h-auto rounded-xl bg-[#5B5CF6] text-white text-base font-semibold hover:brightness-110 shadow-lg hover:shadow-xl hover:shadow-[#5B5CF6]/30 transition-all duration-200"
+              className="px-8 py-4 h-auto rounded-xl bg-[#E8344E] text-white text-base font-semibold hover:brightness-110 shadow-lg hover:shadow-xl hover:shadow-[#E8344E]/30 transition-all duration-200"
               onClick={() => router.push('/chat')}
             >
               Crear mi primera campaña gratis →

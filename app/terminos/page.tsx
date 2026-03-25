@@ -12,7 +12,7 @@ export default function TerminosPage() {
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="font-bold text-lg">
-            <span className="text-[#5B5CF6]">FREE</span><span className="text-[#0F172A]">POL</span>
+            <span className="text-[#E8344E]">FREE</span><span className="text-[#0F172A]">POL</span>
           </Link>
           <Link href="/" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">
             ← Volver al inicio
@@ -58,7 +58,7 @@ export default function TerminosPage() {
 
         <Section titulo="4. Datos y Privacidad">
           Los datos de participantes (correo electrónico, teléfono) recopilados a través de las campañas son propiedad de la empresa que crea la campaña. FREEPOL actúa como procesador de datos y no vende ni comparte esta información con terceros. Consulta nuestra{' '}
-          <Link href="/privacidad" className="text-[#5B5CF6] hover:underline">Política de Privacidad</Link>{' '}
+          <Link href="/privacidad" className="text-[#E8344E] hover:underline">Política de Privacidad</Link>{' '}
           para más detalles.
         </Section>
 
@@ -88,11 +88,11 @@ export default function TerminosPage() {
 
         <Section titulo="11. Contacto">
           Para consultas legales o dudas sobre estos términos, escríbenos a:{' '}
-          <a href="mailto:legal@freepol.app" className="text-[#5B5CF6] hover:underline">legal@freepol.app</a>
+          <a href="mailto:legal@freepol.app" className="text-[#E8344E] hover:underline">legal@freepol.app</a>
         </Section>
 
         <div className="mt-12 pt-8 border-t border-[#E5E7EB] flex gap-6 text-sm">
-          <Link href="/privacidad" className="text-[#5B5CF6] hover:underline">Política de Privacidad</Link>
+          <Link href="/privacidad" className="text-[#E8344E] hover:underline">Política de Privacidad</Link>
           <Link href="/precios" className="text-[#64748B] hover:text-[#0F172A]">Precios</Link>
           <Link href="/" className="text-[#64748B] hover:text-[#0F172A]">Inicio</Link>
         </div>

@@ -10,14 +10,14 @@ const pasos = [
   {
     numero: '01',
     icon: PenLine,
-    iconColor: '#5B5CF6',
+    iconColor: '#E8344E',
     titulo: 'Describe tu campaña',
     texto: 'Escribe en el chat qué tipo de campaña quieres, los premios y las reglas.',
   },
   {
     numero: '02',
     icon: Brain,
-    iconColor: '#A855F7',
+    iconColor: '#F2839A',
     titulo: 'La IA analiza',
     texto:
       'FREEPOL identifica qué puede hacer y te ofrece alternativas para lo que no.',

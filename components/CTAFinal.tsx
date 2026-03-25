@@ -46,7 +46,7 @@ const CTAFinal = memo(function CTAFinal({ onOpenAuth }: CTAFinalProps) {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
               <Button
-                className="px-10 py-4 h-auto rounded-xl bg-white text-[#5B5CF6] font-bold text-base hover:bg-white/90 shadow-xl transition-all duration-200"
+                className="px-10 py-4 h-auto rounded-xl bg-white text-[#E8344E] font-bold text-base hover:bg-white/90 shadow-xl transition-all duration-200"
                 onClick={() => router.push('/chat')}
               >
                 Crear cuenta gratis

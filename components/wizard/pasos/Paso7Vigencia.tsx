@@ -39,7 +39,7 @@ function DateInput({
         value={value}
         min={min}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] transition-all [color-scheme:dark]"
+        className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] transition-all [color-scheme:dark]"
       />
     </div>
   )
@@ -106,9 +106,9 @@ export default function Paso7Vigencia() {
 
         {/* Toggle horario específico */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3 p-4 bg-[#1E293B] border border-[#334155] rounded-xl">
+          <div className="flex items-center gap-3 p-4 bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl">
             <div
-              className={`w-10 h-6 rounded-full transition-colors duration-200 relative cursor-pointer flex-shrink-0 ${conHorario ? 'bg-[#5B5CF6]' : 'bg-[#334155]'}`}
+              className={`w-10 h-6 rounded-full transition-colors duration-200 relative cursor-pointer flex-shrink-0 ${conHorario ? 'bg-[#E8344E]' : 'bg-[#2D2F5E]'}`}
               onClick={() => {
                 setConHorario(!conHorario)
                 if (conHorario) {
@@ -136,7 +136,7 @@ export default function Paso7Vigencia() {
                     type="time"
                     value={config.horario_inicio ?? ''}
                     onChange={(e) => setConfig('horario_inicio', e.target.value || null)}
-                    className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] [color-scheme:dark]"
+                    className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] [color-scheme:dark]"
                   />
                 </div>
                 <div className="space-y-2">
@@ -145,7 +145,7 @@ export default function Paso7Vigencia() {
                     type="time"
                     value={config.horario_fin ?? ''}
                     onChange={(e) => setConfig('horario_fin', e.target.value || null)}
-                    className="w-full bg-[#1E293B] border border-[#334155] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#5B5CF6] focus:border-[#5B5CF6] [color-scheme:dark]"
+                    className="w-full bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl py-3 px-4 text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#E8344E] focus:border-[#E8344E] [color-scheme:dark]"
                   />
                 </div>
               </div>
@@ -163,7 +163,7 @@ export default function Paso7Vigencia() {
                         className={`w-9 h-9 rounded-full text-sm font-semibold transition-all duration-200 ${
                           activo
                             ? 'gradient-bg text-white shadow-sm'
-                            : 'bg-[#1E293B] border border-[#334155] text-[#64748B] hover:border-[#5B5CF6]/50'
+                            : 'bg-[#1A1B4B] border border-[#2D2F5E] text-[#64748B] hover:border-[#E8344E]/50'
                         }`}
                       >
                         {dia.label}

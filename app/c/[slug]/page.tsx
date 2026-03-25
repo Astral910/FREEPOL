@@ -62,8 +62,8 @@ export default async function CampanaPublicaPage({ params }: Props) {
   if (error || !campana) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center px-4 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#EEF2FF] flex items-center justify-center mb-6">
-          <Zap size={28} className="text-[#5B5CF6]" />
+        <div className="w-16 h-16 rounded-2xl bg-[#FFF0F2] flex items-center justify-center mb-6">
+          <Zap size={28} className="text-[#E8344E]" />
         </div>
         <h1 className="text-2xl font-bold text-[#0F172A] mb-2">Campaña no encontrada</h1>
         <p className="text-[#64748B] mb-8 max-w-sm">
@@ -71,7 +71,7 @@ export default async function CampanaPublicaPage({ params }: Props) {
         </p>
         <Link
           href="/"
-          className="px-6 py-3 rounded-xl bg-[#5B5CF6] text-white font-semibold hover:opacity-90 transition-opacity"
+          className="px-6 py-3 rounded-xl bg-[#E8344E] text-white font-semibold hover:opacity-90 transition-opacity"
         >
           Volver al inicio
         </Link>

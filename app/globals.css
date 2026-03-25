@@ -3,13 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --primary: #5B5CF6;
+  --primary: #E8344E;
+  --primary-dark: #CC2840;
+  --primary-light: #EC4D63;
+  --accent: #F2839A;
+  --navy: #1A1B4B;
   --secondary: #22C55E;
   --background: #FFFFFF;
   --card: #F8FAFC;
   --border: #E5E7EB;
   --text-primary: #0F172A;
   --text-soft: #64748B;
+  /* Nombre lógico de marca; el valor efectivo de la familia lo completa next/font en <html> */
+  --font-sloth: 'Sloth', sans-serif;
 }
 
 html {
@@ -19,11 +25,12 @@ html {
 body {
   background-color: #FFFFFF;
   color: #0F172A;
+  font-family: var(--font-sloth), sans-serif;
 }
 
 /* Gradiente de texto IA */
 .gradient-text {
-  background: linear-gradient(135deg, #5B5CF6, #A855F7);
+  background: linear-gradient(135deg, #E8344E, #F2839A);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -31,7 +38,7 @@ body {
 
 /* Gradiente de fondo IA */
 .gradient-bg {
-  background: linear-gradient(135deg, #5B5CF6, #A855F7);
+  background: linear-gradient(135deg, #E8344E, #F2839A);
 }
 
 /* Animación del punto parpadeante del badge */

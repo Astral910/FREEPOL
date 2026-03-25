@@ -86,7 +86,7 @@ export default function ChatPage() {
       setAuthOpen(true)
       toast('Inicia sesión para acceder al dashboard', {
         icon: '🔐',
-        style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #334155' },
+        style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E' },
       })
     }
 
@@ -95,7 +95,7 @@ export default function ChatPage() {
     if (promptParam) {
       setInputValue(decodeURIComponent(promptParam))
       toast('Prompt cargado desde demos ✨', {
-        style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #334155' },
+        style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #2D2F5E' },
       })
     }
   }, [searchParams])
@@ -144,7 +144,7 @@ export default function ChatPage() {
     if (!empresa) {
       toast('Inicia sesión para crear campañas con FREEPOL', {
         icon: '🔐',
-        style: { background: '#1E293B', color: '#E2E8F0', border: '1px solid #5B5CF6' },
+        style: { background: '#1A1B4B', color: '#E2E8F0', border: '1px solid #E8344E' },
       })
       setAuthOpen(true)
       return
@@ -239,14 +239,14 @@ export default function ChatPage() {
 
   const Sidebar = (
     <aside
-      className="w-72 border-r border-[#334155] flex flex-col h-full flex-shrink-0"
-      style={{ backgroundColor: empresa?.color_primario ? `${empresa.color_primario}10` : undefined, background: '#1E293B' }}
+      className="w-72 border-r border-[#2D2F5E] flex flex-col h-full flex-shrink-0"
+      style={{ backgroundColor: empresa?.color_primario ? `${empresa.color_primario}10` : undefined, background: '#1A1B4B' }}
     >
       {/* Header del sidebar */}
-      <div className="p-5 border-b border-[#334155]">
+      <div className="p-5 border-b border-[#2D2F5E]">
         <Link href="/" className="flex items-center gap-2 mb-3 group">
           <ArrowLeft size={14} className="text-[#475569] group-hover:text-[#94A3B8] transition-colors" />
-          <Zap size={16} className="text-[#5B5CF6]" />
+          <Zap size={16} className="text-[#E8344E]" />
           <span className="font-bold text-white">
             {empresa ? (
               <span style={{ color: empresa.color_primario }}>{empresa.nombre}</span>
@@ -260,7 +260,7 @@ export default function ChatPage() {
         </p>
         <button
           onClick={reiniciar}
-          className="w-full bg-[#5B5CF6] hover:brightness-110 text-white rounded-lg px-4 py-2.5 text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200"
+          className="w-full bg-[#E8344E] hover:brightness-110 text-white rounded-lg px-4 py-2.5 text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200"
         >
           <Plus size={16} />
           Nueva campaña
@@ -276,7 +276,7 @@ export default function ChatPage() {
           {historialMostrado.map((item) => (
             <div
               key={item.id}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] cursor-pointer group transition-colors duration-150"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#2D2F5E] cursor-pointer group transition-colors duration-150"
             >
               <MessageSquare size={14} className="text-[#475569] flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -290,26 +290,26 @@ export default function ChatPage() {
       </div>
 
       {/* Panel inferior del sidebar */}
-      <div className="p-4 border-t border-[#334155] space-y-2">
+      <div className="p-4 border-t border-[#2D2F5E] space-y-2">
         <button
           onClick={() => setTipsOpen(true)}
-          className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] transition-colors text-[#64748B] hover:text-[#94A3B8] group"
+          className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#2D2F5E] transition-colors text-[#64748B] hover:text-[#94A3B8] group"
         >
           <BookOpen size={15} />
           <span className="text-sm">Guía de prompts</span>
         </button>
         {empresa ? (
-          <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] transition-colors">
-            <LayoutDashboard size={15} className="text-[#5B5CF6]" />
-            <span className="text-[#5B5CF6] text-sm">Ver mis campañas →</span>
+          <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#2D2F5E] transition-colors">
+            <LayoutDashboard size={15} className="text-[#E8344E]" />
+            <span className="text-[#E8344E] text-sm">Ver mis campañas →</span>
           </Link>
         ) : (
           <button
             onClick={() => setAuthOpen(true)}
-            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#334155] transition-colors border border-[#5B5CF6]/30 bg-[#5B5CF6]/5"
+            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#2D2F5E] transition-colors border border-[#E8344E]/30 bg-[#E8344E]/5"
           >
-            <LogIn size={15} className="text-[#5B5CF6]" />
-            <span className="text-[#5B5CF6] text-sm font-medium">Iniciar sesión para crear campañas</span>
+            <LogIn size={15} className="text-[#E8344E]" />
+            <span className="text-[#E8344E] text-sm font-medium">Iniciar sesión para crear campañas</span>
           </button>
         )}
       </div>
@@ -317,15 +317,15 @@ export default function ChatPage() {
   )
 
   return (
-    <div className="flex h-screen bg-[#0F172A] overflow-hidden">
+    <div className="flex h-screen bg-[#0A0A0A] overflow-hidden">
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
       <Toaster
         position="top-center"
         toastOptions={{
           style: {
-            background: '#1E293B',
+            background: '#1A1B4B',
             color: '#E2E8F0',
-            border: '1px solid #334155',
+            border: '1px solid #2D2F5E',
             borderRadius: '12px',
           },
         }}
@@ -348,7 +348,7 @@ export default function ChatPage() {
       {/* Área principal */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header móvil */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[#334155] flex-shrink-0">
+        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[#2D2F5E] flex-shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
             aria-label="Abrir menú"

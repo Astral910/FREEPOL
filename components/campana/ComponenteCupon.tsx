@@ -66,7 +66,7 @@ export default function ComponenteCupon({ campana, participanteId }: Props) {
           particleCount: 80,
           spread: 60,
           origin: { y: 0.4 },
-          colors: ['#5B5CF6', '#22C55E', '#A855F7'],
+          colors: ['#E8344E', '#22C55E', '#F2839A'],
         })
       } catch {
         setError('Error de conexión. Recarga la página.')
@@ -174,7 +174,7 @@ export default function ComponenteCupon({ campana, participanteId }: Props) {
         />
         <button
           onClick={descargarQR}
-          className="flex items-center gap-2 text-sm text-[#64748B] hover:text-[#5B5CF6] transition-colors"
+          className="flex items-center gap-2 text-sm text-[#64748B] hover:text-[#E8344E] transition-colors"
         >
           <Download size={14} />
           Descargar QR
@@ -185,7 +185,7 @@ export default function ComponenteCupon({ campana, participanteId }: Props) {
       {cfg.deep_link_url && (
         <button
           onClick={abrirDeepLink}
-          className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 gradient-bg shadow-lg shadow-[#5B5CF6]/20 hover:opacity-90 transition-opacity"
+          className="w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 gradient-bg shadow-lg shadow-[#E8344E]/20 hover:opacity-90 transition-opacity"
         >
           <ExternalLink size={18} />
           Abrir en la App →

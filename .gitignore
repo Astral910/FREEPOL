@@ -11,6 +11,7 @@ dist/
 
 # Documentación interna / auditoría (no versionar)
 AUDITORIA.md
+DOCUMENTACION_TECNICA_COMPLETA_FREEPOL.md
 
 # Variables de entorno — NUNCA subir al repo
 .env

@@ -148,7 +148,7 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
               <>
                 <Button
                   variant="ghost"
-                  className="text-sm text-[#64748B] hover:text-[#5B5CF6] hover:bg-[#F0F0FF] rounded-lg flex items-center gap-1.5 transition-all duration-200"
+                  className="text-sm text-[#64748B] hover:text-[#E8344E] hover:bg-[#F0F0FF] rounded-lg flex items-center gap-1.5 transition-all duration-200"
                   onClick={() => router.push('/chat')}
                 >
                   <Sparkles size={14} />
@@ -162,7 +162,7 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
                   Iniciar sesión
                 </Button>
                 <Button
-                  className="text-sm px-5 py-2 rounded-lg bg-[#5B5CF6] text-white hover:brightness-110 shadow-sm hover:shadow-md hover:shadow-[#5B5CF6]/25 transition-all duration-200 flex items-center gap-2"
+                  className="text-sm px-5 py-2 rounded-lg bg-[#E8344E] text-white hover:brightness-110 shadow-sm hover:shadow-md hover:shadow-[#E8344E]/25 transition-all duration-200 flex items-center gap-2"
                   onClick={() => onOpenAuth('register')}
                 >
                   Empezar gratis
@@ -216,7 +216,7 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
                 {/* Botones al fondo */}
                 <div className="p-5 border-t border-[#E5E7EB] flex flex-col gap-3">
                   <Button
-                    className="w-full rounded-lg bg-[#EEF2FF] text-[#5B5CF6] border border-[#C4B5FD] flex items-center justify-center gap-2 hover:bg-[#E0E7FF]"
+                    className="w-full rounded-lg bg-[#FFF0F2] text-[#E8344E] border border-[#F9B8C4] flex items-center justify-center gap-2 hover:bg-[#E0E7FF]"
                     onClick={() => {
                       setMobileOpen(false)
                       router.push('/chat')
@@ -236,7 +236,7 @@ export default function Navbar({ onOpenAuth }: NavbarProps) {
                     Iniciar sesión
                   </Button>
                   <Button
-                    className="w-full rounded-lg bg-[#5B5CF6] text-white flex items-center justify-center gap-2"
+                    className="w-full rounded-lg bg-[#E8344E] text-white flex items-center justify-center gap-2"
                     onClick={() => {
                       setMobileOpen(false)
                       onOpenAuth('register')

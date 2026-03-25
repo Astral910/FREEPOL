@@ -31,7 +31,7 @@ const CANALES = [
   {
     id: 'landing',
     icono: Globe,
-    color: '#5B5CF6',
+    color: '#E8344E',
     nombre: 'Landing Page',
     descripcion: 'Página web generada automáticamente',
   },
@@ -82,8 +82,8 @@ export default function Paso3Canales() {
                 onClick={() => toggleCanal(canal.id)}
                 className={`flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all duration-200 ${
                   estaActivo
-                    ? 'border-[#5B5CF6] bg-[#1E293B] shadow-md shadow-[#5B5CF6]/10'
-                    : 'border-[#334155] bg-[#1E293B] hover:border-[#5B5CF6]/40'
+                    ? 'border-[#E8344E] bg-[#1A1B4B] shadow-md shadow-[#E8344E]/10'
+                    : 'border-[#2D2F5E] bg-[#1A1B4B] hover:border-[#E8344E]/40'
                 }`}
               >
                 <div
@@ -99,7 +99,7 @@ export default function Paso3Canales() {
                 {/* Toggle visual */}
                 <div
                   className={`w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 relative ${
-                    estaActivo ? 'bg-[#5B5CF6]' : 'bg-[#334155]'
+                    estaActivo ? 'bg-[#E8344E]' : 'bg-[#2D2F5E]'
                   }`}
                 >
                   <div

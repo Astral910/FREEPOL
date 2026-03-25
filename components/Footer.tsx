@@ -37,7 +37,7 @@ const columnas = {
  */
 const Footer = memo(function Footer() {
   return (
-    <footer className="bg-[#0F172A] py-16">
+    <footer className="bg-[#0A0A0A] py-16">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Columna Brand */}
@@ -106,7 +106,7 @@ const Footer = memo(function Footer() {
         </div>
 
         {/* Línea divisora */}
-        <Separator className="mt-12 bg-[#1E293B]" />
+        <Separator className="mt-12 bg-[#1A1B4B]" />
 
         {/* Copyright */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">

@@ -29,7 +29,7 @@ const AlertDialogContent = React.forwardRef<
     <AlertDialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 bg-[#1E293B] border border-[#334155] p-6 shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-2xl',
+        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 bg-[#1A1B4B] border border-[#2D2F5E] p-6 shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-2xl',
         className,
       )}
       {...props}
@@ -78,7 +78,7 @@ const AlertDialogCancel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Cancel
     ref={ref}
-    className={cn('mt-2 sm:mt-0 inline-flex items-center justify-center rounded-xl border border-[#334155] text-[#94A3B8] text-sm font-medium px-5 py-2.5 hover:bg-[#334155] transition-colors', className)}
+    className={cn('mt-2 sm:mt-0 inline-flex items-center justify-center rounded-xl border border-[#2D2F5E] text-[#94A3B8] text-sm font-medium px-5 py-2.5 hover:bg-[#2D2F5E] transition-colors', className)}
     {...props}
   />
 ))

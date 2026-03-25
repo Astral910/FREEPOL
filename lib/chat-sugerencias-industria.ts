@@ -38,9 +38,9 @@ const ICONOS: Record<SugerenciaTipo, LucideIcon> = {
 }
 
 const COLORES: Record<SugerenciaTipo, string> = {
-  ruleta: '#5B5CF6',
+  ruleta: '#E8344E',
   puntos: '#22C55E',
-  cupon: '#A855F7',
+  cupon: '#F2839A',
   factura: '#F59E0B',
 }
 

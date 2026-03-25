@@ -9,15 +9,15 @@ import { ArrowLeft, Sparkles } from 'lucide-react'
  */
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-4 relative overflow-hidden">
       {/* Círculos decorativos de fondo */}
       <motion.div
-        className="absolute top-20 left-10 w-96 h-96 bg-[#5B5CF6]/10 rounded-full blur-3xl pointer-events-none"
+        className="absolute top-20 left-10 w-96 h-96 bg-[#E8344E]/10 rounded-full blur-3xl pointer-events-none"
         animate={{ y: [0, -20, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        className="absolute bottom-20 right-10 w-80 h-80 bg-[#A855F7]/10 rounded-full blur-3xl pointer-events-none"
+        className="absolute bottom-20 right-10 w-80 h-80 bg-[#F2839A]/10 rounded-full blur-3xl pointer-events-none"
         animate={{ y: [0, 20, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
       />
@@ -34,7 +34,7 @@ export default function NotFound() {
 
         {/* Ícono */}
         <div className="flex justify-center -mt-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#5B5CF6] to-[#A855F7] flex items-center justify-center shadow-lg shadow-[#5B5CF6]/30">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#E8344E] to-[#F2839A] flex items-center justify-center shadow-lg shadow-[#E8344E]/30">
             <Sparkles size={24} className="text-white" />
           </div>
         </div>
@@ -49,7 +49,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <Link
             href="/"
-            className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#1E293B] border border-[#334155] text-[#CBD5E1] font-medium hover:bg-[#334155] transition-colors text-sm"
+            className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#1A1B4B] border border-[#2D2F5E] text-[#CBD5E1] font-medium hover:bg-[#2D2F5E] transition-colors text-sm"
           >
             <ArrowLeft size={16} />
             Volver al inicio
@@ -57,7 +57,7 @@ export default function NotFound() {
           <Link
             href="/chat"
             className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm transition-opacity hover:opacity-90"
-            style={{ background: 'linear-gradient(135deg, #5B5CF6, #A855F7)' }}
+            style={{ background: 'linear-gradient(135deg, #E8344E, #F2839A)' }}
           >
             <Sparkles size={16} />
             Abrir el asistente
@@ -65,7 +65,7 @@ export default function NotFound() {
         </div>
 
         <p className="text-[#475569] text-xs pt-2">
-          <span className="text-[#5B5CF6] font-bold">FREE</span>
+          <span className="text-[#E8344E] font-bold">FREE</span>
           <span className="text-[#64748B] font-bold">POL</span>
           {' '}— Plataforma de fidelización con IA
         </p>

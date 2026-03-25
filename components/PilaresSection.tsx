@@ -9,15 +9,15 @@ import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation'
 const pilares = [
   {
     icon: MessageSquare,
-    iconColor: '#5B5CF6',
-    iconBg: '#EEF2FF',
-    borderColor: 'border-l-[#5B5CF6]',
+    iconColor: '#E8344E',
+    iconBg: '#FFF0F2',
+    borderColor: 'border-l-[#E8344E]',
     titulo: 'Describe en lenguaje natural',
     texto:
       'Escribe exactamente lo que necesitas. Nuestra IA entiende tu negocio y lo convierte en una campaña funcional sin que toques código.',
     badgeLabel: 'Natural Language AI',
-    badgeBg: 'bg-[#EEF2FF]',
-    badgeText: 'text-[#5B5CF6]',
+    badgeBg: 'bg-[#FFF0F2]',
+    badgeText: 'text-[#E8344E]',
   },
   {
     icon: Zap,
@@ -33,15 +33,15 @@ const pilares = [
   },
   {
     icon: BarChart3,
-    iconColor: '#A855F7',
+    iconColor: '#F2839A',
     iconBg: '#FAF5FF',
-    borderColor: 'border-l-[#A855F7]',
+    borderColor: 'border-l-[#F2839A]',
     titulo: 'Tus datos, tu control',
     texto:
       'Todos los participantes y comportamientos quedan en tu base de datos. Re-marketing basado en comportamiento real.',
     badgeLabel: 'Data Sovereignty',
     badgeBg: 'bg-[#FAF5FF]',
-    badgeText: 'text-[#A855F7]',
+    badgeText: 'text-[#F2839A]',
   },
 ]
 

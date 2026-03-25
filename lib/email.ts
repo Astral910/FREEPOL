@@ -20,9 +20,9 @@ function templateBase(contenido: string): string {
       <table width="560" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:16px;overflow:hidden;border:1px solid #E5E7EB;">
         <!-- Header gradiente -->
         <tr>
-          <td style="background:linear-gradient(135deg,#5B5CF6,#A855F7);padding:28px 40px;">
+          <td style="background:linear-gradient(135deg,#E8344E,#F2839A);padding:28px 40px;">
             <p style="margin:0;font-size:22px;font-weight:800;color:#FFFFFF;letter-spacing:-0.5px;">
-              <span style="color:#E0E7FF;">FREE</span>POL
+              <span style="color:#FFFFFF;">FREE</span>POL
             </p>
             <p style="margin:4px 0 0;font-size:13px;color:rgba(255,255,255,0.75);">
               Plataforma de fidelización con IA
@@ -35,7 +35,7 @@ function templateBase(contenido: string): string {
         <tr>
           <td style="background:#F8FAFC;padding:20px 40px;border-top:1px solid #E5E7EB;">
             <p style="margin:0;font-size:12px;color:#94A3B8;text-align:center;">
-              Powered by FREEPOL · <a href="https://freepol.app" style="color:#5B5CF6;text-decoration:none;">freepol.app</a>
+              Powered by FREEPOL · <a href="https://freepol.app" style="color:#E8344E;text-decoration:none;">freepol.app</a>
             </p>
           </td>
         </tr>
@@ -78,7 +78,7 @@ export async function enviarCodigoPremio({
     </p>
     <div style="background:#F8FAFC;border:2px dashed #E5E7EB;border-radius:12px;padding:24px;text-align:center;margin:0 0 24px;">
       <p style="margin:0 0 8px;font-size:13px;color:#64748B;text-transform:uppercase;letter-spacing:1px;">Tu premio</p>
-      <p style="margin:0 0 12px;font-size:18px;font-weight:700;color:#5B5CF6;">${premio}</p>
+      <p style="margin:0 0 12px;font-size:18px;font-weight:700;color:#E8344E;">${premio}</p>
       <p style="margin:0 0 4px;font-size:12px;color:#94A3B8;">Código único</p>
       <p style="margin:0;font-size:28px;font-weight:900;color:#0F172A;font-family:'Courier New',monospace;letter-spacing:2px;">${codigo}</p>
     </div>
@@ -141,7 +141,7 @@ export async function enviarBienvenida({
     </p>
     <div style="text-align:center;margin:0 0 24px;">
       <a href="${urlCompleta}"
-        style="display:inline-block;background:linear-gradient(135deg,#5B5CF6,#A855F7);color:#FFFFFF;font-weight:700;font-size:15px;padding:14px 32px;border-radius:12px;text-decoration:none;">
+        style="display:inline-block;background:linear-gradient(135deg,#E8344E,#F2839A);color:#FFFFFF;font-weight:700;font-size:15px;padding:14px 32px;border-radius:12px;text-decoration:none;">
         Participar ahora →
       </a>
     </div>

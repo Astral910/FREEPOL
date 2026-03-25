@@ -55,6 +55,51 @@ function checkPasswordRequirements(password: string) {
 }
 
 /**
+ * Límite de correos / peticiones en el signUp público de Supabase.
+ * En ese caso intentamos POST /api/auth/registro-directo (solo si el servidor lo permite).
+ */
+function esErrorRateLimitRegistro(error: { message: string; status?: number }): boolean {
+  const m = error.message.toLowerCase()
+  if (error.status === 429) return true
+  if (m.includes('rate limit')) return true
+  if (m.includes('too many requests')) return true
+  if (m.includes('email rate limit')) return true
+  if (m.includes('over_email_send_rate_limit')) return true
+  if (m.includes('email_send_rate_limit')) return true
+  return false
+}
+
+/** Mensajes claros para errores de supabase.auth.signUp */
+function mapRegisterError(error: { message: string }): string {
+  const m = error.message.toLowerCase()
+  if (m.includes('already registered') || m.includes('user already registered')) {
+    return 'Este correo ya está registrado. ¿Quieres iniciar sesión?'
+  }
+  if (esErrorRateLimitRegistro(error)) {
+    return 'Demasiados intentos de registro por correo. Espera unos minutos e inténtalo de nuevo.'
+  }
+  if (m.includes('password') && m.includes('weak')) {
+    return 'La contraseña es demasiado débil. Usa mayúsculas, números y un carácter especial.'
+  }
+  if (m.includes('invalid email')) {
+    return 'El formato del correo no es válido.'
+  }
+  return 'No se pudo completar el registro. Verifica los datos e intenta de nuevo.'
+}
+
+/** Tras registro-directo + signIn, si el login falla */
+function mapSignInErrorDespuesRegistroDirecto(error: { message: string }): string {
+  const m = error.message.toLowerCase()
+  if (m.includes('email not confirmed') || m.includes('email_not_confirmed')) {
+    return 'La cuenta se creó pero falta confirmación de correo. Revisa tu bandeja o inicia sesión en unos segundos.'
+  }
+  if (m.includes('invalid login') || m.includes('invalid_credentials')) {
+    return 'No se pudo iniciar sesión automáticamente. Usa «Iniciar sesión» con el mismo correo y contraseña.'
+  }
+  return 'Cuenta procesada, pero el inicio de sesión automático falló. Prueba iniciar sesión manualmente.'
+}
+
+/**
  * Modal de autenticación con tabs de login y registro.
  * Usa Supabase Auth para login/signup.
  */
@@ -159,6 +204,23 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
     }
   }
 
+  /** Guarda datos para onboarding y redirige igual que un registro exitoso con sesión */
+  const completarRegistroTrasSesion = async (userId: string, data: RegisterForm) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        'freepol_registro',
+        JSON.stringify({
+          nombre_empresa: data.company,
+          nombre_completo: data.fullName,
+          sitio_web: data.sitioWeb ?? '',
+        }),
+      )
+    }
+    handleDialogOpenChange(false)
+    const empresa = await getEmpresaDelUsuario(userId)
+    router.push(empresa ? '/dashboard' : '/onboarding')
+  }
+
   const handleRegister = async (data: RegisterForm) => {
     if (data.password !== data.confirmPassword) {
       registerForm.setError('confirmPassword', { message: 'Las contraseñas no coinciden' })
@@ -184,43 +246,76 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
           },
         },
       })
+
       if (error) {
-        if (error.message.includes('already registered')) {
-          setRegisterError('Este correo ya está registrado. ¿Quieres iniciar sesión?')
-        } else {
-          setRegisterError(error.message)
-        }
-      } else if (signupData.session && signupData.user) {
-        // Confirmación de correo desactivada en Supabase: sesión inmediata
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(
-            'freepol_registro',
-            JSON.stringify({
-              nombre_empresa: data.company,
-              nombre_completo: data.fullName,
-              sitio_web: data.sitioWeb ?? '',
+        // Fallback: límite de envío de email en Supabase → Admin API (solo si ALLOW_DIRECT_SIGNUP=true)
+        if (esErrorRateLimitRegistro(error)) {
+          const res = await fetch('/api/auth/registro-directo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: data.email,
+              password: data.password,
+              fullName: data.fullName,
+              company: data.company,
             }),
-          )
+          })
+          const json = (await res.json()) as { ok?: boolean; error?: string }
+
+          if (res.status === 201 && json.ok === true) {
+            const { error: signInErr, data: signInData } = await supabase.auth.signInWithPassword({
+              email: data.email,
+              password: data.password,
+            })
+            if (signInErr || !signInData.user) {
+              setRegisterError(
+                signInErr
+                  ? mapSignInErrorDespuesRegistroDirecto(signInErr)
+                  : 'Cuenta creada pero no se pudo iniciar sesión. Usa «Iniciar sesión».',
+              )
+              return
+            }
+            await completarRegistroTrasSesion(signInData.user.id, data)
+            return
+          }
+
+          if (res.status === 403) {
+            setRegisterError(
+              'Hay demasiados registros por correo ahora. Espera unos minutos. (El registro alternativo no está activo en este servidor.)',
+            )
+            return
+          }
+          if (res.status === 409) {
+            setRegisterError('Este correo ya está registrado. ¿Quieres iniciar sesión?')
+            return
+          }
+          setRegisterError(json.error ?? 'No se pudo registrar con el método alternativo.')
+          return
         }
-        handleDialogOpenChange(false)
-        const empresa = await getEmpresaDelUsuario(signupData.user.id)
-        router.push(empresa ? '/dashboard' : '/onboarding')
-      } else {
-        // Requiere abrir el enlace del correo (o el usuario ya existe y Supabase no devuelve error explícito)
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(
-            'freepol_registro',
-            JSON.stringify({
-              nombre_empresa: data.company,
-              nombre_completo: data.fullName,
-              sitio_web: data.sitioWeb ?? '',
-            }),
-          )
-        }
-        setRegisteredEmail(data.email)
-        setRegisterSuccess(true)
-        setResendCountdown(60)
+
+        setRegisterError(mapRegisterError(error))
+        return
       }
+
+      if (signupData.session && signupData.user) {
+        await completarRegistroTrasSesion(signupData.user.id, data)
+        return
+      }
+
+      // Requiere abrir el enlace del correo
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          'freepol_registro',
+          JSON.stringify({
+            nombre_empresa: data.company,
+            nombre_completo: data.fullName,
+            sitio_web: data.sitioWeb ?? '',
+          }),
+        )
+      }
+      setRegisteredEmail(data.email)
+      setRegisterSuccess(true)
+      setResendCountdown(60)
     } catch {
       setRegisterError('Ocurrió un error inesperado. Intenta de nuevo.')
     } finally {
@@ -271,7 +366,7 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
             <div className="w-full max-w-xs flex flex-col gap-2 pt-2">
               <Button
                 type="button"
-                className="w-full bg-[#5B5CF6] text-white hover:brightness-110"
+                className="w-full bg-[#E8344E] text-white hover:brightness-110"
                 onClick={() => salirDePantallaVerificacion('login')}
               >
                 Ir a iniciar sesión
@@ -294,9 +389,9 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
             {/* Header con logo */}
             <div className="px-8 pt-8 pb-4 text-center">
               <div className="flex items-center justify-center gap-1.5 mb-4">
-                <Zap size={18} className="text-[#5B5CF6]" />
+                <Zap size={18} className="text-[#E8344E]" />
                 <span className="text-lg font-bold">
-                  <span className="text-[#5B5CF6]">FREE</span>
+                  <span className="text-[#E8344E]">FREE</span>
                   <span className="text-[#0F172A]">POL</span>
                 </span>
               </div>
@@ -355,12 +450,12 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="rounded border-[#E5E7EB] text-[#5B5CF6]"
+                      className="rounded border-[#E5E7EB] text-[#E8344E]"
                       {...loginForm.register('remember')}
                     />
                     <span className="text-sm text-[#64748B]">Recordarme</span>
                   </label>
-                  <button type="button" className="text-sm text-[#5B5CF6] hover:underline">
+                  <button type="button" className="text-sm text-[#E8344E] hover:underline">
                     ¿Olvidaste tu contraseña?
                   </button>
                 </div>
@@ -370,7 +465,7 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                     <p>{loginError}</p>
                     <button
                       type="button"
-                      className="text-xs font-semibold text-[#5B5CF6] hover:underline"
+                      className="text-xs font-semibold text-[#E8344E] hover:underline"
                       onClick={() => setLoginError('')}
                     >
                       Cerrar este mensaje
@@ -380,7 +475,7 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
 
                 <Button
                   type="submit"
-                  className="w-full bg-[#5B5CF6] text-white rounded-lg py-3 h-auto font-semibold hover:brightness-110"
+                  className="w-full bg-[#E8344E] text-white rounded-lg py-3 h-auto font-semibold hover:brightness-110"
                   disabled={loginLoading}
                 >
                   {loginLoading ? (
@@ -575,11 +670,11 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                   />
                   <span className="text-xs text-[#64748B] leading-relaxed">
                     Acepto los{' '}
-                    <a href="/terms" className="text-[#5B5CF6] hover:underline">
+                    <a href="/terms" className="text-[#E8344E] hover:underline">
                       Términos de servicio
                     </a>{' '}
                     y la{' '}
-                    <a href="/privacy" className="text-[#5B5CF6] hover:underline">
+                    <a href="/privacy" className="text-[#E8344E] hover:underline">
                       Política de Privacidad
                     </a>
                   </span>
@@ -591,7 +686,7 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
                     {registerError.includes('ya está registrado') && (
                       <button
                         type="button"
-                        className="ml-2 text-[#5B5CF6] hover:underline"
+                        className="ml-2 text-[#E8344E] hover:underline"
                         onClick={() => setActiveTab('login')}
                       >
                         Ir a login
@@ -602,7 +697,7 @@ export default function AuthDialog({ open, onOpenChange, defaultTab = 'login' }:
 
                 <Button
                   type="submit"
-                  className="w-full bg-[#5B5CF6] text-white rounded-lg py-3 h-auto font-semibold hover:brightness-110"
+                  className="w-full bg-[#E8344E] text-white rounded-lg py-3 h-auto font-semibold hover:brightness-110"
                   disabled={registerLoading}
                 >
                   {registerLoading ? (

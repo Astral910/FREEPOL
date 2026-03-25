@@ -39,8 +39,8 @@ export interface CampanaRow {
 const TIPO_CONFIG = {
   ruleta: { label: 'Ruleta', icono: Trophy, color: '#F59E0B', bg: '#F59E0B15' },
   puntos: { label: 'Puntos', icono: Star, color: '#22C55E', bg: '#22C55E15' },
-  cupon: { label: 'Cupón', icono: Ticket, color: '#5B5CF6', bg: '#5B5CF615' },
-  factura: { label: 'Factura', icono: Receipt, color: '#A855F7', bg: '#A855F715' },
+  cupon: { label: 'Cupón', icono: Ticket, color: '#E8344E', bg: '#E8344E15' },
+  factura: { label: 'Factura', icono: Receipt, color: '#F2839A', bg: '#F2839A15' },
 }
 
 const ESTADO_CONFIG = {
@@ -130,7 +130,7 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
     return (
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-[#1E293B] border border-[#334155] rounded-2xl p-5 flex gap-4">
+          <div key={i} className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-5 flex gap-4">
             <Skeleton className="h-10 w-10 rounded-xl" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-4 w-48" />
@@ -144,11 +144,11 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
 
   if (campanas.length === 0) {
     return (
-      <div className="bg-[#1E293B] border border-[#334155] rounded-2xl p-12 text-center space-y-5">
+      <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl p-12 text-center space-y-5">
         <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mx-auto shadow-lg shadow-[#5B5CF6]/20"
+          className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mx-auto shadow-lg shadow-[#E8344E]/20"
         >
           <Rocket size={26} className="text-white" />
         </motion.div>
@@ -172,7 +172,7 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
         <div className="flex items-center gap-2 flex-1">
           <h2 className="text-white font-semibold text-lg">Mis campañas</h2>
-          <span className="text-xs bg-[#334155] text-[#94A3B8] px-2.5 py-0.5 rounded-full">
+          <span className="text-xs bg-[#2D2F5E] text-[#94A3B8] px-2.5 py-0.5 rounded-full">
             {campanas.length}
           </span>
         </div>
@@ -183,7 +183,7 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             placeholder="Buscar campaña..."
-            className="bg-[#1E293B] border border-[#334155] rounded-lg pl-9 pr-4 py-2 text-sm text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:border-[#5B5CF6] w-full sm:w-48 transition-colors"
+            className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-lg pl-9 pr-4 py-2 text-sm text-[#E2E8F0] placeholder:text-[#475569] focus:outline-none focus:border-[#E8344E] w-full sm:w-48 transition-colors"
           />
         </div>
       </div>
@@ -192,18 +192,18 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
       <div className="flex gap-2 flex-wrap mb-4">
         {FILTROS.map((f) => (
           <button key={f} onClick={() => setFiltro(f)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${filtro === f ? 'bg-[#5B5CF6] text-white' : 'bg-[#1E293B] border border-[#334155] text-[#94A3B8] hover:text-[#E2E8F0]'}`}>
+            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${filtro === f ? 'bg-[#E8344E] text-white' : 'bg-[#1A1B4B] border border-[#2D2F5E] text-[#94A3B8] hover:text-[#E2E8F0]'}`}>
             {f}
           </button>
         ))}
       </div>
 
       {/* Tabla (desktop) */}
-      <div className="hidden md:block bg-[#1E293B] border border-[#334155] rounded-2xl overflow-hidden">
+      <div className="hidden md:block bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#334155]">
+              <tr className="border-b border-[#2D2F5E]">
                 {['Campaña', 'Tipo', 'Estado', 'Participantes', 'Canjes', 'Creada', ''].map((h) => (
                   <th key={h} className="text-left text-[#64748B] text-xs uppercase tracking-wide px-5 py-3 font-medium whitespace-nowrap">{h}</th>
                 ))}
@@ -226,7 +226,7 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="border-b border-[#0F172A]/50 hover:bg-[#0F172A]/40 transition-colors"
+                      className="border-b border-[#0A0A0A]/50 hover:bg-[#0A0A0A]/40 transition-colors"
                     >
                       {/* Campaña */}
                       <td className="px-5 py-4">
@@ -257,9 +257,9 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
                       <td className="px-5 py-4">
                         <p className="text-[#E2E8F0] text-sm">{c.total_participantes.toLocaleString()}</p>
                         {limite && (
-                          <div className="mt-1 w-16 h-1 bg-[#334155] rounded-full overflow-hidden">
+                          <div className="mt-1 w-16 h-1 bg-[#2D2F5E] rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-[#5B5CF6] rounded-full transition-all"
+                              className="h-full bg-[#E8344E] rounded-full transition-all"
                               style={{ width: `${Math.min((c.total_participantes / limite) * 100, 100)}%` }}
                             />
                           </div>
@@ -281,34 +281,34 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
                       <td className="px-5 py-4">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button className="w-8 h-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-[#475569] hover:text-[#94A3B8] transition-colors">
+                            <button className="w-8 h-8 rounded-lg bg-[#0A0A0A] flex items-center justify-center text-[#475569] hover:text-[#94A3B8] transition-colors">
                               <MoreHorizontal size={15} />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-[#1E293B] border-[#334155] text-[#E2E8F0]">
-                            <DropdownMenuItem className="gap-2 hover:bg-[#334155] cursor-pointer" asChild>
+                          <DropdownMenuContent align="end" className="bg-[#1A1B4B] border-[#2D2F5E] text-[#E2E8F0]">
+                            <DropdownMenuItem className="gap-2 hover:bg-[#2D2F5E] cursor-pointer" asChild>
                               <a href={`/c/${c.slug}`} target="_blank" rel="noreferrer">
                                 <ExternalLink size={13} /> Ver landing
                               </a>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 hover:bg-[#334155] cursor-pointer" onClick={() => copiarLink(c.slug)}>
+                            <DropdownMenuItem className="gap-2 hover:bg-[#2D2F5E] cursor-pointer" onClick={() => copiarLink(c.slug)}>
                               <Copy size={13} /> Copiar link
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 hover:bg-[#334155] cursor-pointer" onClick={() => setQrCampana(c)}>
+                            <DropdownMenuItem className="gap-2 hover:bg-[#2D2F5E] cursor-pointer" onClick={() => setQrCampana(c)}>
                               <QrCode size={13} /> Ver QR
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 hover:bg-[#334155] cursor-pointer" asChild>
+                            <DropdownMenuItem className="gap-2 hover:bg-[#2D2F5E] cursor-pointer" asChild>
                               <Link href={`/dashboard/campana/${c.id}`}>
                                 <BarChart2 size={13} /> Ver métricas
                               </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator className="bg-[#334155]" />
-                            <DropdownMenuItem className="gap-2 hover:bg-[#334155] cursor-pointer" onClick={() => toggleEstado(c)}>
+                            <DropdownMenuSeparator className="bg-[#2D2F5E]" />
+                            <DropdownMenuItem className="gap-2 hover:bg-[#2D2F5E] cursor-pointer" onClick={() => toggleEstado(c)}>
                               {c.estado === 'activa'
                                 ? <><Pause size={13} /> Pausar</>
                                 : <><Play size={13} /> Reactivar</>}
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator className="bg-[#334155]" />
+                            <DropdownMenuSeparator className="bg-[#2D2F5E]" />
                             <DropdownMenuItem className="gap-2 text-red-400 hover:bg-red-500/10 cursor-pointer" onClick={() => setEliminarId(c.id)}>
                               <Trash size={13} /> Eliminar
                             </DropdownMenuItem>
@@ -332,7 +332,7 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
           const TipoIcono = tipo.icono
 
           return (
-            <div key={c.id} className="bg-[#1E293B] border border-[#334155] rounded-xl p-4 space-y-3">
+            <div key={c.id} className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl p-4 space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-white font-medium text-sm">{c.nombre_campana}</p>
@@ -355,15 +355,15 @@ export default function ListaCampanas({ userId, supabase }: ListaCampanasProps) 
               </div>
               <div className="flex gap-2">
                 <a href={`/c/${c.slug}`} target="_blank" rel="noreferrer"
-                  className="flex-1 py-2 rounded-lg bg-[#0F172A] text-[#94A3B8] text-xs text-center hover:text-[#E2E8F0] transition-colors">
+                  className="flex-1 py-2 rounded-lg bg-[#0A0A0A] text-[#94A3B8] text-xs text-center hover:text-[#E2E8F0] transition-colors">
                   Ver landing
                 </a>
                 <button onClick={() => setQrCampana(c)}
-                  className="flex-1 py-2 rounded-lg bg-[#0F172A] text-[#94A3B8] text-xs hover:text-[#E2E8F0] transition-colors">
+                  className="flex-1 py-2 rounded-lg bg-[#0A0A0A] text-[#94A3B8] text-xs hover:text-[#E2E8F0] transition-colors">
                   QR
                 </button>
                 <button onClick={() => toggleEstado(c)}
-                  className="flex-1 py-2 rounded-lg bg-[#0F172A] text-[#94A3B8] text-xs hover:text-[#E2E8F0] transition-colors">
+                  className="flex-1 py-2 rounded-lg bg-[#0A0A0A] text-[#94A3B8] text-xs hover:text-[#E2E8F0] transition-colors">
                   {c.estado === 'activa' ? 'Pausar' : 'Activar'}
                 </button>
               </div>

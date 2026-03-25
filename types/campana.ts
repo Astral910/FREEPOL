@@ -44,7 +44,7 @@ export interface ConfigCampana {
   limite_participantes: number | null
   deep_link_url: string | null
   horas_expiracion_codigo: number
-  /** Color de marca en la landing (hex). Opcional; por defecto #5B5CF6 */
+  /** Color de marca en la landing (hex). Opcional; por defecto #E8344E */
   color_primario?: string | null
 }
 

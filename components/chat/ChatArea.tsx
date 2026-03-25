@@ -78,7 +78,7 @@ export default function ChatArea({
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mb-6 shadow-lg shadow-[#5B5CF6]/30"
+              className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mb-6 shadow-lg shadow-[#E8344E]/30"
             >
               <Sparkles size={28} className="text-white" />
             </motion.div>
@@ -105,7 +105,7 @@ export default function ChatArea({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => onSugerencia(s.promptEjemplo)}
-                    className="bg-[#1E293B] border border-[#334155] rounded-xl p-4 text-left cursor-pointer group transition-all duration-200 hover:border-current"
+                    className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-xl p-4 text-left cursor-pointer group transition-all duration-200 hover:border-current"
                     style={
                       { '--hover-color': s.color } as React.CSSProperties
                     }
@@ -114,8 +114,8 @@ export default function ChatArea({
                       e.currentTarget.style.backgroundColor = `${s.color}0D`
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#334155'
-                      e.currentTarget.style.backgroundColor = '#1E293B'
+                      e.currentTarget.style.borderColor = '#2D2F5E'
+                      e.currentTarget.style.backgroundColor = '#1A1B4B'
                     }}
                   >
                     <div className="flex items-start gap-3">
@@ -163,8 +163,8 @@ export default function ChatArea({
                 <div
                   className={`max-w-[75%] rounded-2xl px-4 py-3 ${
                     msg.rol === 'usuario'
-                      ? 'bg-[#5B5CF6] text-white rounded-tr-none'
-                      : 'bg-[#1E293B] text-[#E2E8F0] rounded-tl-none border border-[#334155]'
+                      ? 'bg-[#E8344E] text-white rounded-tr-none'
+                      : 'bg-[#1A1B4B] text-[#E2E8F0] rounded-tl-none border border-[#2D2F5E]'
                   }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.contenido}</p>
@@ -196,7 +196,7 @@ export default function ChatArea({
                     <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
                       <Sparkles size={14} className="text-white animate-spin" />
                     </div>
-                    <div className="bg-[#1E293B] border border-[#334155] rounded-2xl rounded-tl-none px-4 py-3">
+                    <div className="bg-[#1A1B4B] border border-[#2D2F5E] rounded-2xl rounded-tl-none px-4 py-3">
                       <p className="text-[#94A3B8] text-sm">{texto}</p>
                     </div>
                   </motion.div>
